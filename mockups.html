@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Token Flow Manager — Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Geist', 'ui-sans-serif', 'system-ui'],
+          mono: ['Geist Mono', 'ui-monospace', 'monospace'],
+        },
+        colors: {
+          ink: {
+            50:  '#FAFAF9',
+            100: '#F5F5F4',
+            200: '#E7E5E4',
+            300: '#D6D3D1',
+            400: '#A8A29E',
+            500: '#78716C',
+            600: '#57534E',
+            700: '#44403C',
+            800: '#292524',
+            900: '#1C1917',
+            950: '#0C0A09',
+          },
+          forge: {
+            50:  '#FFF7ED',
+            100: '#FFEDD5',
+            200: '#FED7AA',
+            500: '#F97316',
+            600: '#EA580C',
+            700: '#C2410C',
+          },
+        },
+      },
+    },
+  };
+</script>
+<style>
+  body {
+    background: #F1F0EE;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+    -webkit-font-smoothing: antialiased;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #D6D3D1; border-radius: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .dot-bg {
+    background-image: radial-gradient(circle, #D6D3D1 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+  .ring-focus { box-shadow: 0 0 0 2px #FFF, 0 0 0 4px #EA580C; }
+  .checker {
+    background-image:
+      linear-gradient(45deg, #E7E5E4 25%, transparent 25%),
+      linear-gradient(-45deg, #E7E5E4 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #E7E5E4 75%),
+      linear-gradient(-45deg, transparent 75%, #E7E5E4 75%);
+    background-size: 8px 8px;
+    background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+  }
+  /* Tabs */
+  .tab-active { background: #0C0A09; color: white; }
+  .tab-inactive:hover { background: #E7E5E4; }
+</style>
+</head>
+<body class="font-sans text-ink-950">
+
+<!-- TOP NAVIGATION (Mockup picker) -->
+<div class="sticky top-0 z-50 bg-ink-50/85 backdrop-blur-md border-b border-ink-200">
+  <div class="max-w-[1440px] mx-auto px-6 py-3 flex items-center gap-6">
+    <div class="flex items-center gap-2">
+      <div class="w-6 h-6 rounded-md bg-ink-950 flex items-center justify-center">
+        <div class="w-2.5 h-2.5 bg-forge-500 rounded-sm rotate-45"></div>
+      </div>
+      <span class="font-semibold tracking-tight">Token Flow Manager</span>
+      <span class="text-xs px-1.5 py-0.5 rounded font-mono bg-ink-100 text-ink-500 border border-ink-200">mockups</span>
+    </div>
+    <div class="flex gap-1 ml-auto text-sm overflow-x-auto">
+      <button onclick="showView('view1')" id="tab-view1" class="tab-active px-3 py-1.5 rounded-md transition-colors whitespace-nowrap">1 · Variables</button>
+      <button onclick="showView('view2')" id="tab-view2" class="tab-inactive px-3 py-1.5 rounded-md transition-colors whitespace-nowrap">2 · Inspector</button>
+      <button onclick="showView('view3')" id="tab-view3" class="tab-inactive px-3 py-1.5 rounded-md transition-colors whitespace-nowrap">3 · ⌘K</button>
+      <button onclick="showView('view4')" id="tab-view4" class="tab-inactive px-3 py-1.5 rounded-md transition-colors whitespace-nowrap">4 · Color picker</button>
+      <button onclick="showView('view5')" id="tab-view5" class="tab-inactive px-3 py-1.5 rounded-md transition-colors whitespace-nowrap">5 · Typography</button>
+      <button onclick="showView('view6')" id="tab-view6" class="tab-inactive px-3 py-1.5 rounded-md transition-colors whitespace-nowrap">6 · Git diff</button>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-[1440px] mx-auto p-6 space-y-12">
+
+<!-- ===================================================================== -->
+<!-- VIEW 1 — VARIABLES TABLE (Vue principale, inspirée Figma Variables)    -->
+<!-- ===================================================================== -->
+<section id="view1">
+  <div class="mb-4 flex items-end justify-between">
+    <div>
+      <div class="text-xs font-mono uppercase tracking-wider text-ink-500 mb-1">Mockup 01</div>
+      <h2 class="text-2xl font-semibold tracking-tight">Variables Table — vue principale</h2>
+      <p class="text-sm text-ink-600 mt-1">Tableau dense, modes en colonnes, chips d'alias. Inspiration directe Figma Variables.</p>
+    </div>
+  </div>
+
+  <!-- App window -->
+  <div class="bg-white rounded-xl border border-ink-200 shadow-[0_1px_3px_rgba(12,10,9,0.04),0_8px_24px_rgba(12,10,9,0.06)] overflow-hidden">
+
+    <!-- HEADER -->
+    <header class="h-12 border-b border-ink-200 flex items-center px-3 gap-3 bg-white">
+      <div class="flex gap-1.5">
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+      </div>
+      <div class="h-5 w-px bg-ink-200 mx-1"></div>
+      <div class="flex items-center gap-2 text-sm">
+        <div class="w-5 h-5 rounded bg-ink-950 flex items-center justify-center">
+          <div class="w-1.5 h-1.5 bg-forge-500 rounded-sm rotate-45"></div>
+        </div>
+        <span class="font-medium">tokenflow</span>
+        <span class="text-ink-400">/</span>
+        <span class="font-mono text-xs text-ink-600">~/projects/ds-acme</span>
+        <span class="ml-1 inline-flex items-center gap-1 text-xs font-mono text-ink-500">
+          <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="4" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="12" cy="8" r="1.5"/><path d="M5.5 4h6.5M4 5.5v5M5.5 12h4l2.5-2.5"/></svg>
+          main
+        </span>
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 -ml-0.5" title="3 files modified"></span>
+      </div>
+      <div class="ml-auto flex items-center gap-1">
+        <button class="text-xs text-ink-600 px-2 py-1 rounded hover:bg-ink-100 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><path d="m13 13-2.5-2.5"/></svg>
+          Search
+          <kbd class="font-mono text-[10px] bg-ink-100 border border-ink-200 px-1 rounded text-ink-500">⌘K</kbd>
+        </button>
+        <button class="p-1.5 rounded hover:bg-ink-100 text-ink-600">
+          <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v1.5M8 13.5V15M3.05 3.05l1.06 1.06M11.89 11.89l1.06 1.06M1 8h1.5M13.5 8H15M3.05 12.95l1.06-1.06M11.89 4.11l1.06-1.06"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN GRID -->
+    <div class="grid grid-cols-[240px_1fr] h-[640px]">
+
+      <!-- SIDEBAR -->
+      <aside class="border-r border-ink-200 bg-ink-50/40 flex flex-col text-sm">
+        <div class="p-3 border-b border-ink-200">
+          <div class="text-[11px] uppercase tracking-wider text-ink-500 font-medium mb-1.5 px-1">Collection</div>
+          <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md bg-white border border-ink-200 hover:border-ink-300">
+            <span class="font-medium">Tokens</span>
+            <svg class="w-3.5 h-3.5 text-ink-500" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 6 4 4 4-4"/></svg>
+          </button>
+        </div>
+
+        <nav class="p-2 flex-1 overflow-auto scrollbar-thin">
+          <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md bg-ink-950 text-white">
+            <span class="font-medium">All variables</span>
+            <span class="font-mono text-xs text-ink-400">19</span>
+          </button>
+
+          <div class="mt-3 mb-1.5 px-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Groups</div>
+
+          <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-ink-100 text-ink-700">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3 h-3 text-ink-400" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2v8l5-4z"/></svg>
+              surface
+            </span>
+            <span class="font-mono text-xs text-ink-400">5</span>
+          </button>
+          <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-ink-100 text-ink-700">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3 h-3 text-ink-400" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2v8l5-4z"/></svg>
+              spacing
+            </span>
+            <span class="font-mono text-xs text-ink-400">6</span>
+          </button>
+          <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-ink-100 text-ink-700">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3 h-3 text-ink-400" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2v8l5-4z"/></svg>
+              radius
+            </span>
+            <span class="font-mono text-xs text-ink-400">4</span>
+          </button>
+          <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-ink-100 text-ink-700">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3 h-3 text-ink-400" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2v8l5-4z"/></svg>
+              text
+            </span>
+            <span class="font-mono text-xs text-ink-400">2</span>
+          </button>
+          <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md hover:bg-ink-100 text-ink-700">
+            <span class="flex items-center gap-1.5">
+              <svg class="w-3 h-3 text-ink-400" viewBox="0 0 12 12" fill="currentColor"><path d="M3 2v8l5-4z"/></svg>
+              border
+            </span>
+            <span class="font-mono text-xs text-ink-400">2</span>
+          </button>
+
+          <div class="mt-3 mb-1.5 px-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Filters</div>
+          <button class="w-full text-left px-2 py-1.5 rounded-md hover:bg-ink-100 text-ink-600 text-[13px]">Aliases only</button>
+          <button class="w-full text-left px-2 py-1.5 rounded-md hover:bg-ink-100 text-ink-600 text-[13px]">Deprecated</button>
+          <button class="w-full text-left px-2 py-1.5 rounded-md hover:bg-ink-100 text-ink-600 text-[13px]">Orphans</button>
+        </nav>
+
+        <div class="border-t border-ink-200 p-2.5">
+          <div class="text-[11px] uppercase tracking-wider text-ink-500 font-medium mb-1.5 px-1">Diagnostics</div>
+          <button class="w-full flex items-center gap-2 px-2 py-1 rounded hover:bg-ink-100 text-[13px]">
+            <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+            <span class="text-ink-700">2 errors</span>
+          </button>
+          <button class="w-full flex items-center gap-2 px-2 py-1 rounded hover:bg-ink-100 text-[13px]">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span class="text-ink-700">5 warnings</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="overflow-auto scrollbar-thin">
+
+        <!-- Toolbar -->
+        <div class="h-10 border-b border-ink-200 px-3 flex items-center gap-2 bg-white sticky top-0 z-10">
+          <div class="flex items-center gap-1 text-[13px] text-ink-600">
+            <span class="font-medium text-ink-950">All variables</span>
+            <span class="text-ink-400">·</span>
+            <span class="font-mono text-xs">19 items</span>
+          </div>
+          <div class="ml-auto flex items-center gap-1">
+            <div class="flex border border-ink-200 rounded-md p-0.5 bg-ink-50/40">
+              <button class="px-2 py-0.5 rounded bg-white shadow-sm border border-ink-200 text-xs font-medium">Table</button>
+              <button class="px-2 py-0.5 rounded text-xs text-ink-500">Grid</button>
+              <button class="px-2 py-0.5 rounded text-xs text-ink-500">JSON</button>
+            </div>
+            <button class="text-xs text-ink-600 px-2 py-1 rounded hover:bg-ink-100 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
+              Filter
+            </button>
+            <button class="text-xs text-ink-600 px-2 py-1 rounded hover:bg-ink-100 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3v10M3 5l2-2 2 2M11 13V3M9 11l2 2 2-2"/></svg>
+              Sort
+            </button>
+          </div>
+        </div>
+
+        <!-- TABLE HEAD -->
+        <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200 bg-white sticky top-10 z-10">
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Name</div>
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium border-l border-ink-200">Light</div>
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium border-l border-ink-200">Dark</div>
+          <div class="border-l border-ink-200 flex items-center justify-center">
+            <button class="w-6 h-6 rounded hover:bg-ink-100 flex items-center justify-center text-ink-500" title="Add mode">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- TABLE BODY -->
+        <div class="text-[13px]">
+
+          <!-- GROUP: surface -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] bg-ink-50/60 sticky top-[80px] z-[5] border-b border-ink-200">
+            <div class="px-3 py-1.5 flex items-center gap-1.5 font-medium text-ink-700">
+              <svg class="w-3 h-3 text-ink-500" viewBox="0 0 12 12" fill="currentColor"><path d="M2 4l4 4 4-4z"/></svg>
+              surface
+              <span class="font-mono text-[11px] text-ink-400 ml-1">5</span>
+            </div>
+            <div class="border-l border-ink-200"></div>
+            <div class="border-l border-ink-200"></div>
+            <div class="border-l border-ink-200"></div>
+          </div>
+
+          <!-- surface-primary -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200/70 hover:bg-ink-50/40 group">
+            <div class="px-3 py-2 flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D,#6C5CE7,#FF6B6B);"></span>
+              <span class="font-mono text-[13px]">surface-primary</span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <!-- alias chip -->
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#F9FAFB;"></span>
+                <span class="font-mono text-xs text-ink-700">color/gray/50</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#111827;"></span>
+                <span class="font-mono text-xs text-ink-700">color/gray/900</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70 flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <button class="w-6 h-6 rounded hover:bg-ink-200 flex items-center justify-center text-ink-500">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor"><circle cx="4" cy="8" r="1"/><circle cx="8" cy="8" r="1"/><circle cx="12" cy="8" r="1"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- surface-secondary -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200/70 hover:bg-ink-50/40 group">
+            <div class="px-3 py-2 flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D,#6C5CE7,#FF6B6B);"></span>
+              <span class="font-mono text-[13px]">surface-secondary</span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#1F2937;"></span>
+                <span class="font-mono text-xs text-ink-700">color/gray/800</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#9CA3AF;"></span>
+                <span class="font-mono text-xs text-ink-700">color/gray/400</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70"></div>
+          </div>
+
+          <!-- surface-invert -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200/70 hover:bg-ink-50/40 group">
+            <div class="px-3 py-2 flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D,#6C5CE7,#FF6B6B);"></span>
+              <span class="font-mono text-[13px]">surface-invert</span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#111827;"></span>
+                <span class="font-mono text-xs text-ink-700">color/gray/900</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#F9FAFB;"></span>
+                <span class="font-mono text-xs text-ink-700">color/gray/50</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70"></div>
+          </div>
+
+          <!-- surface-brand -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200/70 hover:bg-ink-50/40 group">
+            <div class="px-3 py-2 flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D,#6C5CE7,#FF6B6B);"></span>
+              <span class="font-mono text-[13px]">surface-brand</span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#7AC4A8;"></span>
+                <span class="font-mono text-xs text-ink-700">color/brand/watermelon</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#7AC4A8;"></span>
+                <span class="font-mono text-xs text-ink-700">color/brand/watermelon</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70"></div>
+          </div>
+
+          <!-- surface-warning (with diagnostic) -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200/70 hover:bg-ink-50/40 group bg-red-50/30">
+            <div class="px-3 py-2 flex items-center gap-2">
+              <span class="w-4 h-4 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D,#6C5CE7,#FF6B6B);"></span>
+              <span class="font-mono text-[13px]">surface-warning</span>
+              <span class="ml-1 inline-flex items-center gap-1 text-[10px] font-medium text-red-700 bg-red-100 border border-red-200 px-1.5 py-0.5 rounded-full">
+                <span class="w-1 h-1 rounded-full bg-red-500"></span>
+                broken alias
+              </span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-red-50 border border-red-200 border-dashed">
+                <svg class="w-3.5 h-3.5 text-red-500" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5M8 11v.01"/></svg>
+                <span class="font-mono text-xs text-red-700 line-through">color/amber/600</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#D97706;"></span>
+                <span class="font-mono text-xs text-ink-700">color/amber/400</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70"></div>
+          </div>
+
+          <!-- GROUP: spacing -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] bg-ink-50/60 sticky top-[80px] z-[5] border-b border-ink-200 mt-1">
+            <div class="px-3 py-1.5 flex items-center gap-1.5 font-medium text-ink-700">
+              <svg class="w-3 h-3 text-ink-500" viewBox="0 0 12 12" fill="currentColor"><path d="M2 4l4 4 4-4z"/></svg>
+              spacing
+              <span class="font-mono text-[11px] text-ink-400 ml-1">6</span>
+            </div>
+            <div class="border-l border-ink-200"></div>
+            <div class="border-l border-ink-200"></div>
+            <div class="border-l border-ink-200"></div>
+          </div>
+
+          <!-- spacing-none -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200/70 hover:bg-ink-50/40">
+            <div class="px-3 py-2 flex items-center gap-2">
+              <span class="w-4 h-4 rounded border border-ink-300 shrink-0 flex items-center justify-center text-[10px] font-mono text-ink-500">#</span>
+              <span class="font-mono text-[13px]">spacing-none</span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center">
+              <span class="font-mono text-[13px] text-ink-700">0</span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center">
+              <span class="font-mono text-[13px] text-ink-700">0</span>
+            </div>
+            <div class="border-l border-ink-200/70"></div>
+          </div>
+
+          <!-- spacing-xs -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200/70 hover:bg-ink-50/40">
+            <div class="px-3 py-2 flex items-center gap-2">
+              <span class="w-4 h-4 rounded border border-ink-300 shrink-0 flex items-center justify-center text-[10px] font-mono text-ink-500">#</span>
+              <span class="font-mono text-[13px]">spacing-xs</span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300 flex items-center justify-center text-[9px] font-mono text-ink-500">#</span>
+                <span class="font-mono text-xs text-ink-700">spacing/.5</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300 flex items-center justify-center text-[9px] font-mono text-ink-500">#</span>
+                <span class="font-mono text-xs text-ink-700">spacing/.5</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70"></div>
+          </div>
+
+          <!-- spacing-sm -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200/70 hover:bg-ink-50/40">
+            <div class="px-3 py-2 flex items-center gap-2">
+              <span class="w-4 h-4 rounded border border-ink-300 shrink-0 flex items-center justify-center text-[10px] font-mono text-ink-500">#</span>
+              <span class="font-mono text-[13px]">spacing-sm</span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300 flex items-center justify-center text-[9px] font-mono text-ink-500">#</span>
+                <span class="font-mono text-xs text-ink-700">spacing/1</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300 flex items-center justify-center text-[9px] font-mono text-ink-500">#</span>
+                <span class="font-mono text-xs text-ink-700">spacing/1</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70"></div>
+          </div>
+
+          <!-- spacing-md -->
+          <div class="grid grid-cols-[minmax(240px,1fr)_220px_220px_40px] border-b border-ink-200/70 hover:bg-ink-50/40">
+            <div class="px-3 py-2 flex items-center gap-2">
+              <span class="w-4 h-4 rounded border border-ink-300 shrink-0 flex items-center justify-center text-[10px] font-mono text-ink-500">#</span>
+              <span class="font-mono text-[13px]">spacing-md</span>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300 flex items-center justify-center text-[9px] font-mono text-ink-500">#</span>
+                <span class="font-mono text-xs text-ink-700">spacing/3</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+              <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+                <span class="w-3.5 h-3.5 rounded-sm border border-ink-300 flex items-center justify-center text-[9px] font-mono text-ink-500">#</span>
+                <span class="font-mono text-xs text-ink-700">spacing/3</span>
+              </div>
+            </div>
+            <div class="border-l border-ink-200/70"></div>
+          </div>
+
+          <!-- Create variable footer row -->
+          <div class="px-3 py-2.5 text-[13px] text-ink-500 hover:text-ink-950 hover:bg-ink-50/40 cursor-pointer flex items-center gap-2">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg>
+            Create variable
+          </div>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- FOOTER STATUS BAR -->
+    <footer class="h-8 border-t border-ink-200 bg-ink-50/60 px-3 flex items-center gap-4 text-[11px] font-mono text-ink-600">
+      <div class="flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+        2 errors
+      </div>
+      <div class="flex items-center gap-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        5 warnings
+      </div>
+      <div class="flex items-center gap-1">
+        <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="4" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="12" cy="8" r="1.5"/><path d="M5.5 4h6.5M4 5.5v5M5.5 12h4l2.5-2.5"/></svg>
+        3 files modified
+      </div>
+      <div class="ml-auto flex items-center gap-3">
+        <span>19 tokens · 2 modes · 1 collection</span>
+        <span class="text-ink-400">DTCG 2025.10</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Annotation -->
+  <div class="mt-3 text-xs text-ink-500 max-w-3xl">
+    <span class="font-mono text-ink-700">Note —</span>
+    Les modes <em>Light</em> et <em>Dark</em> sont des <strong>colonnes</strong>, pas un switcher global. La ligne <span class="font-mono">surface-warning</span> illustre la mise en évidence d'un alias brisé (chip rouge + bordure tiretée + badge "broken alias" + fond rosé léger).
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- VIEW 2 — INSPECTOR (édition fine d'un token color)                     -->
+<!-- ===================================================================== -->
+<section id="view2" class="hidden">
+  <div class="mb-4 flex items-end justify-between">
+    <div>
+      <div class="text-xs font-mono uppercase tracking-wider text-ink-500 mb-1">Mockup 02</div>
+      <h2 class="text-2xl font-semibold tracking-tight">Inspector — édition d'un token color</h2>
+      <p class="text-sm text-ink-600 mt-1">Panel latéral à droite, color picker OKLCH custom, chaîne d'alias résolue par mode, références entrantes, source file.</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl border border-ink-200 shadow-[0_1px_3px_rgba(12,10,9,0.04),0_8px_24px_rgba(12,10,9,0.06)] overflow-hidden">
+
+    <!-- HEADER (same as view1) -->
+    <header class="h-12 border-b border-ink-200 flex items-center px-3 gap-3 bg-white">
+      <div class="flex gap-1.5">
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+      </div>
+      <div class="h-5 w-px bg-ink-200 mx-1"></div>
+      <div class="flex items-center gap-2 text-sm">
+        <div class="w-5 h-5 rounded bg-ink-950 flex items-center justify-center">
+          <div class="w-1.5 h-1.5 bg-forge-500 rounded-sm rotate-45"></div>
+        </div>
+        <span class="font-medium">tokenflow</span>
+        <span class="text-ink-400">/</span>
+        <span class="font-mono text-xs text-ink-600">~/projects/ds-acme</span>
+      </div>
+    </header>
+
+    <!-- MAIN GRID with inspector -->
+    <div class="grid grid-cols-[200px_1fr_380px] h-[640px]">
+
+      <!-- SIDEBAR (compact) -->
+      <aside class="border-r border-ink-200 bg-ink-50/40 p-2 text-sm">
+        <div class="px-2 py-1.5 mb-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Tokens</div>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700 hover:bg-ink-100">
+          <span>All variables</span>
+          <span class="font-mono text-xs text-ink-400">19</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md bg-forge-50 text-forge-700 border border-forge-200">
+          <span class="font-medium">surface</span>
+          <span class="font-mono text-xs">5</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700 hover:bg-ink-100">
+          <span>spacing</span>
+          <span class="font-mono text-xs text-ink-400">6</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700 hover:bg-ink-100">
+          <span>radius</span>
+          <span class="font-mono text-xs text-ink-400">4</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700 hover:bg-ink-100">
+          <span>text</span>
+          <span class="font-mono text-xs text-ink-400">2</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700 hover:bg-ink-100">
+          <span>border</span>
+          <span class="font-mono text-xs text-ink-400">2</span>
+        </button>
+      </aside>
+
+      <!-- TABLE (slightly dimmed) -->
+      <main class="overflow-hidden bg-white relative">
+        <div class="h-10 border-b border-ink-200 px-3 flex items-center text-[13px]">
+          <span class="font-medium">surface</span>
+          <span class="text-ink-400 mx-1.5">/</span>
+          <span class="font-mono text-ink-700">surface-primary</span>
+        </div>
+
+        <!-- TABLE HEAD -->
+        <div class="grid grid-cols-[1fr_180px_180px] border-b border-ink-200 bg-white">
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Name</div>
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium border-l border-ink-200">Light</div>
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium border-l border-ink-200">Dark</div>
+        </div>
+
+        <!-- Group surface -->
+        <div class="grid grid-cols-[1fr_180px_180px] bg-ink-50/60 border-b border-ink-200">
+          <div class="px-3 py-1.5 flex items-center gap-1.5 font-medium text-ink-700 text-[13px]">
+            <svg class="w-3 h-3 text-ink-500" viewBox="0 0 12 12" fill="currentColor"><path d="M2 4l4 4 4-4z"/></svg>
+            surface
+          </div>
+          <div class="border-l border-ink-200"></div>
+          <div class="border-l border-ink-200"></div>
+        </div>
+
+        <!-- SELECTED row: surface-primary -->
+        <div class="grid grid-cols-[1fr_180px_180px] border-b border-ink-200/70 bg-forge-50/40 ring-1 ring-inset ring-forge-200">
+          <div class="px-3 py-2 flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D,#6C5CE7,#FF6B6B);"></span>
+            <span class="font-mono text-[13px] font-medium">surface-primary</span>
+          </div>
+          <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+            <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-white border border-forge-300 shadow-sm">
+              <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#F9FAFB;"></span>
+              <span class="font-mono text-xs text-ink-700">color/gray/50</span>
+            </div>
+          </div>
+          <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center gap-2">
+            <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-white border border-ink-200">
+              <span class="w-3.5 h-3.5 rounded-sm border border-ink-300" style="background:#111827;"></span>
+              <span class="font-mono text-xs text-ink-700">color/gray/900</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- other rows (faded) -->
+        <div class="grid grid-cols-[1fr_180px_180px] border-b border-ink-200/70 opacity-60 text-[13px]">
+          <div class="px-3 py-2 flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D);"></span>
+            <span class="font-mono">surface-secondary</span>
+          </div>
+          <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center">
+            <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+              <span class="w-3.5 h-3.5 rounded-sm" style="background:#1F2937;"></span>
+              <span class="font-mono text-xs">color/gray/800</span>
+            </div>
+          </div>
+          <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center">
+            <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+              <span class="w-3.5 h-3.5 rounded-sm" style="background:#9CA3AF;"></span>
+              <span class="font-mono text-xs">color/gray/400</span>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-[1fr_180px_180px] border-b border-ink-200/70 opacity-60 text-[13px]">
+          <div class="px-3 py-2 flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D);"></span>
+            <span class="font-mono">surface-invert</span>
+          </div>
+          <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center">
+            <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+              <span class="w-3.5 h-3.5 rounded-sm" style="background:#111827;"></span>
+              <span class="font-mono text-xs">color/gray/900</span>
+            </div>
+          </div>
+          <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center">
+            <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+              <span class="w-3.5 h-3.5 rounded-sm" style="background:#F9FAFB;"></span>
+              <span class="font-mono text-xs">color/gray/50</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- INSPECTOR PANEL -->
+      <aside class="border-l border-ink-200 bg-white flex flex-col overflow-hidden">
+
+        <!-- Inspector header -->
+        <div class="px-4 py-3 border-b border-ink-200 flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full border border-ink-300 mt-0.5 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D,#6C5CE7,#FF6B6B);"></span>
+          <div class="flex-1 min-w-0">
+            <div class="text-[11px] font-mono text-ink-500 mb-0.5">surface › surface-primary</div>
+            <div class="font-mono font-medium text-[15px] truncate">surface-primary</div>
+          </div>
+          <button class="p-1 rounded hover:bg-ink-100 text-ink-500 -mr-1 -mt-1">
+            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+          </button>
+        </div>
+
+        <div class="overflow-auto scrollbar-thin flex-1">
+
+          <!-- Metadata -->
+          <section class="px-4 py-3 border-b border-ink-200">
+            <div class="grid grid-cols-[80px_1fr] gap-y-2 text-[13px] items-start">
+              <div class="text-ink-500">Type</div>
+              <div class="font-mono">
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-ink-100 border border-ink-200 text-xs">
+                  <span class="w-2 h-2 rounded-full" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D);"></span>
+                  color
+                </span>
+              </div>
+              <div class="text-ink-500">Description</div>
+              <div>
+                <textarea rows="2" class="w-full text-[13px] px-2 py-1.5 rounded border border-ink-200 bg-ink-50/40 focus:outline-none focus:bg-white focus:border-forge-500 focus:ring-2 focus:ring-forge-200 resize-none">Primary surface used for cards, panels and modal backgrounds.</textarea>
+              </div>
+            </div>
+          </section>
+
+          <!-- Values per mode -->
+          <section class="px-4 py-3 border-b border-ink-200">
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-[11px] uppercase tracking-wider text-ink-500 font-medium">Values</div>
+              <button class="text-xs text-ink-500 hover:text-ink-950 flex items-center gap-1">
+                <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg>
+                Add mode
+              </button>
+            </div>
+
+            <!-- Light value -->
+            <div class="mb-4">
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="text-xs font-medium text-ink-700">Light</div>
+                <div class="flex items-center gap-1 bg-ink-100 rounded p-0.5">
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 text-ink-500">Value</button>
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 bg-white rounded shadow-sm border border-ink-200">Alias</button>
+                </div>
+              </div>
+              <div class="border border-forge-300 rounded-md bg-forge-50/30 p-2 ring-2 ring-forge-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-5 h-5 rounded-sm border border-ink-300" style="background:#F9FAFB;"></span>
+                  <span class="font-mono text-[13px] text-ink-700 flex-1">color/gray/50</span>
+                  <button class="p-0.5 rounded hover:bg-ink-100 text-ink-400">
+                    <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 6 4 4 4-4"/></svg>
+                  </button>
+                </div>
+                <div class="mt-2 pt-2 border-t border-forge-200 text-[11px] font-mono text-ink-600 space-y-0.5">
+                  <div class="flex justify-between">
+                    <span class="text-ink-500">resolves to</span>
+                    <span class="text-ink-950">#F9FAFB</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-ink-500">oklch</span>
+                    <span class="text-ink-950">0.985 0.002 247</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-ink-500">gamut</span>
+                    <span class="text-ink-950">sRGB ✓</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dark value -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="text-xs font-medium text-ink-700">Dark</div>
+                <div class="flex items-center gap-1 bg-ink-100 rounded p-0.5">
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 text-ink-500">Value</button>
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 bg-white rounded shadow-sm border border-ink-200">Alias</button>
+                </div>
+              </div>
+              <div class="border border-ink-200 rounded-md bg-ink-50/40 p-2 hover:border-ink-300">
+                <div class="flex items-center gap-2">
+                  <span class="w-5 h-5 rounded-sm border border-ink-300" style="background:#111827;"></span>
+                  <span class="font-mono text-[13px] text-ink-700 flex-1">color/gray/900</span>
+                  <button class="p-0.5 rounded hover:bg-ink-100 text-ink-400">
+                    <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 6 4 4 4-4"/></svg>
+                  </button>
+                </div>
+                <div class="mt-2 pt-2 border-t border-ink-200 text-[11px] font-mono text-ink-600 space-y-0.5">
+                  <div class="flex justify-between">
+                    <span class="text-ink-500">resolves to</span>
+                    <span class="text-ink-950">#111827</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- References -->
+          <section class="px-4 py-3 border-b border-ink-200">
+            <div class="text-[11px] uppercase tracking-wider text-ink-500 font-medium mb-2">References</div>
+            <button class="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-ink-50 text-[13px]">
+              <div class="flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-ink-500" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 10l-2.5 2.5a2.121 2.121 0 1 1-3-3L3 7M10 6l2.5-2.5a2.121 2.121 0 1 1 3 3L13 9M6 10l4-4"/></svg>
+                <span>Used in</span>
+                <span class="font-mono font-medium">12 tokens</span>
+              </div>
+              <svg class="w-3.5 h-3.5 text-ink-400" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m6 4 4 4-4 4"/></svg>
+            </button>
+            <button class="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-ink-50 text-[13px]">
+              <div class="flex items-center gap-2">
+                <svg class="w-3.5 h-3.5 text-ink-500" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5"/><rect x="9" y="2" width="5" height="5"/><rect x="2" y="9" width="5" height="5"/><rect x="9" y="9" width="5" height="5"/></svg>
+                <span>Used in</span>
+                <span class="font-mono font-medium">4 components</span>
+              </div>
+              <svg class="w-3.5 h-3.5 text-ink-400" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m6 4 4 4-4 4"/></svg>
+            </button>
+          </section>
+
+          <!-- Source -->
+          <section class="px-4 py-3">
+            <div class="text-[11px] uppercase tracking-wider text-ink-500 font-medium mb-2">Source</div>
+            <div class="font-mono text-[12px] text-ink-700 bg-ink-50/60 border border-ink-200 rounded px-2 py-1.5 flex items-center justify-between">
+              <span class="truncate">tokens/core/surface.json:14</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 ml-2" title="Modified"></span>
+            </div>
+            <button class="mt-2 w-full text-[12px] text-ink-700 hover:text-ink-950 bg-ink-50 hover:bg-ink-100 border border-ink-200 rounded px-2 py-1.5 flex items-center justify-center gap-1.5">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3h3v3M13 3 8 8M7 4H4a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V9"/></svg>
+              Open in editor
+            </button>
+          </section>
+
+        </div>
+
+        <!-- Inspector footer actions -->
+        <div class="border-t border-ink-200 p-3 flex items-center gap-2">
+          <button class="text-[12px] text-ink-700 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50">Delete</button>
+          <button class="text-[12px] text-ink-700 hover:text-ink-950 px-2 py-1 rounded hover:bg-ink-100">Duplicate</button>
+          <div class="ml-auto flex gap-2">
+            <button class="text-[12px] text-ink-700 px-3 py-1 rounded border border-ink-200 hover:bg-ink-50">Cancel</button>
+            <button class="text-[12px] text-white bg-ink-950 px-3 py-1 rounded hover:bg-ink-800">Save</button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="h-8 border-t border-ink-200 bg-ink-50/60 px-3 flex items-center gap-4 text-[11px] font-mono text-ink-600">
+      <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>2 errors</div>
+      <div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>5 warnings</div>
+      <div class="ml-auto text-ink-400">Editing · unsaved changes</div>
+    </footer>
+  </div>
+
+  <div class="mt-3 text-xs text-ink-500 max-w-3xl">
+    <span class="font-mono text-ink-700">Note —</span>
+    Le panel droit s'ouvre en overlay CDK sur clic ligne. Le toggle <em>Value / Alias</em> permet de basculer entre input direct et autocomplete sur les paths. La valeur résolue affiche <em>hex</em>, <em>oklch</em> et l'indicateur de gamut.
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- VIEW 3 — COMMAND PALETTE + DIAGNOSTICS                                 -->
+<!-- ===================================================================== -->
+<section id="view3" class="hidden">
+  <div class="mb-4 flex items-end justify-between">
+    <div>
+      <div class="text-xs font-mono uppercase tracking-wider text-ink-500 mb-1">Mockup 03</div>
+      <h2 class="text-2xl font-semibold tracking-tight">Command Palette + Diagnostics</h2>
+      <p class="text-sm text-ink-600 mt-1">⌘K pour la recherche fuzzy sur tokens et actions. Drawer Diagnostics en simultané pour montrer les deux mécaniques de navigation rapide.</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl border border-ink-200 shadow-[0_1px_3px_rgba(12,10,9,0.04),0_8px_24px_rgba(12,10,9,0.06)] overflow-hidden relative">
+
+    <!-- HEADER -->
+    <header class="h-12 border-b border-ink-200 flex items-center px-3 gap-3 bg-white">
+      <div class="flex gap-1.5">
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+      </div>
+      <div class="h-5 w-px bg-ink-200 mx-1"></div>
+      <div class="flex items-center gap-2 text-sm">
+        <div class="w-5 h-5 rounded bg-ink-950 flex items-center justify-center">
+          <div class="w-1.5 h-1.5 bg-forge-500 rounded-sm rotate-45"></div>
+        </div>
+        <span class="font-medium">tokenflow</span>
+        <span class="text-ink-400">/</span>
+        <span class="font-mono text-xs text-ink-600">~/projects/ds-acme</span>
+      </div>
+    </header>
+
+    <!-- Dimmed background (table area) -->
+    <div class="grid grid-cols-[200px_1fr] h-[640px] relative">
+
+      <aside class="border-r border-ink-200 bg-ink-50/40 p-2 text-sm opacity-30 pointer-events-none">
+        <div class="px-2 py-1.5 mb-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Tokens</div>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700">
+          <span>All variables</span><span class="font-mono text-xs">19</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700">
+          <span>surface</span><span class="font-mono text-xs">5</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700">
+          <span>spacing</span><span class="font-mono text-xs">6</span>
+        </button>
+      </aside>
+
+      <main class="opacity-30 pointer-events-none">
+        <div class="h-10 border-b border-ink-200 px-3 flex items-center text-[13px]">
+          <span class="font-medium">All variables</span>
+        </div>
+        <div class="grid grid-cols-[1fr_180px_180px] border-b border-ink-200 bg-white">
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Name</div>
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium border-l border-ink-200">Light</div>
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium border-l border-ink-200">Dark</div>
+        </div>
+        <div class="grid grid-cols-[1fr_180px_180px] border-b border-ink-200/70 text-[13px]">
+          <div class="px-3 py-2 flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full border border-ink-300" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D);"></span>
+            <span class="font-mono">surface-primary</span>
+          </div>
+          <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center">
+            <div class="inline-flex items-center gap-1.5 pl-1 pr-2 py-0.5 rounded-md bg-ink-100 border border-ink-200">
+              <span class="w-3.5 h-3.5 rounded-sm" style="background:#F9FAFB;"></span>
+              <span class="font-mono text-xs">color/gray/50</span>
+            </div>
+          </div>
+          <div class="border-l border-ink-200/70"></div>
+        </div>
+      </main>
+
+      <!-- Dim overlay -->
+      <div class="absolute inset-0 bg-ink-950/30 backdrop-blur-[2px]"></div>
+
+      <!-- COMMAND PALETTE -->
+      <div class="absolute left-1/2 top-12 -translate-x-1/2 w-[560px] bg-white rounded-xl shadow-2xl border border-ink-200 overflow-hidden">
+
+        <!-- Search input -->
+        <div class="px-4 py-3 border-b border-ink-200 flex items-center gap-3">
+          <svg class="w-4 h-4 text-ink-400" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="7" cy="7" r="4.5"/><path d="m13 13-2.5-2.5"/>
+          </svg>
+          <input type="text" value="surface" class="flex-1 bg-transparent outline-none font-mono text-[14px] placeholder-ink-400" placeholder="Search tokens, actions, files…">
+          <kbd class="font-mono text-[10px] bg-ink-100 border border-ink-200 px-1.5 py-0.5 rounded text-ink-500">esc</kbd>
+        </div>
+
+        <!-- Results -->
+        <div class="max-h-[420px] overflow-auto scrollbar-thin">
+
+          <div class="px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider text-ink-500 font-medium">Tokens · 4 matches</div>
+
+          <button class="w-full px-3 py-2 flex items-center gap-3 bg-ink-100 border-l-2 border-forge-500">
+            <span class="w-5 h-5 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D);"></span>
+            <div class="flex-1 text-left min-w-0">
+              <div class="font-mono text-[13px]"><span class="bg-forge-200 px-0.5 rounded">surface</span>-primary</div>
+              <div class="font-mono text-[11px] text-ink-500 truncate">Tokens / surface · color · light #F9FAFB · dark #111827</div>
+            </div>
+            <kbd class="font-mono text-[10px] bg-white border border-ink-200 px-1.5 py-0.5 rounded text-ink-500">↵</kbd>
+          </button>
+
+          <button class="w-full px-3 py-2 flex items-center gap-3 hover:bg-ink-50">
+            <span class="w-5 h-5 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D);"></span>
+            <div class="flex-1 text-left min-w-0">
+              <div class="font-mono text-[13px]"><span class="bg-forge-200 px-0.5 rounded">surface</span>-secondary</div>
+              <div class="font-mono text-[11px] text-ink-500 truncate">Tokens / surface · color · alias of color/gray/800</div>
+            </div>
+          </button>
+
+          <button class="w-full px-3 py-2 flex items-center gap-3 hover:bg-ink-50">
+            <span class="w-5 h-5 rounded-full border border-ink-300 shrink-0" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D);"></span>
+            <div class="flex-1 text-left min-w-0">
+              <div class="font-mono text-[13px]"><span class="bg-forge-200 px-0.5 rounded">surface</span>-invert</div>
+              <div class="font-mono text-[11px] text-ink-500 truncate">Tokens / surface · color · alias of color/gray/900</div>
+            </div>
+          </button>
+
+          <button class="w-full px-3 py-2 flex items-center gap-3 hover:bg-ink-50">
+            <span class="w-5 h-5 rounded-full border border-red-300 shrink-0 bg-red-50 flex items-center justify-center">
+              <svg class="w-3 h-3 text-red-500" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5M8 11v.01"/></svg>
+            </span>
+            <div class="flex-1 text-left min-w-0">
+              <div class="font-mono text-[13px]"><span class="bg-forge-200 px-0.5 rounded">surface</span>-warning</div>
+              <div class="font-mono text-[11px] text-red-600 truncate">Tokens / surface · broken alias → color/amber/600</div>
+            </div>
+          </button>
+
+          <div class="px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider text-ink-500 font-medium">Actions</div>
+
+          <button class="w-full px-3 py-2 flex items-center gap-3 hover:bg-ink-50">
+            <span class="w-5 h-5 rounded-md border border-ink-200 bg-ink-50 flex items-center justify-center shrink-0">
+              <svg class="w-3 h-3 text-ink-700" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v10M3 8h10"/></svg>
+            </span>
+            <div class="flex-1 text-left min-w-0">
+              <div class="text-[13px]">Create variable in <span class="font-mono">surface</span></div>
+            </div>
+            <kbd class="font-mono text-[10px] bg-ink-100 border border-ink-200 px-1.5 py-0.5 rounded text-ink-500">⌘N</kbd>
+          </button>
+
+          <button class="w-full px-3 py-2 flex items-center gap-3 hover:bg-ink-50">
+            <span class="w-5 h-5 rounded-md border border-ink-200 bg-ink-50 flex items-center justify-center shrink-0">
+              <svg class="w-3 h-3 text-ink-700" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 6h12"/></svg>
+            </span>
+            <div class="flex-1 text-left min-w-0">
+              <div class="text-[13px]">Add mode to <span class="font-mono">Tokens</span></div>
+            </div>
+          </button>
+
+          <button class="w-full px-3 py-2 flex items-center gap-3 hover:bg-ink-50">
+            <span class="w-5 h-5 rounded-md border border-ink-200 bg-ink-50 flex items-center justify-center shrink-0">
+              <svg class="w-3 h-3 text-ink-700" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h10M3 12h10"/></svg>
+            </span>
+            <div class="flex-1 text-left min-w-0">
+              <div class="text-[13px]">Show diagnostics</div>
+            </div>
+            <kbd class="font-mono text-[10px] bg-ink-100 border border-ink-200 px-1.5 py-0.5 rounded text-ink-500">⌘D</kbd>
+          </button>
+
+          <div class="px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider text-ink-500 font-medium">Files · 2 matches</div>
+
+          <button class="w-full px-3 py-2 flex items-center gap-3 hover:bg-ink-50">
+            <span class="w-5 h-5 rounded-md border border-ink-200 bg-ink-50 flex items-center justify-center shrink-0">
+              <svg class="w-3 h-3 text-ink-700" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h6l4 4v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M9 2v4h4"/></svg>
+            </span>
+            <div class="flex-1 text-left min-w-0">
+              <div class="font-mono text-[13px]">tokens/core/<span class="bg-forge-200 px-0.5 rounded">surface</span>.json</div>
+              <div class="font-mono text-[11px] text-ink-500">5 tokens · modified</div>
+            </div>
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          </button>
+
+          <button class="w-full px-3 py-2 flex items-center gap-3 hover:bg-ink-50">
+            <span class="w-5 h-5 rounded-md border border-ink-200 bg-ink-50 flex items-center justify-center shrink-0">
+              <svg class="w-3 h-3 text-ink-700" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h6l4 4v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/></svg>
+            </span>
+            <div class="flex-1 text-left min-w-0">
+              <div class="font-mono text-[13px]">tokens/semantic/<span class="bg-forge-200 px-0.5 rounded">surface</span>.dark.json</div>
+              <div class="font-mono text-[11px] text-ink-500">5 tokens</div>
+            </div>
+          </button>
+
+        </div>
+
+        <!-- Palette footer -->
+        <div class="px-3 py-2 border-t border-ink-200 bg-ink-50/40 flex items-center gap-4 text-[11px] text-ink-500">
+          <div class="flex items-center gap-1">
+            <kbd class="font-mono bg-white border border-ink-200 px-1 rounded">↑↓</kbd>
+            <span>navigate</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <kbd class="font-mono bg-white border border-ink-200 px-1 rounded">↵</kbd>
+            <span>select</span>
+          </div>
+          <div class="flex items-center gap-1">
+            <kbd class="font-mono bg-white border border-ink-200 px-1 rounded">⌘↵</kbd>
+            <span>open inspector</span>
+          </div>
+          <div class="ml-auto font-mono">tokenflow</div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer class="h-8 border-t border-ink-200 bg-ink-50/60 px-3 flex items-center text-[11px] font-mono text-ink-600">
+      <span>Press</span>
+      <kbd class="font-mono bg-white border border-ink-200 px-1 rounded mx-1.5">esc</kbd>
+      <span>to close · </span>
+      <kbd class="font-mono bg-white border border-ink-200 px-1 rounded mx-1.5">⌘K</kbd>
+      <span>anytime</span>
+    </footer>
+  </div>
+
+  <div class="mt-3 text-xs text-ink-500 max-w-3xl">
+    <span class="font-mono text-ink-700">Note —</span>
+    La palette unifie trois espaces de recherche : <strong>tokens</strong> (avec preview + statut), <strong>actions</strong> (avec raccourcis claviers), <strong>fichiers</strong> (avec état Git). Les matches sont surlignés. Les diagnostics critiques (alias brisé) restent visibles directement dans la palette.
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- VIEW 4 — COLOR PICKER OKLCH (custom, gamut indicator)                  -->
+<!-- ===================================================================== -->
+<section id="view4" class="hidden">
+  <div class="mb-4 flex items-end justify-between">
+    <div>
+      <div class="text-xs font-mono uppercase tracking-wider text-ink-500 mb-1">Mockup 04</div>
+      <h2 class="text-2xl font-semibold tracking-tight">Color picker OKLCH — édition d'une valeur littérale</h2>
+      <p class="text-sm text-ink-600 mt-1">Picker custom basé sur <span class="font-mono">culori</span>, sliders L · C · H, sortie hex / Display P3 / oklch, indicateur de gamut, palette des tokens existants.</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl border border-ink-200 shadow-[0_1px_3px_rgba(12,10,9,0.04),0_8px_24px_rgba(12,10,9,0.06)] overflow-hidden relative">
+
+    <header class="h-12 border-b border-ink-200 flex items-center px-3 gap-3 bg-white">
+      <div class="flex gap-1.5">
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+      </div>
+      <div class="h-5 w-px bg-ink-200 mx-1"></div>
+      <div class="flex items-center gap-2 text-sm">
+        <div class="w-5 h-5 rounded bg-ink-950 flex items-center justify-center">
+          <div class="w-1.5 h-1.5 bg-forge-500 rounded-sm rotate-45"></div>
+        </div>
+        <span class="font-medium">tokenflow</span>
+        <span class="text-ink-400">/</span>
+        <span class="font-mono text-xs text-ink-600">~/projects/ds-acme</span>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-[1fr_380px] h-[640px] relative">
+
+      <!-- BACKGROUND (table + group context) -->
+      <main class="overflow-hidden bg-white opacity-50 pointer-events-none">
+        <div class="h-10 border-b border-ink-200 px-3 flex items-center text-[13px]">
+          <span class="font-medium">color</span>
+          <span class="text-ink-400 mx-1.5">/</span>
+          <span class="font-mono text-ink-700">brand</span>
+          <span class="text-ink-400 mx-1.5">/</span>
+          <span class="font-mono text-ink-700">coral</span>
+        </div>
+        <div class="grid grid-cols-[1fr_180px_180px] border-b border-ink-200 bg-white">
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Name</div>
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium border-l border-ink-200">Light</div>
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium border-l border-ink-200">Dark</div>
+        </div>
+        <div class="grid grid-cols-[1fr_180px_180px] bg-ink-50/60 border-b border-ink-200">
+          <div class="px-3 py-1.5 flex items-center gap-1.5 font-medium text-ink-700 text-[13px]">
+            <svg class="w-3 h-3 text-ink-500" viewBox="0 0 12 12" fill="currentColor"><path d="M2 4l4 4 4-4z"/></svg>
+            brand
+          </div>
+          <div class="border-l border-ink-200"></div>
+          <div class="border-l border-ink-200"></div>
+        </div>
+        <div class="grid grid-cols-[1fr_180px_180px] border-b border-ink-200/70 text-[13px]">
+          <div class="px-3 py-2 flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full border border-ink-300" style="background:#E85D75;"></span>
+            <span class="font-mono">coral</span>
+          </div>
+          <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center">
+            <span class="font-mono text-xs">#E85D75</span>
+          </div>
+          <div class="border-l border-ink-200/70 px-3 py-1.5 flex items-center">
+            <span class="font-mono text-xs">#E85D75</span>
+          </div>
+        </div>
+      </main>
+
+      <!-- INSPECTOR background (dimmed) -->
+      <aside class="border-l border-ink-200 bg-white opacity-50 pointer-events-none">
+        <div class="px-4 py-3 border-b border-ink-200">
+          <div class="text-[11px] font-mono text-ink-500 mb-0.5">brand › coral</div>
+          <div class="font-mono font-medium text-[15px]">coral</div>
+        </div>
+        <div class="px-4 py-3">
+          <div class="text-xs font-medium text-ink-700 mb-1.5">Light</div>
+          <div class="border-2 border-forge-500 rounded-md bg-white p-2">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-sm border border-ink-300" style="background:#E85D75;"></span>
+              <span class="font-mono text-[13px]">#E85D75</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Dim overlay -->
+      <div class="absolute inset-0 bg-ink-950/20 backdrop-blur-[1px]"></div>
+
+      <!-- COLOR PICKER POPOVER -->
+      <div class="absolute right-[120px] top-20 w-[340px] bg-white rounded-xl shadow-2xl border border-ink-200 overflow-hidden">
+
+        <!-- Header -->
+        <div class="px-4 py-3 border-b border-ink-200 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full border border-ink-300" style="background:#E85D75;"></span>
+            <span class="text-[13px] font-medium">Pick color</span>
+            <span class="text-[11px] font-mono text-ink-500">· Light</span>
+          </div>
+          <button class="p-1 rounded hover:bg-ink-100 text-ink-500">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+          </button>
+        </div>
+
+        <!-- Color preview -->
+        <div class="px-4 pt-3 pb-2">
+          <div class="h-20 rounded-md border border-ink-200 relative overflow-hidden" style="background:#E85D75;">
+            <div class="absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/95 text-[10px] font-mono text-ink-700 border border-ink-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+              sRGB ✓ · P3 ✓
+            </div>
+          </div>
+        </div>
+
+        <!-- Sliders -->
+        <div class="px-4 pb-3 space-y-2.5">
+          <!-- L -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[11px] font-mono text-ink-500 uppercase tracking-wider">Lightness</span>
+              <span class="text-[11px] font-mono text-ink-700">0.650</span>
+            </div>
+            <div class="relative h-3 rounded-full" style="background:linear-gradient(to right, oklch(0 0.16 12), oklch(0.5 0.16 12), oklch(1 0.16 12));">
+              <div class="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-ink-950 shadow" style="left:calc(65% - 8px);"></div>
+            </div>
+          </div>
+          <!-- C -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[11px] font-mono text-ink-500 uppercase tracking-wider">Chroma</span>
+              <span class="text-[11px] font-mono text-ink-700">0.160</span>
+            </div>
+            <div class="relative h-3 rounded-full" style="background:linear-gradient(to right, oklch(0.65 0 12), oklch(0.65 0.4 12));">
+              <div class="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-ink-950 shadow" style="left:calc(40% - 8px);"></div>
+            </div>
+          </div>
+          <!-- H -->
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[11px] font-mono text-ink-500 uppercase tracking-wider">Hue</span>
+              <span class="text-[11px] font-mono text-ink-700">12°</span>
+            </div>
+            <div class="relative h-3 rounded-full" style="background:linear-gradient(to right, oklch(0.65 0.16 0), oklch(0.65 0.16 60), oklch(0.65 0.16 120), oklch(0.65 0.16 180), oklch(0.65 0.16 240), oklch(0.65 0.16 300), oklch(0.65 0.16 360));">
+              <div class="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-ink-950 shadow" style="left:calc(3% - 8px);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Value input + format -->
+        <div class="px-4 pb-3">
+          <div class="flex items-center gap-1.5">
+            <input type="text" value="#E85D75" class="flex-1 px-2 py-1.5 rounded border border-ink-200 bg-ink-50/40 font-mono text-[13px] focus:outline-none focus:bg-white focus:border-forge-500 focus:ring-2 focus:ring-forge-200">
+            <button class="px-2 py-1.5 rounded border border-ink-200 bg-white text-[12px] font-mono flex items-center gap-1 hover:bg-ink-50">
+              hex
+              <svg class="w-3 h-3 text-ink-400" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 6 4 4 4-4"/></svg>
+            </button>
+          </div>
+          <div class="mt-2 font-mono text-[11px] text-ink-500 space-y-0.5">
+            <div>oklch(0.650 0.160 12)</div>
+            <div>display-p3(0.890 0.380 0.470)</div>
+          </div>
+        </div>
+
+        <!-- Palette suggestions -->
+        <div class="px-4 py-3 border-t border-ink-200">
+          <div class="text-[10px] uppercase tracking-wider text-ink-500 font-medium mb-2">From your tokens</div>
+          <div class="grid grid-cols-8 gap-1.5">
+            <button class="w-7 h-7 rounded border border-ink-200 hover:ring-2 hover:ring-forge-200" style="background:#F9FAFB;" title="color/gray/50"></button>
+            <button class="w-7 h-7 rounded border border-ink-200 hover:ring-2 hover:ring-forge-200" style="background:#E5E7EB;" title="color/gray/200"></button>
+            <button class="w-7 h-7 rounded border border-ink-200 hover:ring-2 hover:ring-forge-200" style="background:#9CA3AF;" title="color/gray/400"></button>
+            <button class="w-7 h-7 rounded border border-ink-200 hover:ring-2 hover:ring-forge-200" style="background:#1F2937;" title="color/gray/800"></button>
+            <button class="w-7 h-7 rounded border border-ink-200 hover:ring-2 hover:ring-forge-200" style="background:#111827;" title="color/gray/900"></button>
+            <button class="w-7 h-7 rounded border-2 border-ink-950 ring-2 ring-forge-200" style="background:#E85D75;" title="color/brand/coral"></button>
+            <button class="w-7 h-7 rounded border border-ink-200 hover:ring-2 hover:ring-forge-200" style="background:#7AC4A8;" title="color/brand/watermelon"></button>
+            <button class="w-7 h-7 rounded border border-ink-200 hover:ring-2 hover:ring-forge-200" style="background:#F59E0B;" title="color/brand/amber"></button>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-4 py-2.5 border-t border-ink-200 bg-ink-50/40 flex items-center justify-end gap-2">
+          <button class="text-[12px] text-ink-700 px-3 py-1 rounded border border-ink-200 hover:bg-white">Cancel</button>
+          <button class="text-[12px] text-white bg-ink-950 px-3 py-1 rounded hover:bg-ink-800">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="h-8 border-t border-ink-200 bg-ink-50/60 px-3 flex items-center text-[11px] font-mono text-ink-600">
+      <span>Editing</span>
+      <span class="font-medium text-ink-950 mx-1.5">brand/coral</span>
+      <span>· Light mode · unsaved</span>
+      <div class="ml-auto flex items-center gap-3">
+        <span class="text-ink-400">Built on culori · OKLCH</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="mt-3 text-xs text-ink-500 max-w-3xl">
+    <span class="font-mono text-ink-700">Note —</span>
+    Picker custom (pas de lib Angular mature OKLCH+P3). Les sliders <em>L · C · H</em> utilisent des gradients dynamiques OKLCH. La palette en bas suggère les couleurs déjà nommées dans le DS pour encourager la factorisation via alias plutôt que la duplication de valeurs littérales.
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- VIEW 5 — TYPOGRAPHY COMPOSITE EDITOR                                   -->
+<!-- ===================================================================== -->
+<section id="view5" class="hidden">
+  <div class="mb-4 flex items-end justify-between">
+    <div>
+      <div class="text-xs font-mono uppercase tracking-wider text-ink-500 mb-1">Mockup 05</div>
+      <h2 class="text-2xl font-semibold tracking-tight">Typography — édition d'un token composite</h2>
+      <p class="text-sm text-ink-600 mt-1">Editor dédié pour les types DTCG composites (typography, shadow, border…). Preview live, sous-propriétés indépendamment aliasables, résolution récursive.</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl border border-ink-200 shadow-[0_1px_3px_rgba(12,10,9,0.04),0_8px_24px_rgba(12,10,9,0.06)] overflow-hidden">
+
+    <header class="h-12 border-b border-ink-200 flex items-center px-3 gap-3 bg-white">
+      <div class="flex gap-1.5">
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+      </div>
+      <div class="h-5 w-px bg-ink-200 mx-1"></div>
+      <div class="flex items-center gap-2 text-sm">
+        <div class="w-5 h-5 rounded bg-ink-950 flex items-center justify-center">
+          <div class="w-1.5 h-1.5 bg-forge-500 rounded-sm rotate-45"></div>
+        </div>
+        <span class="font-medium">tokenflow</span>
+        <span class="text-ink-400">/</span>
+        <span class="font-mono text-xs text-ink-600">~/projects/ds-acme</span>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-[180px_1fr_440px] h-[640px]">
+
+      <!-- Sidebar -->
+      <aside class="border-r border-ink-200 bg-ink-50/40 p-2 text-sm">
+        <div class="px-2 py-1.5 mb-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Tokens</div>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700 hover:bg-ink-100">
+          <span>All variables</span>
+          <span class="font-mono text-xs text-ink-400">19</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700 hover:bg-ink-100">
+          <span>surface</span>
+          <span class="font-mono text-xs text-ink-400">5</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-ink-700 hover:bg-ink-100">
+          <span>spacing</span>
+          <span class="font-mono text-xs text-ink-400">6</span>
+        </button>
+        <button class="w-full flex items-center justify-between px-2 py-1.5 rounded-md bg-forge-50 text-forge-700 border border-forge-200">
+          <span class="font-medium">text</span>
+          <span class="font-mono text-xs">2</span>
+        </button>
+      </aside>
+
+      <!-- Table (compact) -->
+      <main class="bg-white overflow-hidden">
+        <div class="h-10 border-b border-ink-200 px-3 flex items-center text-[13px]">
+          <span class="font-medium">text</span>
+          <span class="text-ink-400 mx-1.5">/</span>
+          <span class="font-mono text-ink-700">heading-lg</span>
+        </div>
+        <div class="grid grid-cols-[1fr] border-b border-ink-200 bg-white">
+          <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium">Name</div>
+        </div>
+        <div class="grid grid-cols-[1fr] bg-ink-50/60 border-b border-ink-200">
+          <div class="px-3 py-1.5 flex items-center gap-1.5 font-medium text-ink-700 text-[13px]">
+            <svg class="w-3 h-3 text-ink-500" viewBox="0 0 12 12" fill="currentColor"><path d="M2 4l4 4 4-4z"/></svg>
+            text
+          </div>
+        </div>
+        <!-- Selected -->
+        <div class="grid grid-cols-[1fr] border-b border-ink-200/70 bg-forge-50/40 ring-1 ring-inset ring-forge-200 text-[13px]">
+          <div class="px-3 py-2 flex items-center gap-2">
+            <span class="w-4 h-4 rounded border border-ink-300 shrink-0 flex items-center justify-center text-[10px] font-mono font-semibold text-ink-700 bg-white">Aa</span>
+            <span class="font-mono font-medium">heading-lg</span>
+            <span class="ml-1 text-[10px] font-mono text-ink-500 bg-ink-100 border border-ink-200 px-1.5 py-0.5 rounded">typography</span>
+          </div>
+        </div>
+        <div class="grid grid-cols-[1fr] border-b border-ink-200/70 opacity-60 text-[13px]">
+          <div class="px-3 py-2 flex items-center gap-2">
+            <span class="w-4 h-4 rounded border border-ink-300 shrink-0 flex items-center justify-center text-[10px] font-mono font-semibold text-ink-700 bg-white">Aa</span>
+            <span class="font-mono">body-base</span>
+            <span class="ml-1 text-[10px] font-mono text-ink-500 bg-ink-100 border border-ink-200 px-1.5 py-0.5 rounded">typography</span>
+          </div>
+        </div>
+
+        <!-- Live preview area -->
+        <div class="p-6 border-t border-ink-200 mt-2 bg-ink-50/30">
+          <div class="text-[10px] uppercase tracking-wider text-ink-500 font-medium mb-3">Live preview</div>
+          <div class="bg-white rounded-lg border border-ink-200 p-6 min-h-[160px] flex items-center">
+            <div style="font-family:'Geist',sans-serif; font-weight:700; font-size:2.5rem; line-height:1.1; letter-spacing:-0.02em;" class="text-ink-950">
+              Headline that means business
+            </div>
+          </div>
+          <div class="mt-2 text-[11px] font-mono text-ink-500">
+            Geist · 700 · 2.5rem / 1.1 · letter-spacing -0.02em
+          </div>
+        </div>
+      </main>
+
+      <!-- Inspector -->
+      <aside class="border-l border-ink-200 bg-white flex flex-col overflow-hidden">
+
+        <div class="px-4 py-3 border-b border-ink-200 flex items-start gap-3">
+          <span class="w-6 h-6 rounded border border-ink-300 shrink-0 flex items-center justify-center text-[12px] font-semibold bg-white mt-0.5">Aa</span>
+          <div class="flex-1 min-w-0">
+            <div class="text-[11px] font-mono text-ink-500 mb-0.5">text › heading-lg</div>
+            <div class="font-mono font-medium text-[15px]">heading-lg</div>
+          </div>
+          <button class="p-1 rounded hover:bg-ink-100 text-ink-500 -mr-1 -mt-1">
+            <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 4 8 8M12 4l-8 8"/></svg>
+          </button>
+        </div>
+
+        <div class="overflow-auto scrollbar-thin flex-1">
+
+          <!-- Metadata -->
+          <section class="px-4 py-3 border-b border-ink-200">
+            <div class="grid grid-cols-[100px_1fr] gap-y-2 text-[13px] items-center">
+              <div class="text-ink-500">Type</div>
+              <div>
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-ink-100 border border-ink-200 text-xs font-mono">
+                  <span class="w-3 h-3 rounded-sm border border-ink-300 flex items-center justify-center text-[8px] font-semibold">Aa</span>
+                  typography
+                </span>
+              </div>
+              <div class="text-ink-500">Description</div>
+              <div>
+                <input type="text" value="Large heading, use for page titles" class="w-full text-[13px] px-2 py-1 rounded border border-ink-200 bg-ink-50/40 focus:outline-none focus:bg-white focus:border-forge-500 focus:ring-2 focus:ring-forge-200">
+              </div>
+            </div>
+          </section>
+
+          <!-- Properties -->
+          <section class="px-4 py-3 border-b border-ink-200">
+            <div class="text-[11px] uppercase tracking-wider text-ink-500 font-medium mb-3">Properties</div>
+
+            <!-- fontFamily -->
+            <div class="mb-3">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[12px] font-mono text-ink-700">fontFamily</span>
+                <div class="flex items-center gap-1 bg-ink-100 rounded p-0.5">
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 text-ink-500">Value</button>
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 bg-white rounded shadow-sm border border-ink-200">Alias</button>
+                </div>
+              </div>
+              <div class="border border-ink-200 rounded-md bg-ink-50/40 p-2 hover:border-ink-300">
+                <div class="flex items-center gap-2">
+                  <span class="w-5 h-5 rounded-sm border border-ink-300 bg-white flex items-center justify-center text-[10px] font-semibold">Aa</span>
+                  <span class="font-mono text-[13px] text-ink-700 flex-1">font/family/sans</span>
+                  <svg class="w-3 h-3 text-ink-400" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m4 6 4 4 4-4"/></svg>
+                </div>
+                <div class="mt-1.5 pt-1.5 border-t border-ink-200 text-[11px] font-mono text-ink-500">
+                  resolves to <span class="text-ink-950">"Geist"</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- fontWeight -->
+            <div class="mb-3">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[12px] font-mono text-ink-700">fontWeight</span>
+                <div class="flex items-center gap-1 bg-ink-100 rounded p-0.5">
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 text-ink-500">Value</button>
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 bg-white rounded shadow-sm border border-ink-200">Alias</button>
+                </div>
+              </div>
+              <div class="border border-ink-200 rounded-md bg-ink-50/40 p-2 hover:border-ink-300">
+                <div class="flex items-center gap-2">
+                  <span class="w-5 h-5 rounded-sm border border-ink-300 bg-white flex items-center justify-center text-[10px] font-mono font-semibold">700</span>
+                  <span class="font-mono text-[13px] text-ink-700 flex-1">font/weight/bold</span>
+                </div>
+                <div class="mt-1.5 pt-1.5 border-t border-ink-200 text-[11px] font-mono text-ink-500">
+                  resolves to <span class="text-ink-950">700</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- fontSize -->
+            <div class="mb-3">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[12px] font-mono text-ink-700">fontSize</span>
+                <div class="flex items-center gap-1 bg-ink-100 rounded p-0.5">
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 bg-white rounded shadow-sm border border-ink-200">Value</button>
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 text-ink-500">Alias</button>
+                </div>
+              </div>
+              <input type="text" value="2.5rem" class="w-full font-mono text-[13px] px-2 py-1.5 rounded border border-ink-200 bg-ink-50/40 focus:outline-none focus:bg-white focus:border-forge-500 focus:ring-2 focus:ring-forge-200">
+            </div>
+
+            <!-- lineHeight -->
+            <div class="mb-3">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[12px] font-mono text-ink-700">lineHeight</span>
+                <div class="flex items-center gap-1 bg-ink-100 rounded p-0.5">
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 bg-white rounded shadow-sm border border-ink-200">Value</button>
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 text-ink-500">Alias</button>
+                </div>
+              </div>
+              <input type="text" value="1.1" class="w-full font-mono text-[13px] px-2 py-1.5 rounded border border-ink-200 bg-ink-50/40 focus:outline-none focus:bg-white focus:border-forge-500 focus:ring-2 focus:ring-forge-200">
+            </div>
+
+            <!-- letterSpacing -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-[12px] font-mono text-ink-700">letterSpacing</span>
+                <div class="flex items-center gap-1 bg-ink-100 rounded p-0.5">
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 bg-white rounded shadow-sm border border-ink-200">Value</button>
+                  <button class="text-[10px] font-mono px-1.5 py-0.5 text-ink-500">Alias</button>
+                </div>
+              </div>
+              <input type="text" value="-0.02em" class="w-full font-mono text-[13px] px-2 py-1.5 rounded border border-ink-200 bg-ink-50/40 focus:outline-none focus:bg-white focus:border-forge-500 focus:ring-2 focus:ring-forge-200">
+            </div>
+
+          </section>
+
+          <!-- Source -->
+          <section class="px-4 py-3">
+            <div class="text-[11px] uppercase tracking-wider text-ink-500 font-medium mb-2">Source</div>
+            <div class="font-mono text-[12px] text-ink-700 bg-ink-50/60 border border-ink-200 rounded px-2 py-1.5">
+              tokens/core/text.json:23
+            </div>
+          </section>
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-ink-200 p-3 flex items-center gap-2">
+          <button class="text-[12px] text-ink-700 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50">Delete</button>
+          <div class="ml-auto flex gap-2">
+            <button class="text-[12px] text-ink-700 px-3 py-1 rounded border border-ink-200 hover:bg-ink-50">Cancel</button>
+            <button class="text-[12px] text-white bg-ink-950 px-3 py-1 rounded hover:bg-ink-800">Save</button>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <footer class="h-8 border-t border-ink-200 bg-ink-50/60 px-3 flex items-center text-[11px] font-mono text-ink-600">
+      <span>Editing composite token</span>
+      <span class="font-medium text-ink-950 mx-1.5">text/heading-lg</span>
+      <span>· 2 of 5 properties aliased</span>
+      <div class="ml-auto text-ink-400">DTCG 2025.10 · typography</div>
+    </footer>
+  </div>
+
+  <div class="mt-3 text-xs text-ink-500 max-w-3xl">
+    <span class="font-mono text-ink-700">Note —</span>
+    Chaque sous-propriété peut indépendamment être <strong>littérale</strong> ou <strong>aliasée</strong>, comme spécifié par DTCG. Le resolver descend récursivement. La preview live re-rend à chaque édition, sans cycle de save. Même paradigme pour <em>shadow</em>, <em>border</em>, <em>gradient</em>, <em>transition</em>.
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- VIEW 6 — GIT DIFF                                                      -->
+<!-- ===================================================================== -->
+<section id="view6" class="hidden">
+  <div class="mb-4 flex items-end justify-between">
+    <div>
+      <div class="text-xs font-mono uppercase tracking-wider text-ink-500 mb-1">Mockup 06</div>
+      <h2 class="text-2xl font-semibold tracking-tight">Git diff — modifications non commitées</h2>
+      <p class="text-sm text-ink-600 mt-1">Vue dédiée aux changements par rapport à <span class="font-mono">HEAD</span>. Le tool n'effectue jamais de commit — il <em>informe</em> seulement, pour préserver la confiance.</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl border border-ink-200 shadow-[0_1px_3px_rgba(12,10,9,0.04),0_8px_24px_rgba(12,10,9,0.06)] overflow-hidden">
+
+    <header class="h-12 border-b border-ink-200 flex items-center px-3 gap-3 bg-white">
+      <div class="flex gap-1.5">
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+        <span class="w-3 h-3 rounded-full bg-ink-200"></span>
+      </div>
+      <div class="h-5 w-px bg-ink-200 mx-1"></div>
+      <div class="flex items-center gap-2 text-sm">
+        <div class="w-5 h-5 rounded bg-ink-950 flex items-center justify-center">
+          <div class="w-1.5 h-1.5 bg-forge-500 rounded-sm rotate-45"></div>
+        </div>
+        <span class="font-medium">tokenflow</span>
+        <span class="text-ink-400">/</span>
+        <span class="font-mono text-xs text-ink-600">~/projects/ds-acme</span>
+        <span class="ml-1 inline-flex items-center gap-1 text-xs font-mono text-ink-500">
+          <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="4" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="12" cy="8" r="1.5"/><path d="M5.5 4h6.5M4 5.5v5M5.5 12h4l2.5-2.5"/></svg>
+          main
+        </span>
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 -ml-0.5"></span>
+      </div>
+      <div class="ml-auto flex items-center gap-2 text-xs text-ink-600">
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-ink-200 bg-white">
+          <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 10l-2.5 2.5a2.121 2.121 0 1 1-3-3L3 7M10 6l2.5-2.5a2.121 2.121 0 1 1 3 3L13 9M6 10l4-4"/></svg>
+          Open in editor
+        </span>
+      </div>
+    </header>
+
+    <!-- Summary bar -->
+    <div class="h-10 border-b border-ink-200 px-4 flex items-center gap-4 bg-amber-50/40 text-[13px]">
+      <span class="font-medium">Changes vs HEAD</span>
+      <span class="text-ink-500">·</span>
+      <span class="font-mono text-ink-700">3 files modified</span>
+      <span class="text-ink-500">·</span>
+      <span class="font-mono text-green-700">+12</span>
+      <span class="font-mono text-red-700">−8</span>
+      <span class="text-ink-500">·</span>
+      <span class="text-ink-700">7 tokens impacted</span>
+      <div class="ml-auto flex items-center gap-1.5 text-[12px] text-ink-500">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5M8 11v.01"/></svg>
+        <span>tokenflow doesn't commit. Use git from your terminal.</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-[260px_1fr] h-[600px]">
+
+      <!-- File list sidebar -->
+      <aside class="border-r border-ink-200 bg-ink-50/40 overflow-auto scrollbar-thin text-sm">
+        <div class="px-3 py-2 text-[11px] uppercase tracking-wider text-ink-500 font-medium border-b border-ink-200">Modified files</div>
+
+        <!-- Selected file -->
+        <button class="w-full text-left px-3 py-2 bg-white border-l-2 border-forge-500 hover:bg-white group">
+          <div class="flex items-center justify-between mb-0.5">
+            <span class="font-mono text-[12px] text-ink-700 truncate">tokens/core/surface.json</span>
+          </div>
+          <div class="flex items-center gap-2 text-[11px] font-mono">
+            <span class="text-green-700">+5</span>
+            <span class="text-red-700">−3</span>
+            <span class="text-ink-400">·</span>
+            <span class="text-ink-500">2 tokens</span>
+          </div>
+        </button>
+
+        <button class="w-full text-left px-3 py-2 hover:bg-ink-100 group">
+          <div class="flex items-center justify-between mb-0.5">
+            <span class="font-mono text-[12px] text-ink-700 truncate">tokens/core/spacing.json</span>
+          </div>
+          <div class="flex items-center gap-2 text-[11px] font-mono">
+            <span class="text-green-700">+4</span>
+            <span class="text-red-700">−2</span>
+            <span class="text-ink-400">·</span>
+            <span class="text-ink-500">3 tokens</span>
+          </div>
+        </button>
+
+        <button class="w-full text-left px-3 py-2 hover:bg-ink-100 group">
+          <div class="flex items-center justify-between mb-0.5">
+            <span class="font-mono text-[12px] text-ink-700 truncate">tokens/semantic/dark.json</span>
+          </div>
+          <div class="flex items-center gap-2 text-[11px] font-mono">
+            <span class="text-green-700">+3</span>
+            <span class="text-red-700">−3</span>
+            <span class="text-ink-400">·</span>
+            <span class="text-ink-500">2 tokens</span>
+          </div>
+        </button>
+
+        <div class="px-3 py-3 mt-2 border-t border-ink-200 text-[11px] text-ink-500">
+          <div class="flex items-center gap-1.5 mb-1">
+            <svg class="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 4L6 12L2 8"/></svg>
+            Backed up locally
+          </div>
+          <div class="font-mono text-[10px] text-ink-400">.tokenflow/backups/2024-…</div>
+        </div>
+      </aside>
+
+      <!-- Diff editor -->
+      <main class="overflow-hidden flex flex-col">
+
+        <!-- File header -->
+        <div class="px-4 py-2 border-b border-ink-200 flex items-center gap-3 bg-white">
+          <svg class="w-4 h-4 text-ink-500" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h6l4 4v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M9 2v4h4"/></svg>
+          <span class="font-mono text-[13px] font-medium">tokens/core/surface.json</span>
+          <span class="text-[11px] font-mono text-ink-500">2 tokens affected · <span class="text-green-700">+5</span> <span class="text-red-700">−3</span></span>
+          <div class="ml-auto flex items-center gap-1">
+            <button class="text-[12px] text-ink-700 px-2 py-1 rounded hover:bg-ink-100 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8a5 5 0 0 1 9-3M13 4v3h-3M13 8a5 5 0 0 1-9 3M3 12V9h3"/></svg>
+              Discard
+            </button>
+            <button class="text-[12px] text-ink-700 px-2 py-1 rounded hover:bg-ink-100 flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3h3v3M13 3 8 8M7 4H4a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V9"/></svg>
+              Open
+            </button>
+          </div>
+        </div>
+
+        <!-- Diff column headers -->
+        <div class="grid grid-cols-2 border-b border-ink-200 bg-ink-50/40 text-[11px] font-mono text-ink-500">
+          <div class="px-4 py-1.5 border-r border-ink-200">On HEAD</div>
+          <div class="px-4 py-1.5">Working tree</div>
+        </div>
+
+        <!-- Diff body -->
+        <div class="grid grid-cols-2 flex-1 overflow-auto scrollbar-thin font-mono text-[12px] leading-[1.6]">
+
+          <!-- LEFT (HEAD) -->
+          <div class="border-r border-ink-200 bg-white">
+            <pre class="select-text"><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">10</span><span class="px-3 text-ink-700">  "surface": {</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">11</span><span class="px-3 text-ink-700">    "primary": {</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">12</span><span class="px-3 text-ink-700">      "$type": "color",</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">13</span><span class="px-3 text-ink-700">      "$value": {</span></span><span class="grid grid-cols-[40px_1fr] bg-red-50"><span class="text-right pr-2 text-red-400 select-none border-r border-red-200/60">14</span><span class="px-3 text-red-900">        "light": "{color.gray.100}",</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">15</span><span class="px-3 text-ink-700">        "dark":  "{color.gray.900}"</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">16</span><span class="px-3 text-ink-700">      }</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">17</span><span class="px-3 text-ink-700">    },</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">18</span><span class="px-3 text-ink-700">    "secondary": {</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">19</span><span class="px-3 text-ink-700">      "$type": "color",</span></span><span class="grid grid-cols-[40px_1fr] bg-red-50"><span class="text-right pr-2 text-red-400 select-none border-r border-red-200/60">20</span><span class="px-3 text-red-900">      "$value": "{color.gray.300}"</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">21</span><span class="px-3 text-ink-700">    }</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">22</span><span class="px-3 text-ink-700">  }</span></span></pre>
+          </div>
+
+          <!-- RIGHT (Working tree) -->
+          <div class="bg-white">
+            <pre class="select-text"><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">10</span><span class="px-3 text-ink-700">  "surface": {</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">11</span><span class="px-3 text-ink-700">    "primary": {</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">12</span><span class="px-3 text-ink-700">      "$type": "color",</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">13</span><span class="px-3 text-ink-700">      "$value": {</span></span><span class="grid grid-cols-[40px_1fr] bg-green-50"><span class="text-right pr-2 text-green-600 select-none border-r border-green-200/60">14</span><span class="px-3 text-green-900">        "light": "{color.gray.50}",</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">15</span><span class="px-3 text-ink-700">        "dark":  "{color.gray.900}"</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">16</span><span class="px-3 text-ink-700">      },</span></span><span class="grid grid-cols-[40px_1fr] bg-green-50"><span class="text-right pr-2 text-green-600 select-none border-r border-green-200/60">17</span><span class="px-3 text-green-900">      "$description": "Primary surface for cards and panels"</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">18</span><span class="px-3 text-ink-700">    },</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">19</span><span class="px-3 text-ink-700">    "secondary": {</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">20</span><span class="px-3 text-ink-700">      "$type": "color",</span></span><span class="grid grid-cols-[40px_1fr] bg-green-50"><span class="text-right pr-2 text-green-600 select-none border-r border-green-200/60">21</span><span class="px-3 text-green-900">      "$value": {</span></span><span class="grid grid-cols-[40px_1fr] bg-green-50"><span class="text-right pr-2 text-green-600 select-none border-r border-green-200/60">22</span><span class="px-3 text-green-900">        "light": "{color.gray.800}",</span></span><span class="grid grid-cols-[40px_1fr] bg-green-50"><span class="text-right pr-2 text-green-600 select-none border-r border-green-200/60">23</span><span class="px-3 text-green-900">        "dark":  "{color.gray.400}"</span></span><span class="grid grid-cols-[40px_1fr] bg-green-50"><span class="text-right pr-2 text-green-600 select-none border-r border-green-200/60">24</span><span class="px-3 text-green-900">      }</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">25</span><span class="px-3 text-ink-700">    }</span></span><span class="grid grid-cols-[40px_1fr] hover:bg-ink-50"><span class="text-right pr-2 text-ink-400 select-none border-r border-ink-200/60">26</span><span class="px-3 text-ink-700">  }</span></span></pre>
+          </div>
+        </div>
+
+        <!-- Impacted tokens summary -->
+        <div class="border-t border-ink-200 px-4 py-2 bg-ink-50/40 text-[12px] flex items-center gap-3">
+          <span class="text-ink-500 font-medium uppercase tracking-wider text-[10px]">Impacted</span>
+          <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white border border-ink-200">
+            <span class="w-3 h-3 rounded-full border border-ink-300" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D);"></span>
+            <span class="font-mono text-[11px]">surface/primary</span>
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white border border-ink-200">
+            <span class="w-3 h-3 rounded-full border border-ink-300" style="background:conic-gradient(from 0deg,#FF6B6B,#4ECDC4,#FFD93D);"></span>
+            <span class="font-mono text-[11px]">surface/secondary</span>
+          </span>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="h-8 border-t border-ink-200 bg-ink-50/60 px-3 flex items-center text-[11px] font-mono text-ink-600">
+      <span>tokenflow is <strong class="text-ink-950">read-only</strong> on Git — review here, then commit from your terminal or IDE.</span>
+      <div class="ml-auto flex items-center gap-3 text-ink-400">
+        <span>git diff · HEAD</span>
+      </div>
+    </footer>
+  </div>
+
+  <div class="mt-3 text-xs text-ink-500 max-w-3xl">
+    <span class="font-mono text-ink-700">Note —</span>
+    Position assumée : Token Flow Manager <strong>n'écrit jamais dans Git</strong>. Cette vue lit <span class="font-mono">git diff</span> et présente un résumé "tokens impactés" en plus du JSON brut — le contexte que perd un <span class="font-mono">git diff</span> classique. Conflit de merge détecté → fichier en lecture seule, l'utilisateur résout dans son IDE.
+  </div>
+</section>
+
+</div>
+
+<script>
+  function showView(id) {
+    document.querySelectorAll('section[id^="view"]').forEach(s => s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    document.querySelectorAll('[id^="tab-view"]').forEach(t => {
+      t.classList.remove('tab-active');
+      t.classList.add('tab-inactive');
+    });
+    const activeTab = document.getElementById('tab-' + id);
+    activeTab.classList.add('tab-active');
+    activeTab.classList.remove('tab-inactive');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>

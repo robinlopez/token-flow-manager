@@ -1,0 +1,29 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Token Flow Manager",
+  "version": "0.1.0",
+  "identifier": "com.tokenflowmanager.app",
+  "build": {
+    "frontendDist": "../packages/web/dist/web/browser",
+    "beforeBuildCommand": "pnpm -r --filter \"./packages/*\" build && node scripts/build-tauri-sidecar.mjs"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["dmg", "app"],
+    "externalBin": ["binaries/tokenflow"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  }
+}

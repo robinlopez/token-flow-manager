@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- Themes -------------------------------------------------------------
+   The `forge-*` Tailwind classes resolve to these channel triplets, so the
+   whole accent palette swaps when `data-theme` changes on <html>.
+   Default (:root) = Token Flow brand, primary #181919. UiService.theme
+   persists the choice and sets <html data-theme>. */
+:root,
+[data-theme='tokenflow'] {
+  --forge-50: 245 246 246;
+  --forge-100: 232 233 233;
+  --forge-200: 213 214 214;
+  --forge-300: 176 178 178;
+  --forge-400: 125 128 128;
+  --forge-500: 60 62 62;
+  --forge-600: 24 25 25; /* #181919 — Token Flow primary */
+  --forge-700: 5 6 6;
+}
+[data-theme='forge'] {
+  --forge-50: 255 247 237;
+  --forge-100: 255 237 213;
+  --forge-200: 254 215 170;
+  --forge-300: 253 186 116;
+  --forge-400: 251 146 60;
+  --forge-500: 249 115 22;
+  --forge-600: 234 88 12; /* #EA580C — original orange */
+  --forge-700: 194 65 12;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: #f1f0ee;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  -webkit-font-smoothing: antialiased;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Drag & drop (CDK) — smooth reordering + clear insertion feedback */
+.cdk-drag-preview {
+  border-radius: 6px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+  opacity: 0.95;
+}
+.cdk-drag-placeholder {
+  opacity: 1;
+}
+.cdk-drag-animating {
+  transition: transform 180ms cubic-bezier(0, 0, 0.2, 1);
+}
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+  transition: transform 180ms cubic-bezier(0, 0, 0.2, 1);
+}
+/* the original row being dragged stays subtly dimmed in place */
+.cdk-drag.cdk-drag-dragging {
+  opacity: 0.4;
+}
+
+.checker {
+  background-image:
+    linear-gradient(45deg, #e7e5e4 25%, transparent 25%),
+    linear-gradient(-45deg, #e7e5e4 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e7e5e4 75%),
+    linear-gradient(-45deg, transparent 75%, #e7e5e4 75%);
+  background-size: 8px 8px;
+  background-position:
+    0 0,
+    0 4px,
+    4px -4px,
+    -4px 0;
+}

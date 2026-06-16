@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_2" data-name="Calque 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 105.24 105.24">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3 {
+        fill: #181919;
+      }
+
+      .cls-2 {
+        opacity: .7;
+      }
+
+      .cls-3 {
+        opacity: .85;
+      }
+
+      .cls-4 {
+        fill: #f7ebdf;
+      }
+    </style>
+  </defs>
+  <g id="Calque_7" data-name="Calque 7">
+    <path class="cls-4" d="M72.55,105.24h-39.85C14.64,105.24,0,90.6,0,72.55v-39.85C0,14.64,14.64,0,32.69,0h39.85c18.06,0,32.69,14.64,32.69,32.69v39.85c0,12.72-14.64,32.69-32.69,32.69Z"/>
+    <g>
+      <ellipse class="cls-1" cx="69.37" cy="42.94" rx="8.24" ry="32.64" transform="translate(-12.2 44.57) rotate(-32.9)"/>
+      <path class="cls-2" d="M37.44,75.87c-10.4-6.01-19.59-9.56-20.53-7.94-.94,1.62,6.74,7.8,17.14,13.81,10.4,6.01,19.59,9.56,20.53,7.94s-6.74-7.8-17.14-13.81Z"/>
+      <ellipse class="cls-3" cx="46.64" cy="59.08" rx="5.4" ry="26.04" transform="translate(-28.12 50.28) rotate(-45)"/>
+    </g>
+  </g>
+</svg>
