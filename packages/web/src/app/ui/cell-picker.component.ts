@@ -20,10 +20,24 @@ import {
   rgbaToHsva,
   type Rgba,
 } from '../core/color';
+import {
+  formatOklch,
+  formatP3,
+  inP3,
+  inSrgb,
+  oklchToHex,
+  oklchToRgba,
+  parseOklch,
+  rgbaToOklch,
+  type Oklcha,
+} from '../core/oklch';
 import type { ParsedToken } from '../core/models';
 
 const POPOVER_W = 304;
 const POPOVER_H = 380;
+/** Slider range for OKLCH chroma; beyond this is unreachable in any display gamut. */
+const CHROMA_MAX = 0.4;
+const OKLCH_LITERAL = /^(oklch|color)\(/i;
 
 interface LibGroup {
   collection: string;
@@ -80,6 +94,29 @@ interface LibGroup {
         </div>
 
         @if (tab() === 'custom' && allowColor()) {
+          <!-- RGB / OKLCH sub-mode toggle -->
+          <div class="px-3 pt-2.5">
+            <div class="inline-flex rounded-md bg-ink-100 p-0.5 text-[11px] font-medium">
+              <button
+                class="px-2.5 py-1 rounded transition-colors"
+                [class.bg-white]="colorMode() === 'rgb'"
+                [class.shadow-sm]="colorMode() === 'rgb'"
+                [class.text-ink-900]="colorMode() === 'rgb'"
+                [class.text-ink-400]="colorMode() !== 'rgb'"
+                (click)="setMode('rgb')"
+              >RGB</button>
+              <button
+                class="px-2.5 py-1 rounded transition-colors"
+                [class.bg-white]="colorMode() === 'oklch'"
+                [class.shadow-sm]="colorMode() === 'oklch'"
+                [class.text-ink-900]="colorMode() === 'oklch'"
+                [class.text-ink-400]="colorMode() !== 'oklch'"
+                (click)="setMode('oklch')"
+              >OKLCH</button>
+            </div>
+          </div>
+
+          @if (colorMode() === 'rgb') {
           <!-- Saturation / value square -->
           <div
             #sv
@@ -160,6 +197,81 @@ interface LibGroup {
               </div>
             </div>
           </div>
+          } @else {
+          <!-- OKLCH: preview + gamut, then L · C · H sliders -->
+          <div class="px-3 pt-3">
+            <div class="relative h-20 rounded-lg border border-black/10 checker overflow-hidden">
+              <div class="absolute inset-0" [style.background]="previewCss()"></div>
+              <div class="absolute bottom-2 right-2 flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/85 text-[11px] font-medium shadow-sm">
+                <span [class.text-emerald-600]="gamutSrgb()" [class.text-ink-300]="!gamutSrgb()">sRGB {{ gamutSrgb() ? '✓' : '✗' }}</span>
+                <span class="text-ink-300">·</span>
+                <span [class.text-emerald-600]="gamutP3()" [class.text-ink-300]="!gamutP3()">P3 {{ gamutP3() ? '✓' : '✗' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 flex flex-col gap-3">
+            <!-- Lightness -->
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="uppercase tracking-wide text-ink-400">Lightness</span>
+                <span class="font-mono text-ink-600">{{ ol().toFixed(3) }}</span>
+              </div>
+              <div #okl class="relative h-3 rounded-full touch-none select-none cursor-pointer" [style.background]="lGradient()" (pointerdown)="okLDown($event)">
+                <div class="absolute top-1/2 -translate-y-1/2 w-4 h-4 -ml-2 rounded-full bg-white border border-ink-300 shadow pointer-events-none" [style.left.%]="ol() * 100"></div>
+              </div>
+            </div>
+            <!-- Chroma -->
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="uppercase tracking-wide text-ink-400">Chroma</span>
+                <span class="font-mono text-ink-600">{{ oc().toFixed(3) }}</span>
+              </div>
+              <div #okc class="relative h-3 rounded-full touch-none select-none cursor-pointer" [style.background]="cGradient()" (pointerdown)="okCDown($event)">
+                <div class="absolute top-1/2 -translate-y-1/2 w-4 h-4 -ml-2 rounded-full bg-white border border-ink-300 shadow pointer-events-none" [style.left.%]="(oc() / chromaMax) * 100"></div>
+              </div>
+            </div>
+            <!-- Hue -->
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="uppercase tracking-wide text-ink-400">Hue</span>
+                <span class="font-mono text-ink-600">{{ ohRounded() }}°</span>
+              </div>
+              <div #okh class="relative h-3 rounded-full touch-none select-none cursor-pointer" [style.background]="hGradient()" (pointerdown)="okHDown($event)">
+                <div class="absolute top-1/2 -translate-y-1/2 w-4 h-4 -ml-2 rounded-full bg-white border border-ink-300 shadow pointer-events-none" [style.left.%]="(oh() / 360) * 100"></div>
+              </div>
+            </div>
+            <!-- Alpha (shared slider markup; only one branch is in the DOM) -->
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="uppercase tracking-wide text-ink-400">Alpha</span>
+                <span class="font-mono text-ink-600">{{ alphaPct() }}%</span>
+              </div>
+              <div #alpha class="relative h-3 rounded-full touch-none select-none cursor-pointer checker" (pointerdown)="alphaDown($event)">
+                <div class="absolute inset-0 rounded-full" [style.background]="alphaGradient()"></div>
+                <div class="absolute top-1/2 -translate-y-1/2 w-4 h-4 -ml-2 rounded-full bg-white border border-ink-300 shadow pointer-events-none" [style.left.%]="a() * 100"></div>
+              </div>
+            </div>
+
+            <!-- Output format + value string -->
+            <div class="flex items-stretch gap-1.5">
+              <select
+                class="text-xs border border-ink-200 rounded-md px-1.5 bg-white focus:outline-none focus:border-forge-500"
+                [ngModel]="oklchFormat()"
+                (ngModelChange)="oklchFormat.set($event)"
+              >
+                <option value="oklch">OKLCH</option>
+                <option value="p3">Display P3</option>
+                <option value="hex">HEX</option>
+              </select>
+              <input
+                class="flex-1 font-mono text-xs border border-ink-200 rounded-md px-2 py-1.5 focus:outline-none focus:border-forge-500"
+                [ngModel]="outputCss()"
+                (change)="onOklchText($any($event.target).value)"
+              />
+            </div>
+          </div>
+          }
         } @else {
           <!-- Libraries: searchable token list, filtered by type -->
           <div class="p-2 border-b border-ink-100">
@@ -222,11 +334,22 @@ export class CellPickerComponent {
   readonly v = signal(0);
   readonly a = signal(1);
 
+  // ---- Working OKLCH colour (RGB sub-mode shares the alpha signal `a`) ----
+  readonly colorMode = signal<'rgb' | 'oklch'>('rgb');
+  readonly oklchFormat = signal<'oklch' | 'p3' | 'hex'>('oklch');
+  readonly ol = signal(0); // lightness 0–1
+  readonly oc = signal(0); // chroma 0–CHROMA_MAX
+  readonly oh = signal(0); // hue 0–360
+  readonly chromaMax = CHROMA_MAX;
+
   readonly hasEyeDropper = typeof (window as { EyeDropper?: unknown }).EyeDropper === 'function';
 
   private readonly sv = viewChild<ElementRef<HTMLElement>>('sv');
   private readonly hueEl = viewChild<ElementRef<HTMLElement>>('hue');
   private readonly alphaEl = viewChild<ElementRef<HTMLElement>>('alpha');
+  private readonly oklEl = viewChild<ElementRef<HTMLElement>>('okl');
+  private readonly okcEl = viewChild<ElementRef<HTMLElement>>('okc');
+  private readonly okhEl = viewChild<ElementRef<HTMLElement>>('okh');
   private readonly searchEl = viewChild<ElementRef<HTMLInputElement>>('search');
   private readonly listEl = viewChild<ElementRef<HTMLElement>>('list');
 
@@ -264,6 +387,17 @@ export class CellPickerComponent {
         this.v.set(hsva.v);
         this.a.set(hsva.a);
       }
+      // Seed OKLCH from the original string when possible (preserves wide-gamut
+      // values the canvas-based parse would clamp), else from the RGBA above.
+      const okl = parseOklch(tgt.resolved) ?? parseOklch(tgt.raw) ?? (rgba ? rgbaToOklch(rgba) : null);
+      if (okl) {
+        this.ol.set(okl.l);
+        this.oc.set(okl.c);
+        this.oh.set(okl.h);
+      }
+      // Open in OKLCH when the literal is already authored in oklch()/color().
+      const litStr = typeof tgt.raw === 'string' ? tgt.raw.trim() : '';
+      this.colorMode.set(OKLCH_LITERAL.test(litStr) ? 'oklch' : 'rgb');
       if (tgt.tab === 'libraries') queueMicrotask(() => this.searchEl()?.nativeElement.focus());
     });
 
@@ -394,16 +528,99 @@ export class CellPickerComponent {
     }
   }
 
+  // ---- OKLCH sub-mode ----
+  oklcha(): Oklcha {
+    return { l: this.ol(), c: this.oc(), h: this.oh(), a: this.a() };
+  }
+  /** The string written to the token, per the active mode + output format. */
+  outputCss(): string {
+    if (this.colorMode() !== 'oklch') return rgbaToCss(this.rgba());
+    const o = this.oklcha();
+    switch (this.oklchFormat()) {
+      case 'p3':
+        return formatP3(o);
+      case 'hex':
+        return oklchToHex(o);
+      default:
+        return formatOklch(o);
+    }
+  }
+  /** Switch sub-mode, converting the current colour so it stays put. */
+  setMode(mode: 'rgb' | 'oklch'): void {
+    if (mode === this.colorMode()) return;
+    if (mode === 'oklch') {
+      const o = rgbaToOklch(this.rgba());
+      this.ol.set(o.l);
+      this.oc.set(o.c);
+      this.oh.set(o.h);
+    } else {
+      const hsva = rgbaToHsva(oklchToRgba(this.oklcha()));
+      this.h.set(hsva.h);
+      this.s.set(hsva.s);
+      this.v.set(hsva.v);
+    }
+    this.colorMode.set(mode);
+  }
+
+  ohRounded(): number {
+    return Math.round(this.oh());
+  }
+  gamutSrgb(): boolean {
+    return inSrgb(this.oklcha());
+  }
+  gamutP3(): boolean {
+    return inP3(this.oklcha());
+  }
+  /** Swatch shows the true (possibly wide-gamut) colour on capable displays. */
+  previewCss(): string {
+    return formatOklch(this.oklcha());
+  }
+  lGradient(): string {
+    const c = this.oc();
+    const h = this.oh();
+    return `linear-gradient(to right, oklch(0 ${c} ${h}), oklch(0.5 ${c} ${h}), oklch(1 ${c} ${h}))`;
+  }
+  cGradient(): string {
+    const l = this.ol();
+    const h = this.oh();
+    return `linear-gradient(to right, oklch(${l} 0 ${h}), oklch(${l} ${CHROMA_MAX} ${h}))`;
+  }
+  hGradient(): string {
+    const l = this.ol() || 0.7;
+    const c = this.oc() || 0.15; // keep the rail colourful even at chroma 0
+    const stops: string[] = [];
+    for (let i = 0; i <= 6; i++) stops.push(`oklch(${l} ${c} ${i * 60}) ${Math.round((i / 6) * 100)}%`);
+    return `linear-gradient(to right, ${stops.join(', ')})`;
+  }
+  okLDown(e: PointerEvent): void {
+    this.drag(this.oklEl()?.nativeElement, (x, _y, r) => this.ol.set(clamp01((x - r.left) / r.width)), e);
+  }
+  okCDown(e: PointerEvent): void {
+    this.drag(this.okcEl()?.nativeElement, (x, _y, r) => this.oc.set(clamp01((x - r.left) / r.width) * CHROMA_MAX), e);
+  }
+  okHDown(e: PointerEvent): void {
+    this.drag(this.okhEl()?.nativeElement, (x, _y, r) => this.oh.set(clamp01((x - r.left) / r.width) * 360), e);
+  }
+  onOklchText(value: string): void {
+    const o = parseOklch(value);
+    if (!o) return;
+    this.ol.set(o.l);
+    this.oc.set(o.c);
+    this.oh.set(o.h);
+    this.a.set(o.a);
+    this.commit();
+  }
+
   /** Optimistic preview (no flush) while dragging. Skipped in sub-field mode. */
   private preview(): void {
     const t = this.t();
-    if (t && !t.onPick) this.store.previewValue(t.tokenId, t.mode, rgbaToCss(this.rgba()));
+    if (t && !t.onPick) this.store.previewValue(t.tokenId, t.mode, this.outputCss());
   }
   /** Persist the current colour (or hand it to `onPick` in sub-field mode). */
   private commit(): void {
     const t = this.t();
     if (!t) return;
-    const css = rgbaToCss(this.rgba());
+    const css = this.outputCss();
     if (t.onPick) t.onPick(css);
     else void this.store.updateValue(t.tokenId, t.mode, css);
   }
