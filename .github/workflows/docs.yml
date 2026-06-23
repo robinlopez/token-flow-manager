@@ -1,0 +1,37 @@
+name: Documentation
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - "docs/**"
+      - "zensical.toml"
+      - "zensical.fr.toml"
+      - ".github/workflows/docs.yml"
+  # Allow manual runs from the Actions tab
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/configure-pages@v6
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.x
+      - run: pip install zensical==0.0.43
+      - run: zensical build --clean          # English at the site root
+      - run: zensical build -f zensical.fr.toml   # French under /fr/
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+      - uses: actions/deploy-pages@v5
+        id: deployment

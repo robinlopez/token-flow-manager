@@ -2,7 +2,7 @@
   "name": "token-flow-manager-monorepo",
   "version": "0.1.0",
   "private": true,
-  "description": "Local Design Tokens manager — DTCG 2025.10 compliant",
+  "description": "Local Design Tokens manager",
   "license": "MIT",
   "engines": {
     "node": ">=20"
@@ -14,7 +14,10 @@
     "typecheck": "pnpm -r --filter \"./packages/*\" typecheck",
     "dev": "pnpm --filter @tokenflow/cli dev",
     "desktop:build": "tauri build",
-    "desktop:dev": "tauri dev"
+    "desktop:dev": "tauri dev",
+    "docs:dev": "zensical serve",
+    "docs:dev:fr": "zensical serve -f zensical.fr.toml",
+    "docs:build": "zensical build --clean && zensical build -f zensical.fr.toml"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.2",
