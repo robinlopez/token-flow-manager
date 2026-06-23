@@ -7,22 +7,17 @@ icon: lucide/rocket
 Token Flow Manager runs on your computer and opens a dashboard in your browser.
 You only need **Node.js 20 or newer** installed ([download it here](https://nodejs.org)).
 
-## 1. Download
+## 1. Install
 
-Go to the [Releases page](https://github.com/robinlopez/token-flow-manager/releases)
-and download the file named `token-flow-manager-0.1.0.tgz`.
-
-## 2. Install
-
-Open a terminal in the folder where you downloaded the file, then run:
+Open a terminal and run:
 
 ```bash
-npm install -g ./token-flow-manager-0.1.0.tgz
+npm install -g token-flow-manager
 ```
 
 That installs the `tokenflow` command on your computer. You only do this once.
 
-## 3. Launch
+## 2. Launch
 
 From now on, just type:
 
@@ -40,6 +35,14 @@ A welcome screen opens in your browser. Pick a recent project or browse for a fo
     tokenflow ./my-design-tokens
     ```
 
+!!! note "Prefer not to install?"
+
+    Run it once-off without installing anything:
+
+    ```bash
+    npx token-flow-manager
+    ```
+
 ## Other commands
 
 ```bash
@@ -53,6 +56,16 @@ Token Flow Manager reads two files:
 
 - **`manifest.json`**: your token organization (collections and modes).
 - **`tokenflow.config.json`**: tool preferences only. Create one with `tokenflow init`.
+
+## Install from a file (offline)
+
+No access to the npm registry? Download the `token-flow-manager-<version>.tgz` from the
+[Releases page](https://github.com/robinlopez/token-flow-manager/releases), then install
+it from the folder where you saved it:
+
+```bash
+npm install -g ./token-flow-manager-0.1.1.tgz
+```
 
 ## Next steps
 

@@ -8,22 +8,17 @@ Token Flow Manager s'exécute sur votre ordinateur et ouvre un tableau de bord d
 votre navigateur. Vous avez seulement besoin de **Node.js 20 ou plus récent**
 ([à télécharger ici](https://nodejs.org)).
 
-## 1. Télécharger
+## 1. Installer
 
-Rendez-vous sur la [page des Releases](https://github.com/robinlopez/token-flow-manager/releases)
-et téléchargez le fichier nommé `token-flow-manager-0.1.0.tgz`.
-
-## 2. Installer
-
-Ouvrez un terminal dans le dossier où vous avez téléchargé le fichier, puis lancez :
+Ouvrez un terminal et lancez :
 
 ```bash
-npm install -g ./token-flow-manager-0.1.0.tgz
+npm install -g token-flow-manager
 ```
 
 Cela installe la commande `tokenflow` sur votre ordinateur. À faire une seule fois.
 
-## 3. Lancer
+## 2. Lancer
 
 Ensuite, il suffit de taper :
 
@@ -42,6 +37,14 @@ parcourez un dossier.
     tokenflow ./mes-design-tokens
     ```
 
+!!! note "Vous préférez ne rien installer ?"
+
+    Lancez-le ponctuellement sans rien installer :
+
+    ```bash
+    npx token-flow-manager
+    ```
+
 ## Autres commandes
 
 ```bash
@@ -56,6 +59,16 @@ Token Flow Manager lit deux fichiers :
 - **`manifest.json`** : l'organisation de vos tokens (collections et modes).
 - **`tokenflow.config.json`** : les préférences de l'outil uniquement. Créez-en un avec
   `tokenflow init`.
+
+## Installer depuis un fichier (hors ligne)
+
+Pas d'accès à la registry npm ? Téléchargez le `token-flow-manager-<version>.tgz` depuis
+la [page des Releases](https://github.com/robinlopez/token-flow-manager/releases), puis
+installez-le depuis le dossier où vous l'avez enregistré :
+
+```bash
+npm install -g ./token-flow-manager-0.1.1.tgz
+```
 
 ## Étapes suivantes
 
