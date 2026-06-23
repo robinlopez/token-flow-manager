@@ -4,6 +4,13 @@ Journal des évolutions notables. Le dépôt est versionné en un **commit uniqu
 
 Format inspiré de Keep a Changelog. Dates au format AAAA-MM-JJ.
 
+## [0.1.1] — 2026-06-23
+
+Correctif d'empaquetage : la page npm de 0.1.0 affichait « This package does not have a README ».
+
+- **README du package ajouté** : `packages/cli/README.md` (install, commandes, features dont le picker OKLCH, config, liens). npm n'affiche que le README **présent dans le dossier du package publié** — le README racine du monorepo n'y était pas. Inclus automatiquement par npm (11 fichiers packés).
+- **Republication** : npm interdisant de republier une version existante, bump **0.1.0 → 0.1.1** synchronisé aux 3 emplacements (`packages/cli/package.json`, `packages/cli/src/cli.ts` `.version()`, `packages/web/src/app/core/version.ts` `APP_VERSION`) + rebuild (`tokenflow --version` → `0.1.1`).
+
 ## [0.1.0] — 2026-06-23
 
 Première version préparée pour publication npm.

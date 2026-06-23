@@ -1,6 +1,6 @@
 {
   "name": "token-flow-manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Local Design Tokens manager — visualize, edit and govern your DTCG token files.",
   "license": "MIT",

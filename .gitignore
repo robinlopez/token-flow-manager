@@ -23,6 +23,9 @@ sandbox/
 # GitHub release notes (drafted locally, pasted into the GitHub Releases UI)
 /RELEASE-*.md
 
+# npm pack tarballs (release artifacts, attached to GitHub Releases)
+*.tgz
+
 # Editor / local agent config (keep private paths out of the public repo)
 .idea/
 .claude/
