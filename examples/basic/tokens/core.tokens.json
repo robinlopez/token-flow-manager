@@ -1,0 +1,51 @@
+{
+  "color": {
+    "$type": "color",
+    "gray": {
+      "50": {
+        "$value": "#fafafa"
+      },
+      "100": {
+        "$value": "#f5f5f4"
+      },
+      "500": {
+        "$value": "#78716c"
+      },
+      "900": {
+        "$value": "#1c1917"
+      }
+    },
+    "brand": {
+      "primary": {
+        "$value": "{color.gray.900}",
+        "$description": "Primary brand ink"
+      },
+      "accent": {
+        "$value": "#ea580c"
+      }
+    },
+    "surface": {
+      "default": {
+        "$value": "{color.gray.50}"
+      },
+      "raised": {
+        "$value": "#ffffff"
+      }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "none": {
+      "$value": "0"
+    },
+    "sm": {
+      "$value": "4px"
+    },
+    "md": {
+      "$value": "8px"
+    },
+    "lg": {
+      "$value": "16px"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "token-flow-manager-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local Design Tokens manager",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.12.4",
+  "scripts": {
+    "build": "pnpm -r --filter \"./packages/*\" build",
+    "test": "pnpm -r --filter \"./packages/*\" test",
+    "typecheck": "pnpm -r --filter \"./packages/*\" typecheck",
+    "dev": "pnpm --filter @tokenflow/cli dev",
+    "desktop:build": "tauri build",
+    "desktop:dev": "tauri dev",
+    "docs:dev": "zensical serve",
+    "docs:dev:fr": "zensical serve -f zensical.fr.toml",
+    "docs:build": "zensical build --clean && zensical build -f zensical.fr.toml"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.2",
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

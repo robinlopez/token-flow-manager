@@ -1,0 +1,57 @@
+{
+  "$description": "Responsive scales — desktop/tablet/mobile are modes, not groups",
+  "desktop": {
+    "screen": {
+      "width": {
+        "$type": "dimension",
+        "$value": "1440px"
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$value": "24px"
+      }
+    }
+  },
+  "tablet": {
+    "screen": {
+      "width": {
+        "$type": "dimension",
+        "$value": "1024px"
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$value": "16px"
+      }
+    },
+    "font": {
+      "base": {
+        "$type": "dimension",
+        "$value": "15px"
+      }
+    }
+  },
+  "mobile": {
+    "screen": {
+      "width": {
+        "$type": "dimension",
+        "$value": "390px"
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$value": "12px"
+      }
+    },
+    "font": {
+      "base": {
+        "$type": "dimension",
+        "$value": "14px"
+      }
+    }
+  },
+  "font": {
+    "base": {
+      "$type": "dimension",
+      "$value": "16px"
+    }
+  }
+}

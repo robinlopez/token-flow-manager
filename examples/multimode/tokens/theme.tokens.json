@@ -1,0 +1,91 @@
+{
+  "color": {
+    "modeLight": {
+      "surface": {
+        "bg": {
+          "$type": "color",
+          "$value": "#ffffff"
+        },
+        "fg": {
+          "$type": "color",
+          "$value": "#1c1917"
+        },
+        "raised": {
+          "$type": "color",
+          "$value": "#fafafa"
+        }
+      },
+      "brand": {
+        "primary": {
+          "$type": "color",
+          "$value": "#ea580c"
+        },
+        "accent": {
+          "$type": "color",
+          "$value": "#0ea5e9"
+        }
+      },
+      "text": {
+        "default": {
+          "$type": "color",
+          "$value": "#1c1917"
+        },
+        "muted": {
+          "$type": "color",
+          "$value": "#78716c"
+        }
+      }
+    },
+    "modeDark": {
+      "surface": {
+        "bg": {
+          "$type": "color",
+          "$value": "#0c0a09"
+        },
+        "fg": {
+          "$type": "color",
+          "$value": "#fafafa"
+        },
+        "raised": {
+          "$type": "color",
+          "$value": "#1c1917"
+        }
+      },
+      "brand": {
+        "primary": {
+          "$type": "color",
+          "$value": "#fb923c"
+        },
+        "accent": {
+          "$type": "color",
+          "$value": "#38bdf8"
+        }
+      },
+      "text": {
+        "default": {
+          "$type": "color",
+          "$value": "#fafafa"
+        },
+        "muted": {
+          "$type": "color",
+          "$value": "#a8a29e"
+        }
+      }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "none": {
+      "$value": "0"
+    },
+    "sm": {
+      "$value": "4px"
+    },
+    "md": {
+      "$value": "8px"
+    },
+    "lg": {
+      "$value": "16px"
+    }
+  }
+}
