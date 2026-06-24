@@ -7,7 +7,7 @@ files from a Variables-style dashboard, without leaving your project.
 
 It starts a local Node server (bound to `127.0.0.1`), parses every `*.tokens.json`,
 resolves aliases across collections and modes, and opens a dashboard. It **never**
-commits — it edits the source JSON in place, atomically, preserving key order and
+commits, it edits the source JSON in place, atomically, preserving key order and
 formatting. Run it with **no path** and a **welcome screen** lets you open a recent
 project or browse for one.
 
