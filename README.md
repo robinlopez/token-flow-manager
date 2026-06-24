@@ -3,7 +3,7 @@
 <img src="https://res.cloudinary.com/dq7rnye43/image/upload/v1782284307/TokenFlow/token-flow-manager.png" alt="Token Flow Manager" width="100%"/>
 
 Local Design Tokens manager, visualize, edit and govern your **DTCG 2025.10** token
-files from a Figma-Variables-style dashboard, without leaving your project.
+files from a Variables-style dashboard, without leaving your project.
 
 It starts a local Node server (bound to `127.0.0.1`), parses every `*.tokens.json`,
 resolves aliases across collections and modes, and opens a dashboard. It **never**
