@@ -171,6 +171,13 @@ export class ProjectManager extends EventEmitter {
   private referencedIds = new Set<string>();
   /** pathKey -> token entries across collections, for alias target resolution. */
   private byPathKey = new Map<string, Array<{ id: string; collection: string; rank: number }>>();
+  /**
+   * Lowercased collection-namespace -> collection name (Tokens Studio / PrimeNG
+   * convention: `{primitive.green.500}` names the collection, not a path
+   * segment). Mirrors the resolver so reference/orphan detection matches what
+   * actually resolves.
+   */
+  private collectionNamespaces = new Map<string, string>();
   /** Effective modes per collection (declared OR auto-detected from a path dimension). */
   private effectiveModes = new Map<string, string[]>();
   /** Active path-segment mode dimension per collection (logical↔physical path translation). */
@@ -383,7 +390,26 @@ export class ProjectManager extends EventEmitter {
 
   /** Resolve an alias path from `fromCollection` to a concrete token id, mirroring resolver scoping. */
   private resolveTargetId(fromCollection: string, aliasPath: string[]): string | undefined {
-    const pk = aliasPath.join('.');
+    const direct = this.lookupByPath(fromCollection, aliasPath.join('.'));
+    if (direct) return direct;
+    // Collection-namespace alias (`{primitive.green.500}`): the first segment
+    // names a collection, not a path. Retry against the token at the remaining
+    // path inside that collection, falling back to the general scoped lookup.
+    if (aliasPath.length > 1) {
+      const ns = this.collectionNamespaces.get(aliasPath[0]!.toLowerCase());
+      if (ns) {
+        const rest = aliasPath.slice(1).join('.');
+        const inNs = this.byPathKey.get(rest)?.find((e) => e.collection === ns);
+        if (inNs) return inNs.id;
+        const scoped = this.lookupByPath(fromCollection, rest);
+        if (scoped) return scoped;
+      }
+    }
+    return undefined;
+  }
+
+  /** Look up a path key as an alias target from `fromCollection` (self, then earlier collections by rank). */
+  private lookupByPath(fromCollection: string, pk: string): string | undefined {
     const direct = this.byPathKey.get(pk)?.find((e) => e.collection === fromCollection);
     if (direct) return direct.id;
     if (!this.config.resolution.crossCollection) return undefined;
@@ -393,6 +419,18 @@ export class ProjectManager extends EventEmitter {
       if (e.rank <= fromRank && (!best || e.rank > best.rank)) best = { id: e.id, rank: e.rank };
     }
     return best?.id;
+  }
+
+  /** Build the collection-namespace map (name + "/"-segments + singular/plural). */
+  private buildCollectionNamespaces(tokens: ParsedToken[]): void {
+    this.collectionNamespaces = new Map();
+    for (const name of new Set(tokens.map((t) => t.collection))) {
+      const n = name.toLowerCase();
+      for (const base of new Set<string>([n, ...n.split('/')])) {
+        const variant = base.endsWith('s') ? base.slice(0, -1) : `${base}s`;
+        for (const v of [base, variant]) if (!this.collectionNamespaces.has(v)) this.collectionNamespaces.set(v, name);
+      }
+    }
   }
 
   /** Direct alias target paths declared by a token across all modes (top-level + composite). */
@@ -423,6 +461,7 @@ export class ProjectManager extends EventEmitter {
       list.push({ id: t.id, collection: t.collection, rank: this.rank(t.collection) });
       this.byPathKey.set(pk, list);
     }
+    this.buildCollectionNamespaces(tokens);
 
     // reference graph (which ids are referenced)
     this.referencedIds = new Set();
@@ -1834,12 +1873,17 @@ export class ProjectManager extends EventEmitter {
       const p = parseAliasPath(raw);
       if (p) out.push(p);
     } else if (isCompositeType(type) && raw && typeof raw === 'object') {
-      for (const v of Object.values(raw as Record<string, unknown>)) {
+      // Composite sub-properties may alias — including gradient stops, which are
+      // an array of objects. Recurse one level into objects and arrays.
+      const visit = (v: unknown): void => {
         if (isAlias(v)) {
           const p = parseAliasPath(v);
           if (p) out.push(p);
+        } else if (v && typeof v === 'object') {
+          for (const inner of Object.values(v as Record<string, unknown>)) visit(inner);
         }
-      }
+      };
+      visit(raw);
     }
     return out;
   }

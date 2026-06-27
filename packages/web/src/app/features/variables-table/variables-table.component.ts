@@ -567,16 +567,22 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                 <!-- Spacer: fills leftover width so the pinned action cell is flush right. -->
                 <div class="flex-1 min-w-0"></div>
                 <div
-                  class="w-10 shrink-0 border-l border-ink-100 flex items-center justify-center sticky right-0 z-[5]"
+                  class="w-10 shrink-0 border-l flex items-center justify-center sticky right-0 z-[5]"
+                  [class.border-ink-100]="!isFocused(token)"
                   [class.bg-white]="!isSelected(token)"
                   [class.group-hover:bg-ink-50]="!isSelected(token)"
                   [class.bg-forge-100]="isSelected(token)"
+                  [class.border-t]="isFocused(token)"
+                  [class.border-b]="isFocused(token)"
+                  [class.border-r]="isFocused(token)"
+                  [class.border-forge-400]="isFocused(token)"
                 >
                   <button
-                    class="w-6 h-6 flex items-center justify-center rounded text-ink-400 hover:text-forge-600 hover:bg-ink-100 transition-opacity"
-                    [class.opacity-30]="!isInspected(token)"
-                    [class.group-hover:opacity-100]="!isInspected(token)"
-                    [class.text-forge-600]="isInspected(token)"
+                    class="w-6 h-6 flex items-center justify-center rounded hover:text-forge-600 hover:bg-ink-100 transition-opacity"
+                    [class.text-ink-400]="!isInspected(token) && !isSelected(token)"
+                    [class.opacity-30]="!isInspected(token) && !isSelected(token)"
+                    [class.group-hover:opacity-100]="!isInspected(token) && !isSelected(token)"
+                    [class.text-forge-600]="isInspected(token) || isSelected(token)"
                     [class.bg-forge-50]="isInspected(token)"
                     title="Open details"
                     (click)="openDetails(token, $event)"

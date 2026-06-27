@@ -38,7 +38,10 @@ import { APP_VERSION } from './core/version';
     CellPickerComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:keydown)': 'onKeydown($event)' },
+  host: {
+    '(document:keydown)': 'onKeydown($event)',
+    '(document:click)': 'onDocumentClick($event)',
+  },
   styles: [
     `
       .tf-spin {
@@ -274,6 +277,28 @@ export class AppComponent {
   }
   redo(): void {
     void this.store.redo();
+  }
+
+  /**
+   * Click anywhere in the window clears the variable selection — the classic
+   * "click away to deselect" behaviour. We bail out when the click lands on a
+   * table row or inside selection-aware UI (sidebar, inspector, toolbar, the
+   * open overlays), since those own / act on the selection themselves; clearing
+   * it there would fight their own click handlers.
+   */
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.store.isOpen()) return;
+    const target = event.target as HTMLElement | null;
+    if (
+      target?.closest(
+        '.tf-row, tf-sidebar, tf-inspector, tf-toolbar, tf-context-menu, ' +
+          'tf-cell-picker, tf-command-palette, tf-settings, tf-distribution, ' +
+          'tf-diagnostics, tf-shortcuts-help',
+      )
+    ) {
+      return;
+    }
+    this.store.deselectAll();
   }
 
   onKeydown(event: KeyboardEvent): void {

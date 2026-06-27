@@ -506,6 +506,17 @@ export class ProjectStore {
     this.selectedIds.set(new Set());
   }
 
+  /**
+   * Fully clear the row selection — multi-selection, range anchor and the
+   * focused/ring token. Used when the user clicks empty space in the table to
+   * dismiss the selection (the inspector panel, if open, stays as-is).
+   */
+  deselectAll(): void {
+    this.selectedIds.set(new Set());
+    this.selectionAnchor = null;
+    this.selectedTokenId.set(null);
+  }
+
   /** Single-select `id` (replaces the selection) and make it the range anchor. */
   selectOnly(id: string): void {
     this.selectedIds.set(new Set([id]));
@@ -718,6 +729,21 @@ export class ProjectStore {
   async references(id: string): Promise<ReferenceInfo[]> {
     const res = await this.fetch(this.api.getReferences(id));
     return res.references;
+  }
+
+  /**
+   * Open a project-relative file (e.g. a token's source) in the OS default
+   * editor. Reuses the distribution open endpoint, which is confined to the
+   * project root server-side.
+   */
+  async openFileInEditor(relPath: string): Promise<boolean> {
+    try {
+      const res = await this.fetch(this.api.openDistributionFile(relPath));
+      return res.ok;
+    } catch (err) {
+      this.ui.showToast(errMessage(err), 4000);
+      return false;
+    }
   }
 
   async renamePreview(id: string, dottedPath: string): Promise<{ files: number; references: number; conflict: boolean }> {
