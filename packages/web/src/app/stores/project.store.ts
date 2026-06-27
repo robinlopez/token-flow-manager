@@ -506,6 +506,17 @@ export class ProjectStore {
     this.selectedIds.set(new Set());
   }
 
+  /**
+   * Fully clear the row selection — multi-selection, range anchor and the
+   * focused/ring token. Used when the user clicks empty space in the table to
+   * dismiss the selection (the inspector panel, if open, stays as-is).
+   */
+  deselectAll(): void {
+    this.selectedIds.set(new Set());
+    this.selectionAnchor = null;
+    this.selectedTokenId.set(null);
+  }
+
   /** Single-select `id` (replaces the selection) and make it the range anchor. */
   selectOnly(id: string): void {
     this.selectedIds.set(new Set([id]));

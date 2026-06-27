@@ -1,9 +1,31 @@
 {
   "name": "token-flow-manager",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "description": "Local Design Tokens manager — visualize, edit and govern your DTCG token files.",
   "license": "MIT",
+  "keywords": [
+    "design-tokens",
+    "design-system",
+    "dtcg",
+    "design-tokens-community-group",
+    "tokens",
+    "design-token-manager",
+    "token-manager",
+    "style-dictionary",
+    "figma",
+    "figma-variables",
+    "variables",
+    "theming",
+    "dark-mode",
+    "oklch",
+    "color",
+    "css-variables",
+    "w3c-design-tokens",
+    "cli",
+    "tokens-studio",
+    "frontend"
+  ],
   "bin": {
     "token-flow-manager": "./dist/cli.js",
     "tokenflow": "./dist/cli.js"
