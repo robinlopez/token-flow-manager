@@ -731,6 +731,21 @@ export class ProjectStore {
     return res.references;
   }
 
+  /**
+   * Open a project-relative file (e.g. a token's source) in the OS default
+   * editor. Reuses the distribution open endpoint, which is confined to the
+   * project root server-side.
+   */
+  async openFileInEditor(relPath: string): Promise<boolean> {
+    try {
+      const res = await this.fetch(this.api.openDistributionFile(relPath));
+      return res.ok;
+    } catch (err) {
+      this.ui.showToast(errMessage(err), 4000);
+      return false;
+    }
+  }
+
   async renamePreview(id: string, dottedPath: string): Promise<{ files: number; references: number; conflict: boolean }> {
     return this.fetch(this.api.renamePreview(id, dottedPath));
   }

@@ -3,7 +3,7 @@
  * here and nowhere else. The picker works in the plain {@link Oklcha} shape
  * (l 0–1, c 0–~0.4, h 0–360, a 0–1) and converts to CSS strings on commit.
  */
-import { clampChroma, converter, inGamut, parse } from 'culori';
+import { clampChroma, converter, parse } from 'culori';
 import type { Rgba } from './color';
 
 export interface Oklcha {
@@ -16,8 +16,6 @@ export interface Oklcha {
 const toOklch = converter('oklch');
 const toRgb = converter('rgb');
 const toP3 = converter('p3');
-const inSrgbGamut = inGamut('rgb');
-const inP3Gamut = inGamut('p3');
 
 /** culori uses an undefined hue for achromatic colours; fall back to 0. */
 function asOklcha(o: { l?: number; c?: number; h?: number; alpha?: number } | undefined): Oklcha | null {
@@ -83,11 +81,21 @@ export function oklchToHex(o: Oklcha): string {
   return c.a < 1 ? base + hex2(c.a * 255) : base;
 }
 
+/**
+ * Whether each channel sits in [0, 1] with a tiny tolerance, so boundary
+ * colours (pure white/black, primaries) aren't reported "out of gamut" because
+ * the round-trip conversion lands a hair past 1.0 in floating point.
+ */
+function withinUnit(c: { r?: number; g?: number; b?: number }): boolean {
+  const eps = 1e-4;
+  const ok = (n: number | undefined): boolean => (n ?? 0) >= -eps && (n ?? 0) <= 1 + eps;
+  return ok(c.r) && ok(c.g) && ok(c.b);
+}
 export function inSrgb(o: Oklcha): boolean {
-  return inSrgbGamut(culoriOklch(o));
+  return withinUnit(toRgb(culoriOklch(o)));
 }
 export function inP3(o: Oklcha): boolean {
-  return inP3Gamut(culoriOklch(o));
+  return withinUnit(toP3(culoriOklch(o)));
 }
 
 const clamp255 = (n: number): number => Math.round(Math.max(0, Math.min(255, n)));
