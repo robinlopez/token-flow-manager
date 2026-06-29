@@ -27,6 +27,20 @@ Un assistant en trois étapes : **Variants**, **Outputs**, **Build & test**.
 
 ![Assistant de distribution, étape Outputs](assets/screenshots/distribution-outputs.webp)
 
+### Fichiers de sortie & téléchargements
+
+Le rapport de build regroupe les fichiers générés dans des sections repliables **par
+format** (CSS, SCSS, Less, JavaScript / TypeScript, JSON), chacune indiquant son nombre
+de fichiers et sa taille totale. Repliez un groupe pour vous concentrer sur le reste.
+
+Vous pouvez télécharger le résultat sans rien écrire dans votre projet :
+
+- **⬇ .zip** sur un groupe télécharge uniquement les fichiers de ce format (chacun rangé
+  sous son target).
+- **⬇ Download all (.zip)** télécharge tout, organisé par format puis par target.
+
+![Rapport de build, fichiers groupés par format avec téléchargement zip](assets/screenshots/distribution-build.webp)
+
 ## Vue d'ensemble
 
 Une fois un pipeline enregistré, la fenêtre Distribution affiche son résumé : les

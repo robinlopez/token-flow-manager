@@ -49,6 +49,8 @@ export interface ParsedToken {
   aliasChainsByMode?: Record<string, string[][]>;
   description?: string;
   deprecated?: boolean | string;
+  /** Vendor `$extensions` preserved from the source file (e.g. `com.figma`). */
+  extensions?: Record<string, unknown>;
   source: TokenSource;
   diagnostics: Diagnostic[];
 }
@@ -379,7 +381,7 @@ export interface BuildDiagnostic {
 }
 export interface DistBuildReport {
   ok: boolean;
-  outputs: { target: string; file: string; bytes: number }[];
+  outputs: { target: string; file: string; bytes: number; content?: string }[];
   diagnostics: BuildDiagnostic[];
   durationMs?: number;
   error?: string;

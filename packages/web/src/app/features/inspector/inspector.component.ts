@@ -307,6 +307,35 @@ interface GradientStop {
             </button>
           </section>
 
+          <!-- Extensions ($extensions, e.g. com.figma) -->
+          @if (extEntries().length) {
+            <section class="p-4">
+              <div class="text-[11px] uppercase tracking-wide text-ink-400 mb-1.5">Extensions</div>
+              @for (e of extEntries(); track e.vendor) {
+                <div class="mb-2 last:mb-0 border border-ink-200 rounded overflow-hidden">
+                  <div class="flex items-center justify-between gap-2 px-2 py-1.5 bg-ink-50">
+                    <span class="font-mono text-[11px] text-ink-600 truncate" [title]="e.vendor">{{ e.vendor }}</span>
+                    <button type="button" class="text-[11px] text-forge-600 hover:underline shrink-0" (click)="toggleExtRaw(e.vendor)">
+                      {{ extRawOpen()[e.vendor] ? 'Formatted' : 'View JSON' }}
+                    </button>
+                  </div>
+                  @if (extRawOpen()[e.vendor]) {
+                    <pre class="text-[10px] leading-relaxed font-mono text-ink-700 bg-white px-2 py-2 overflow-auto max-h-56 whitespace-pre">{{ e.raw }}</pre>
+                  } @else {
+                    <div class="px-2 py-1.5 space-y-1">
+                      @for (f of e.fields; track f.key) {
+                        <div class="flex items-start gap-2 text-xs">
+                          @if (f.key) { <span class="font-mono text-ink-400 w-24 shrink-0 truncate" [title]="f.key">{{ f.key }}</span> }
+                          <span class="font-mono text-ink-700 break-all flex-1">{{ f.value }}</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </section>
+          }
+
           <!-- Diagnostics -->
           @if (t.diagnostics.length) {
             <section class="p-4">
@@ -364,6 +393,22 @@ export class InspectorComponent {
   readonly references = signal<ReferenceInfo[]>([]);
   /** Whether the referencing-tokens list is expanded (collapsed by default). */
   readonly refsExpanded = signal(false);
+  /** Per-vendor toggle between the formatted view and the raw JSON dump. */
+  readonly extRawOpen = signal<Record<string, boolean>>({});
+  /**
+   * Vendor `$extensions` blocks of the inspected token, flattened to key/value
+   * rows for a readable view (e.g. `com.figma` → variableId, modeId, scopes…),
+   * plus the pretty-printed JSON for the raw fallback.
+   */
+  readonly extEntries = computed<{ vendor: string; fields: { key: string; value: string }[]; raw: string }[]>(() => {
+    const ext = this.token()?.extensions;
+    if (!ext || typeof ext !== 'object') return [];
+    return Object.entries(ext).map(([vendor, data]) => ({
+      vendor,
+      fields: this.flattenExt(data),
+      raw: JSON.stringify(data, null, 2),
+    }));
+  });
   readonly renameDraft = signal('');
   readonly renamePreview = signal<{ files: number; references: number; conflict: boolean } | null>(null);
   readonly descDraft = signal('');
@@ -388,6 +433,7 @@ export class InspectorComponent {
       this.renamePreview.set(null);
       this.editingMode.set(null);
       this.refsExpanded.set(false);
+      this.extRawOpen.set({});
       if (t) {
         this.renameDraft.set(t.path.join('.'));
         this.descDraft.set(t.description ?? '');
@@ -442,6 +488,23 @@ export class InspectorComponent {
   glyph(type: string): string {
     return typeGlyph(type);
   }
+  /** Flatten a vendor extension block into top-level key/value display rows. */
+  private flattenExt(data: unknown): { key: string; value: string }[] {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return [{ key: '', value: this.fmtExtValue(data) }];
+    }
+    return Object.entries(data as Record<string, unknown>).map(([key, v]) => ({ key, value: this.fmtExtValue(v) }));
+  }
+  /** Render an extension value: arrays joined, nested objects as compact JSON. */
+  private fmtExtValue(v: unknown): string {
+    if (Array.isArray(v)) return v.map((x) => this.fmtExtValue(x)).join(', ');
+    if (v && typeof v === 'object') return JSON.stringify(v);
+    return String(v);
+  }
+  toggleExtRaw(vendor: string): void {
+    this.extRawOpen.set({ ...this.extRawOpen(), [vendor]: !this.extRawOpen()[vendor] });
+  }
+
   hasError(t: ParsedToken): boolean {
     return t.diagnostics.some((d) => d.severity === 'error');
   }

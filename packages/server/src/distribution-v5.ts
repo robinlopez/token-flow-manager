@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile, mkdir, symlink } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile, readFile, mkdir, symlink } from 'node:fs/promises';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
@@ -303,9 +303,34 @@ export async function runTestBuild(
     }
 
     const report = parseReport(stdout, stderr);
+    await attachOutputContents(report, sandbox, dryMatrix);
     return { ...report, durationMs: Date.now() - startedAt };
   } finally {
     await rm(sandbox, { recursive: true, force: true }).catch(() => {});
+  }
+}
+
+/**
+ * Read each produced file back from the sandbox and attach its text content to
+ * the report so the client can offer per-type zip downloads. Outputs only carry
+ * a target label + filename, so we locate each file under its target's
+ * destination dir (`build/<id>`); unreadable files simply keep `content` unset.
+ */
+async function attachOutputContents(report: DistBuildReport, sandbox: string, dryMatrix: DistMatrix): Promise<void> {
+  const used = new Set<number>();
+  for (const t of dryMatrix.targets) {
+    const dir = join(sandbox, t.destination);
+    for (let i = 0; i < report.outputs.length; i++) {
+      if (used.has(i)) continue;
+      const o = report.outputs[i]!;
+      if (o.target !== t.label) continue;
+      try {
+        o.content = await readFile(join(dir, o.file), 'utf8');
+        used.add(i);
+      } catch {
+        /* leave content undefined — the file will just not be downloadable */
+      }
+    }
   }
 }
 
