@@ -379,7 +379,7 @@ export interface BuildDiagnostic {
 }
 export interface DistBuildReport {
   ok: boolean;
-  outputs: { target: string; file: string; bytes: number }[];
+  outputs: { target: string; file: string; bytes: number; content?: string }[];
   diagnostics: BuildDiagnostic[];
   durationMs?: number;
   error?: string;

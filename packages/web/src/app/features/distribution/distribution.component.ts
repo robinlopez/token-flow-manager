@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } 
 import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import JSZip from 'jszip';
 import { ApiService } from '../../core/api.service';
 import { UiService } from '../../core/ui.service';
 import type {
@@ -18,6 +19,41 @@ import type {
 type Step = 1 | 2 | 3;
 /** The configurator is a 3-state machine (landing + the two flows + overview). */
 type View = 'landing' | 'assistant' | 'overview' | 'link';
+
+type OutputFile = DistBuildReport['outputs'][number];
+/** Output files bucketed by format family for the collapsible report view. */
+interface OutputGroup {
+  type: string;
+  label: string;
+  files: OutputFile[];
+  bytes: number;
+  /** At least one file has content the client can put into a zip. */
+  downloadable: boolean;
+}
+/** Display order + label for each output-format bucket. */
+const OUTPUT_GROUPS: { type: string; label: string }[] = [
+  { type: 'css', label: 'CSS' },
+  { type: 'scss', label: 'SCSS' },
+  { type: 'less', label: 'Less' },
+  { type: 'typescript', label: 'JavaScript / TypeScript' },
+  { type: 'json', label: 'JSON' },
+  { type: 'other', label: 'Other' },
+];
+
+/** Map an output filename to its format-group bucket via its extension. */
+function groupTypeOf(file: string): string {
+  const ext = file.slice(file.lastIndexOf('.') + 1).toLowerCase();
+  if (ext === 'css') return 'css';
+  if (ext === 'scss' || ext === 'sass') return 'scss';
+  if (ext === 'less') return 'less';
+  if (ext === 'ts' || ext === 'js' || ext === 'mjs') return 'typescript';
+  if (ext === 'json') return 'json';
+  return 'other';
+}
+/** Sanitize a target label into a safe zip folder name. */
+function safeName(name: string): string {
+  return name.replace(/[^\w.-]+/g, '_').replace(/^_+|_+$/g, '') || 'files';
+}
 
 /** Friendly output presets → SD format + a sensible default folder. */
 const TARGET_PRESETS: { label: string; format: string; dest: string }[] = [
@@ -394,14 +430,37 @@ const TOKENS_STUDIO_HINT =
               </div>
             </div>
             <div>
-              <div class="text-[11px] uppercase tracking-wide text-ink-400 mb-1.5">Output files ({{ r.outputs.length }})</div>
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <div class="text-[11px] uppercase tracking-wide text-ink-400">Output files ({{ r.outputs.length }})</div>
+                @if (anyDownloadable()) {
+                  <button type="button" class="text-[11px] text-forge-600 hover:underline shrink-0" (click)="downloadAll()">⬇ Download all (.zip)</button>
+                }
+              </div>
               @if (r.outputs.length === 0) { <p class="text-xs text-ink-400">No file listed.</p> }
-              <div class="space-y-1">
-                @for (o of r.outputs; track $index) {
-                  <div class="flex items-center gap-2 text-xs">
-                    <span class="px-1.5 py-0.5 rounded bg-ink-100 text-ink-600 text-[10px]">{{ o.target }}</span>
-                    <span class="font-mono truncate flex-1">{{ o.file }}</span>
-                    <span class="text-ink-400 text-[10px]">{{ kb(o.bytes) }}</span>
+              <div class="space-y-1.5">
+                @for (g of outputGroups(); track g.type) {
+                  <div class="border border-ink-200 rounded overflow-hidden">
+                    <div class="flex items-center gap-2 px-2 py-1.5 bg-ink-50">
+                      <button type="button" class="flex items-center gap-1.5 min-w-0 flex-1 text-left" (click)="toggleGroup(g.type)">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-ink-400 transition-transform" [class.rotate-90]="!collapsedGroups()[g.type]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                        <span class="text-[11px] font-medium text-ink-700">{{ g.label }}</span>
+                        <span class="text-[10px] text-ink-400">{{ g.files.length }} file{{ g.files.length === 1 ? '' : 's' }} · {{ kb(g.bytes) }}</span>
+                      </button>
+                      @if (g.downloadable) {
+                        <button type="button" class="text-[11px] text-forge-600 hover:underline shrink-0" (click)="downloadGroup(g)">⬇ .zip</button>
+                      }
+                    </div>
+                    @if (!collapsedGroups()[g.type]) {
+                      <div class="px-2 py-1.5 space-y-1">
+                        @for (o of g.files; track $index) {
+                          <div class="flex items-center gap-2 text-xs">
+                            <span class="px-1.5 py-0.5 rounded bg-ink-100 text-ink-600 text-[10px]">{{ o.target }}</span>
+                            <span class="font-mono truncate flex-1">{{ o.file }}</span>
+                            <span class="text-ink-400 text-[10px]">{{ kb(o.bytes) }}</span>
+                          </div>
+                        }
+                      </div>
+                    }
                   </div>
                 }
               </div>
@@ -498,6 +557,61 @@ export class DistributionComponent {
   }
   kb(b: number): string {
     return b < 1024 ? `${b} B` : `${(b / 1024).toFixed(1)} kB`;
+  }
+
+  /** Collapsed state per output-format group (expanded by default). */
+  readonly collapsedGroups = signal<Record<string, boolean>>({});
+  /** Output files of the current report bucketed by format family, ordered. */
+  readonly outputGroups = computed<OutputGroup[]>(() => {
+    const outs = this.report()?.outputs ?? [];
+    const byType = new Map<string, OutputGroup>();
+    for (const o of outs) {
+      const type = groupTypeOf(o.file);
+      let g = byType.get(type);
+      if (!g) {
+        g = { type, label: OUTPUT_GROUPS.find((x) => x.type === type)?.label ?? type, files: [], bytes: 0, downloadable: false };
+        byType.set(type, g);
+      }
+      g.files.push(o);
+      g.bytes += o.bytes;
+      if (o.content != null) g.downloadable = true;
+    }
+    return OUTPUT_GROUPS.map((x) => byType.get(x.type)).filter((g): g is OutputGroup => !!g);
+  });
+  readonly anyDownloadable = computed(() => this.outputGroups().some((g) => g.downloadable));
+
+  toggleGroup(type: string): void {
+    this.collapsedGroups.set({ ...this.collapsedGroups(), [type]: !this.collapsedGroups()[type] });
+  }
+
+  /** Build and download a zip of one format group, namespaced by target folder. */
+  async downloadGroup(g: OutputGroup): Promise<void> {
+    const zip = new JSZip();
+    for (const o of g.files) {
+      if (o.content == null) continue;
+      zip.file(`${safeName(o.target)}/${o.file}`, o.content);
+    }
+    await this.saveZip(zip, `tokens-${g.type}.zip`);
+  }
+
+  /** Build and download a single zip of all files, grouped by type then target. */
+  async downloadAll(): Promise<void> {
+    const zip = new JSZip();
+    for (const o of this.report()?.outputs ?? []) {
+      if (o.content == null) continue;
+      zip.file(`${groupTypeOf(o.file)}/${safeName(o.target)}/${o.file}`, o.content);
+    }
+    await this.saveZip(zip, 'tokens-all.zip');
+  }
+
+  private async saveZip(zip: JSZip, filename: string): Promise<void> {
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   }
   variantNames(s: MatrixSource): string[] {
     return s.variants.map((v) => v.name);

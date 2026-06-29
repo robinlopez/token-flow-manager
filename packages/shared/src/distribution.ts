@@ -239,8 +239,8 @@ export type BuildDiagnostic = z.infer<typeof BuildDiagnosticSchema>;
 /** Concise report of a test build (dry-run). */
 export const DistBuildReportSchema = z.object({
   ok: z.boolean(),
-  /** Files that were produced (target label + relative path + byte size). */
-  outputs: z.array(z.object({ target: z.string(), file: z.string(), bytes: z.number() })),
+  /** Files that were produced (target label + relative path + byte size + content for download). */
+  outputs: z.array(z.object({ target: z.string(), file: z.string(), bytes: z.number(), content: z.string().optional() })),
   diagnostics: z.array(BuildDiagnosticSchema),
   durationMs: z.number().optional(),
   /** Set when the build could not run at all (e.g. no Style Dictionary). */

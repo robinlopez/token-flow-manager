@@ -24,6 +24,19 @@ A three-step wizard: **Variants**, **Outputs**, **Build & test**.
 
 ![Distribution assistant, Outputs step](assets/screenshots/distribution-outputs.webp)
 
+### Output files & downloads
+
+The build report groups the generated files into collapsible sections **by format**
+(CSS, SCSS, Less, JavaScript / TypeScript, JSON), each showing its file count and total
+size. Collapse a group to focus on the rest.
+
+You can download the result without writing anything to your project:
+
+- **⬇ .zip** on a group downloads just that format's files (each namespaced by target).
+- **⬇ Download all (.zip)** downloads everything, organised by format then target.
+
+![Distribution build report, grouped output files with zip downloads](assets/screenshots/distribution-build.webp)
+
 ## Overview
 
 Once a pipeline is saved, the Distribution dialog shows its summary: sources and their
