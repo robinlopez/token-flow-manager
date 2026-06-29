@@ -95,7 +95,7 @@ interface LibGroup {
 
         @if (tab() === 'custom' && allowColor()) {
           <!-- RGB / OKLCH sub-mode toggle -->
-          <div class="px-3 pt-2.5">
+          <div class="px-3 pt-2.5 pb-2.5">
             <div class="inline-flex rounded-md bg-ink-100 p-0.5 text-[11px] font-medium">
               <button
                 class="px-2.5 py-1 rounded transition-colors"
