@@ -33,6 +33,20 @@ icon: lucide/sparkles
 - **Aide des raccourcis clavier** (++cmd+slash++ ou ++question++) et la version de
   l'application dans le pied de page.
 
+## Inspecteur & extensions
+
+Ouvrez le panneau de détail d'un token avec l'**icône engrenage** sur sa ligne. Il
+affiche la description, les valeurs par mode (avec couleur résolue, OKLCH et gamut), les
+références entrantes, le renommage et l'emplacement du fichier source.
+
+Lorsqu'un token porte des **`$extensions`** DTCG — par exemple le bloc `com.figma`
+exporté par Figma (variable id, collection id, mode id, type résolu, scopes…) — celles-ci
+sont préservées à la lecture et affichées dans une section **Extensions** dédiée. Chaque
+bloc vendeur est rendu en lignes clé/valeur lisibles, avec un bouton **View JSON** pour la
+charge brute. Les extensions restent intactes à travers les éditions et les écritures.
+
+![Panneau de détail du token affichant les extensions com.figma](assets/screenshots/inspector-extensions.webp)
+
 ## Modèle de sûreté
 
 !!! info "Il ne commit jamais"

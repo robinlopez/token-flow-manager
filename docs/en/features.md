@@ -32,6 +32,20 @@ icon: lucide/sparkles
 - **Keyboard shortcuts help** (++cmd+slash++ or ++question++) and the app version in the
   footer.
 
+## Inspector & extensions
+
+Open a token's detail panel with the **gear icon** on its row. It shows the description,
+per-mode values (with resolved colour, OKLCH and gamut), incoming references, rename, and
+the source file location.
+
+When a token carries DTCG **`$extensions`** — for example the `com.figma` block exported
+by Figma (variable id, collection id, mode id, resolved type, scopes…) — it is preserved
+on read and shown in a dedicated **Extensions** section. Each vendor block is rendered as
+readable key/value rows, with a **View JSON** toggle for the raw payload. Extensions are
+kept intact through edits and writes.
+
+![Token detail panel showing the com.figma extensions](assets/screenshots/inspector-extensions.webp)
+
 ## Safety model
 
 !!! info "It never commits"
