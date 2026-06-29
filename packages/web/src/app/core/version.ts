@@ -5,4 +5,4 @@
  * "Versioning" section in plan.md). Bump following semver and add an entry to
  * CHANGELOG.md.
  */
-export const APP_VERSION = '0.1.2';
+export const APP_VERSION = '0.1.3';

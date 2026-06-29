@@ -31,7 +31,7 @@ const program = new Command();
 program
   .name('token-flow-manager')
   .description('Local Design Tokens manager — DTCG 2025.10')
-  .version('0.1.2');
+  .version('0.1.3');
 
 program
   .argument('[path]', 'project directory to open (omit to pick one from the welcome screen)')
