@@ -17,7 +17,8 @@
     "desktop:dev": "tauri dev",
     "docs:dev": "zensical serve",
     "docs:dev:fr": "zensical serve -f zensical.fr.toml",
-    "docs:build": "zensical build --clean && zensical build -f zensical.fr.toml"
+    "docs:build": "node scripts/docs-build-versioned.mjs",
+    "docs:build:single": "zensical build --clean && zensical build -f zensical.fr.toml"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.2",

@@ -6,8 +6,10 @@ on:
       - main
     paths:
       - "docs/**"
+      - "docs-archive/**"
       - "zensical.toml"
       - "zensical.fr.toml"
+      - "scripts/docs-build-versioned.mjs"
       - ".github/workflows/docs.yml"
   # Allow manual runs from the Actions tab
   workflow_dispatch:
@@ -27,9 +29,13 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: 3.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - run: pip install zensical==0.0.43
-      - run: zensical build --clean          # English at the site root
-      - run: zensical build -f zensical.fr.toml   # French under /fr/
+      # Build every documented version (en + fr) into site/<version>/ with a
+      # versions.json + root redirect. See scripts/docs-build-versioned.mjs.
+      - run: node scripts/docs-build-versioned.mjs
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site

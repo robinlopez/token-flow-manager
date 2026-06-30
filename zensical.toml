@@ -326,6 +326,13 @@ alternate = [
   { name = "Français", link = "/token-flow-manager/fr/", lang = "fr" },
 ]
 
+# Documentation versioning. The header shows a version selector that reads
+# `versions.json` at the site root; each version is built into its own
+# subdirectory by `scripts/docs-build-versioned.mjs` (mike-compatible layout).
+[project.extra.version]
+provider = "mike"
+default = "0.1.4"
+
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
 link = "https://github.com/robinlopez/token-flow-manager"

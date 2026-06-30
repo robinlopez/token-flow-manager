@@ -327,6 +327,11 @@ alternate = [
   { name = "Français", link = "/token-flow-manager/fr/", lang = "fr" },
 ]
 
+# Documentation versioning (see scripts/docs-build-versioned.mjs).
+[project.extra.version]
+provider = "mike"
+default = "0.1.4"
+
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
 link = "https://github.com/robinlopez/token-flow-manager"

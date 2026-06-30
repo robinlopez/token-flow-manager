@@ -35,3 +35,6 @@ sandbox/
 /CHANGELOG.md
 /plan.md
 /mockups.html
+
+# Transient per-version Zensical configs (scripts/docs-build-versioned.mjs)
+.zendocs-*.toml
