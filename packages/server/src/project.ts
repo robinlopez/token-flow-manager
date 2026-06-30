@@ -75,12 +75,17 @@ import {
   type DistributionCollection,
   type TokenConfigManifest,
   type DistMatrix,
+  type DistConfig,
   type DistBuildReport,
   type WriteDistributionResult,
   type LinkedConfig,
+  matrixToConfig,
+  DistConfigSchema,
   makeDiagnostic,
 } from '@tokenflow/shared';
 import { detectSdVersion, runTestBuild, generateV5Script, runExternalCommand } from './distribution-v5.js';
+import { generateResolverScript, runResolverBuild } from './distribution-resolver.js';
+import { proposeConfig, type ProposeCollection } from './distribution-propose.js';
 import {
   detectManifest,
   readManifestRaw,
@@ -841,6 +846,9 @@ export class ProjectManager extends EventEmitter {
       hasBuildScript,
       buildScriptPath,
       savedMatrix: this.readSavedMatrix(),
+      savedConfig: this.readSavedConfig(),
+      proposedConfig: this.proposeResolverConfig(),
+      resolverConfigured: existsSync(join(pkgRoot, this.configSidecarRel)),
       v5ScriptPath,
       linked: this.readLinked(),
       detectedConfigs: this.detectConfigCandidates(),
@@ -909,6 +917,8 @@ export class ProjectManager extends EventEmitter {
   /** Where a generated v5 build script lives, and the matrix sidecar. */
   private readonly v5ScriptRel = 'scripts/tokens.build.mjs';
   private readonly distSidecarRel = '.tokenflow/distribution.json';
+  /** Sidecar for the deterministic-resolver config (new path). */
+  private readonly configSidecarRel = '.tokenflow/distribution.config.json';
   /** Sidecar pointing at an external build the project already owns. */
   private readonly linkSidecarRel = '.tokenflow/distribution-link.json';
 
@@ -977,6 +987,78 @@ export class ProjectManager extends EventEmitter {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * The deterministic-resolver config to hydrate the wizard from: the new
+   * sidecar if present, else a best-effort migration of the legacy matrix
+   * sidecar, else null.
+   */
+  private readSavedConfig(): DistConfig | null {
+    const abs = join(this.pkgRoot(), this.configSidecarRel);
+    if (existsSync(abs)) {
+      try {
+        return DistConfigSchema.parse(JSON.parse(readFileSync(abs, 'utf8')));
+      } catch {
+        /* fall through to migration */
+      }
+    }
+    const matrix = this.readSavedMatrix();
+    return matrix ? matrixToConfig(matrix) : null;
+  }
+
+  /**
+   * Auto-detect each collection's topology (nested path-segment modes vs. one
+   * file per mode) and propose a deterministic-resolver config the wizard can
+   * start from (mode → selector map editable in the UI).
+   */
+  private proposeResolverConfig(): DistConfig {
+    const cols: ProposeCollection[] = this.config.collections.map((c) => {
+      const col = this.collections.get(c.name);
+      const rt = this.runtimes.get(c.name);
+      const modes = (col?.modes ?? []).map((m) => m.id).filter((id) => id !== 'default');
+      let topology: ProposeCollection['topology'] = 'none';
+      let fileModes: Record<string, string> | undefined;
+      if (rt?.fileModes && rt.fileModes.size > 0) {
+        topology = 'files';
+        fileModes = Object.fromEntries(rt.fileModes);
+      } else if (rt?.modeDimension !== undefined && modes.length >= 2) {
+        topology = 'nested';
+      }
+      return { id: c.name, files: col?.files ?? [], modes, topology, ...(fileModes ? { fileModes } : {}) };
+    });
+    // Collection files are relative to the project root; the generated script
+    // resolves its ROOT to the package root, so point sourceRoot at the project.
+    const sourceRoot = relative(this.pkgRoot(), this.root);
+    const savedDest = this.readSavedConfig()?.outputs?.[0]?.destination;
+    return proposeConfig(cols, { sourceRoot, destination: savedDest });
+  }
+
+  /** Dry-run the deterministic resolver (sandboxed; the project is never written). */
+  async testBuildResolver(config: DistConfig): Promise<DistBuildReport> {
+    return runResolverBuild(this.pkgRoot(), config, Date.now());
+  }
+
+  /**
+   * Write the deterministic resolver build script (config embedded) + ensure an
+   * npm script runs it, and persist the config to its sidecar. The script has no
+   * runtime dependencies (no Style Dictionary), so nothing is added to
+   * package.json beyond the npm script.
+   */
+  async writeResolver(config: DistConfig): Promise<WriteDistributionResult> {
+    const root = this.pkgRoot();
+    const scriptAbs = join(root, this.v5ScriptRel);
+    await mkdir(dirname(scriptAbs), { recursive: true });
+    await this.backupArbitrary(scriptAbs);
+    await writeFileAtomic(scriptAbs, generateResolverScript(config));
+
+    const sidecar = join(root, this.configSidecarRel);
+    await mkdir(dirname(sidecar), { recursive: true });
+    await writeFileAtomic(sidecar, JSON.stringify(config, null, 2) + '\n');
+
+    const npmScript = { name: 'tokens:build', command: `node ${this.v5ScriptRel}` };
+    const npmAdded = await this.ensureNpmScript(npmScript);
+    return { ok: true, scriptPath: this.v5ScriptRel, npmScript, npmAdded, addedDependencies: [] };
   }
 
   /**
