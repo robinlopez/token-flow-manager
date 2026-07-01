@@ -37,11 +37,6 @@ const read = (p) => JSON.parse(readFileSync(join(SRC, p), 'utf8'));
 const report = { ok: true, outputs: [], diagnostics: [] };
 const note = (level, message, extra) => report.diagnostics.push(Object.assign({ level: level, message: message }, extra || {}));
 
-const prefixById = {};
-for (const c of CONFIG.collections) prefixById[c.id] = c.prefix || '';
-const colById = {};
-for (const c of CONFIG.collections) colById[c.id] = c;
-
 function kebab(parts) {
   return parts.filter(Boolean).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 }
@@ -84,6 +79,20 @@ function nonDefaultMode(col, leaf) {
   return undefined;
 }
 
+// A collection is addressed in a {ref.path} by its prefix (if set) or, when the
+// collection has no CSS namespace, by its kebab-cased id -- so refs resolve the
+// same way whether or not the collection emits prefixed variable names.
+function refKeys(c) {
+  const keys = [];
+  if (c.prefix) keys.push(c.prefix);
+  const idKey = kebab([c.id]);
+  if (idKey) keys.push(idKey);
+  return keys.filter(function (k, i, arr) { return arr.indexOf(k) === i; });
+}
+
+const prefixById = {};
+for (const c of CONFIG.collections) for (const k of refKeys(c)) prefixById[k] = c.prefix || '';
+
 // --- CSS / SCSS reference resolution -> var(--…) (never inlined) ---
 function resolveVar(value) {
   if (typeof value !== 'string') return value;
@@ -109,12 +118,13 @@ function expandVar(col, name, value) {
 const lit = {};
 for (const c of CONFIG.collections) {
   const strip = nestedStrip(c);
-  lit[c.id] = {};
+  const bucket = {};
   for (const l of leavesByCol[c.id]) {
     const key = kebab(l.path.filter(function (p) { return !strip.has(p); }));
     const mode = nonDefaultMode(c, l) || '__base__';
-    (lit[c.id][key] = lit[c.id][key] || {})[mode] = l.value;
+    (bucket[key] = bucket[key] || {})[mode] = l.value;
   }
+  for (const k of refKeys(c)) lit[k] = bucket;
 }
 function lookupLit(ref, curMode) {
   const segs = ref.split('.');
