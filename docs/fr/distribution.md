@@ -40,6 +40,8 @@ avec une case à cocher optionnelle de **nettoyage** qui supprime le sidecar de 
 (et, en quittant Style Dictionary, sa devDependency `style-dictionary`) afin que la
 détection reste non ambiguë.
 
+![Sélecteur de moteur basculé sur Style Dictionary, avec la bannière d'avertissement de changement de mode](assets/screenshots/distribution-engine.webp)
+
 L'éditeur a deux parties : **Outputs** (où et dans quel format) et **Collections &
 modes** (quoi, et comment chaque mode est écrit). Un **Test build** en bac à sable ne
 touche jamais votre projet ; **Save script** écrit un `tokens.build.mjs` autonome plus un
@@ -134,3 +136,8 @@ Vous avez déjà une config Style Dictionary (ou autre) et une commande de build
 **I already have my config** pour pointer l'outil vers votre fichier de config et votre
 commande. Lancer un build relié exécute votre vraie commande et écrit ses fichiers sur le
 disque.
+
+Lorsqu'un build géré par TFM (résolveur ou Style Dictionary) est déjà actif, relier affiche
+le même avertissement de changement de mode ; le lien externe prend alors le dessus. Une
+fois configuré, l'**aperçu** affiche le mode actif courant avec **Edit** (rouvrir son
+assistant), **Change mode** (choisir un autre moteur) et — pour un build relié — **Unlink**.

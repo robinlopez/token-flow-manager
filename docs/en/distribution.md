@@ -39,6 +39,8 @@ the current mode, a warning banner appears with an opt-in **clean-up** checkbox 
 the previous mode's sidecar (and, when leaving Style Dictionary, its `style-dictionary`
 devDependency) so detection stays unambiguous.
 
+![Engine selector switched to Style Dictionary, with the switch-mode warning banner](assets/screenshots/distribution-engine.webp)
+
 The editor has two parts: **Outputs** (where and in which format) and **Collections &
 modes** (what, and how each mode is written). A sandboxed **Test build** never touches your
 project; **Save script** writes a self-contained `tokens.build.mjs` plus an npm script.
@@ -128,3 +130,8 @@ export const themeTokens = {
 Already have a Style Dictionary (or other) config and build command? Choose **I already
 have my config** to point the tool at your config file and build command. Running a linked
 build executes your real command and writes its output files to disk.
+
+When a TFM-managed build (resolver or Style Dictionary) is already active, linking shows the
+same switch-mode warning; the external link then takes precedence. Once configured, the
+**overview** shows the current active mode with **Edit** (reopen its wizard), **Change mode**
+(pick another engine), and — for a linked build — **Unlink**.
