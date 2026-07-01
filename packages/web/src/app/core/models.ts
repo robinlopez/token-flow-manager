@@ -302,6 +302,8 @@ export interface LinkedConfig {
   configPath: string;
   buildCommand: string;
 }
+/** The one build mode a project is actively configured in. */
+export type DistributionMode = 'resolver' | 'style-dictionary' | 'linked' | 'none';
 export interface DistributionState {
   /** Stable id of the open project (its root) — scopes client-side drafts. */
   projectId: string;
@@ -323,6 +325,8 @@ export interface DistributionState {
   proposedConfig: DistConfig;
   /** A deterministic-resolver config was saved to this project (new sidecar exists). */
   resolverConfigured: boolean;
+  /** The build mode this project is actively configured in (drives routing + switch warnings). */
+  activeMode: DistributionMode;
   /** Relative path of a written v5 build script, if present. */
   v5ScriptPath: string | null;
   /** Pointer to an external build the project already owns ("I have my config"). */

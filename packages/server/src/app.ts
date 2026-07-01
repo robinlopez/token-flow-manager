@@ -486,7 +486,7 @@ function registerApiRoutes(
     const parsed = WriteDistributionRequestSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
     try {
-      return await project.writeDistribution(parsed.data.matrix);
+      return await project.writeDistribution(parsed.data.matrix, parsed.data.cleanPrevious ?? false);
     } catch (err) {
       return reply.code(400).send({ error: (err as Error).message });
     }
@@ -509,7 +509,7 @@ function registerApiRoutes(
     const parsed = ResolverWriteRequestSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
     try {
-      return await project.writeResolver(parsed.data.config);
+      return await project.writeResolver(parsed.data.config, parsed.data.cleanPrevious ?? false);
     } catch (err) {
       return reply.code(400).send({ error: (err as Error).message });
     }
@@ -521,7 +521,8 @@ function registerApiRoutes(
     const parsed = LinkConfigRequestSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
     try {
-      return await project.linkExisting(parsed.data);
+      const { cleanPrevious, ...link } = parsed.data;
+      return await project.linkExisting(link, cleanPrevious ?? false);
     } catch (err) {
       return reply.code(400).send({ error: (err as Error).message });
     }

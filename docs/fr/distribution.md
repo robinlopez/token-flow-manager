@@ -19,6 +19,27 @@ existant** que vous avez déjà.
 
 ## Configurer la conversion
 
+### Choisir le moteur
+
+En haut du configurateur, un sélecteur de **moteur** permet de choisir comment le build est
+généré :
+
+- **Résolveur déterministe** (recommandé) - le build sans Style Dictionary décrit plus haut.
+  Il écrit un `tokens.build.mjs` autonome, **sans aucune dépendance** à l'exécution.
+- **Style Dictionary** - un pipeline [Style Dictionary](https://styledictionary.com) v5
+  classique (sources × targets × stratégie de rendu par source). Le `tokens.build.mjs`
+  généré importe `style-dictionary`, qui est donc ajouté à vos `devDependencies` (lancez
+  `npm install` avant de builder). Un badge dans l'en-tête rappelle si Style Dictionary est
+  installé - il n'apparaît que lorsque Style Dictionary est le contexte courant.
+
+Un projet est configuré dans **un seul mode actif** à la fois (résolveur, Style Dictionary,
+ou un build externe relié). Les deux moteurs gérés partagent le même
+`scripts/tokens.build.mjs` : changer de moteur **remplace** donc le build actif. Lorsque
+vous choisissez un moteur différent du mode courant, une bannière d'avertissement s'affiche
+avec une case à cocher optionnelle de **nettoyage** qui supprime le sidecar de l'ancien mode
+(et, en quittant Style Dictionary, sa devDependency `style-dictionary`) afin que la
+détection reste non ambiguë.
+
 L'éditeur a deux parties : **Outputs** (où et dans quel format) et **Collections &
 modes** (quoi, et comment chaque mode est écrit). Un **Test build** en bac à sable ne
 touche jamais votre projet ; **Save script** écrit un `tokens.build.mjs` autonome plus un

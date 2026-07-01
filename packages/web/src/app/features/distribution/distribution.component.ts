@@ -6,20 +6,13 @@ import JSZip from 'jszip';
 import { ApiService } from '../../core/api.service';
 import { UiService } from '../../core/ui.service';
 import { ResolverWizardComponent } from './resolver-wizard.component';
-import type {
-  DistBuildReport,
-  DistMatrix,
-  DistributionState,
-  MatrixSource,
-  MatrixTarget,
-  RenderStrategy,
-  TargetRendering,
-  WriteDistributionResult,
-} from '../../core/models';
+import { SdWizardComponent } from './sd-wizard.component';
+import type { DistBuildReport, DistMatrix, DistributionMode, DistributionState } from '../../core/models';
 
-type Step = 1 | 2 | 3;
-/** The configurator state machine (landing + the two flows + overview). */
-type View = 'landing' | 'assistant' | 'overview' | 'link';
+/** The configurator state machine (landing + configure + overview + link). */
+type View = 'landing' | 'configure' | 'overview' | 'link';
+/** Which build engine the "Configure the conversion" flow drives. */
+type Engine = 'resolver' | 'style-dictionary';
 
 type OutputFile = DistBuildReport['outputs'][number];
 /** Output files bucketed by format family for the collapsible report view. */
@@ -28,7 +21,6 @@ interface OutputGroup {
   label: string;
   files: OutputFile[];
   bytes: number;
-  /** At least one file has content the client can put into a zip. */
   downloadable: boolean;
 }
 /** Display order + label for each output-format bucket. */
@@ -56,38 +48,28 @@ function safeName(name: string): string {
   return name.replace(/[^\w.-]+/g, '_').replace(/^_+|_+$/g, '') || 'files';
 }
 
-/** Friendly output presets → SD format + a sensible default folder. */
-const TARGET_PRESETS: { label: string; format: string; dest: string }[] = [
-  { label: 'CSS variables', format: 'css/variables', dest: 'src/styles/generated' },
-  { label: 'SCSS variables', format: 'scss/variables', dest: 'src/styles/generated' },
-  { label: 'TypeScript', format: 'javascript/es6', dest: 'src/app/theme/tokens' },
-  { label: 'JSON', format: 'json/nested', dest: 'src/tokens' },
-];
-
-const STRATEGY_LABELS: { id: RenderStrategy; label: string }[] = [
-  { id: 'selectors', label: 'CSS selectors' },
-  { id: 'media', label: 'Media queries' },
-  { id: 'files', label: 'Separate files' },
-  { id: 'single', label: 'Single (flat)' },
-];
-
-const TOKENS_STUDIO_HINT =
-  'Adds the @tokens-studio/sd-transforms preprocessor before the build. Enable it only if your tokens follow the Tokens Studio format (composite typography/shadow/border objects, rem math, references like {…}). Leave off for plain DTCG tokens.';
+/** Human label for an active mode (overview badge). */
+const MODE_LABEL: Record<DistributionMode, string> = {
+  resolver: 'Deterministic resolver',
+  'style-dictionary': 'Style Dictionary',
+  linked: 'External build',
+  none: 'Not configured',
+};
 
 /**
- * Phase 4 (redesign) — Distribution configurator with a 3-state machine:
- *  • landing   — choose to configure (assistant) or link an existing build
- *  • assistant — Variants → Outputs → Build & test (TFM-managed v5)
- *  • overview  — summary of the configured pipeline (v5 or external)
+ * Distribution configurator shell — a 4-state machine:
+ *  • landing   — choose to configure (an engine) or link an existing build
+ *  • configure — pick the engine (Resolver / Style Dictionary) and drive its wizard
+ *  • overview  — summary of the configured pipeline (active mode) + change mode
  *  • link      — point at the project's own config + build command
- * The opening view is routed from the server state (saved matrix / v5 script /
- * linked external config). A collection has named variants (no guessed nature);
- * each target renders them with a generic per-source strategy.
+ * The opening view is routed from the server's detected `activeMode`. Switching
+ * to an engine that differs from the active mode shows a warning banner (the
+ * shared `tokens.build.mjs` has one owner) with an opt-in "clean previous".
  */
 @Component({
   selector: 'tf-distribution',
   standalone: true,
-  imports: [FormsModule, NgTemplateOutlet, ResolverWizardComponent],
+  imports: [FormsModule, NgTemplateOutlet, ResolverWizardComponent, SdWizardComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (ui.distributionOpen()) {
@@ -100,12 +82,14 @@ const TOKENS_STUDIO_HINT =
               Distribution
             </div>
             <div class="flex-1 flex items-center justify-center gap-1 text-xs">
-              @if (view() === 'assistant') { <span class="text-ink-400">Configure the conversion</span> }
+              @if (view() === 'configure') { <span class="text-ink-400">Configure the conversion</span> }
             </div>
-            <span class="text-[11px] font-mono px-1.5 py-0.5 rounded inline-flex items-center gap-1"
-              [class.bg-green-50]="sdInstalled()" [class.text-green-700]="sdInstalled()"
-              [class.bg-ink-100]="!sdInstalled()" [class.text-ink-500]="!sdInstalled()"
-              [title]="sdTitle()">{{ sdInstalled() ? '✓ ' : '' }}Style Dictionary {{ sdLabel() }}</span>
+            @if (showSdBadge()) {
+              <span class="text-[11px] font-mono px-1.5 py-0.5 rounded inline-flex items-center gap-1"
+                [class.bg-green-50]="sdInstalled()" [class.text-green-700]="sdInstalled()"
+                [class.bg-ink-100]="!sdInstalled()" [class.text-ink-500]="!sdInstalled()"
+                [title]="sdTitle()">{{ sdInstalled() ? '✓ ' : '' }}Style Dictionary {{ sdLabel() }}</span>
+            }
             <button class="text-ink-400 hover:text-ink-700 text-xl leading-none" (click)="close()">×</button>
           </div>
 
@@ -121,13 +105,13 @@ const TOKENS_STUDIO_HINT =
                     <p class="text-ink-500 mb-7 text-center max-w-md">Generate CSS / SCSS / TS from your tokens, or hook into the build your project already has.</p>
                     <div class="grid grid-cols-2 gap-4 w-full max-w-2xl">
                       <button class="text-left border-2 border-forge-300 bg-forge-50/40 rounded-xl p-5 hover:border-forge-500 hover:bg-forge-50 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                        [disabled]="!hasCollections()" (click)="goAssistant()">
+                        [disabled]="!hasCollections()" (click)="goConfigure()">
                         <div class="flex items-center justify-between mb-2">
                           <span class="text-2xl">⚙️</span>
                           <span class="text-[10px] uppercase tracking-wide font-medium text-forge-700 bg-forge-100 px-2 py-0.5 rounded-full">Recommended</span>
                         </div>
                         <div class="font-semibold text-ink-900 mb-1">Configure the conversion</div>
-                        <p class="text-xs text-ink-500">Auto-detects each collection's modes/topology and generates a deterministic build (CSS vars, SCSS vars, or SCSS mixin) — testable in a sandbox before writing.</p>
+                        <p class="text-xs text-ink-500">Generate a build from your tokens — a deterministic SD-free resolver (recommended) or a Style Dictionary pipeline. Test it in a sandbox before writing.</p>
                         @if (!hasCollections()) { <p class="text-[11px] text-amber-700 mt-2">No token collection detected.</p> }
                       </button>
                       <button class="text-left border-2 border-ink-200 rounded-xl p-5 hover:border-ink-400 hover:bg-ink-50 transition" (click)="goLink()">
@@ -141,6 +125,9 @@ const TOKENS_STUDIO_HINT =
                         }
                       </button>
                     </div>
+                    @if (activeMode() !== 'none') {
+                      <button class="mt-6 text-xs text-ink-500 hover:text-forge-700" (click)="view.set('overview')">← Back to current configuration ({{ modeLabel(activeMode()) }})</button>
+                    }
                   </div>
                 }
 
@@ -148,6 +135,14 @@ const TOKENS_STUDIO_HINT =
                   <div class="max-w-xl mx-auto">
                     <h2 class="text-base font-semibold text-ink-900 mb-1">Hook into your existing build</h2>
                     <p class="text-ink-500 text-xs mb-5">TFM generates nothing in this mode: it points at your config and runs your command.</p>
+
+                    @if (linkWarning(); as w) {
+                      <div class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-[11px] text-amber-800 mb-4">
+                        <div class="font-medium mb-0.5">⚠️ Switching mode</div>
+                        <div>{{ w }}</div>
+                        <label class="flex items-center gap-1.5 mt-2 cursor-pointer"><input type="checkbox" [ngModel]="cleanPrevious()" (ngModelChange)="cleanPrevious.set($event)" /> {{ cleanLabel() }}</label>
+                      </div>
+                    }
 
                     <label class="block mb-1 text-xs font-medium text-ink-700">Config file <span class="text-ink-400 font-normal">(optional)</span></label>
                     <input class="w-full border border-ink-200 rounded-md px-3 py-2 font-mono text-xs mb-1.5" [ngModel]="linkConfigPath()" (ngModelChange)="linkConfigPath.set($event)" placeholder="e.g. style-dictionary.config.js" />
@@ -184,6 +179,7 @@ const TOKENS_STUDIO_HINT =
 
                 @case ('overview') {
                   <div class="flex items-center gap-3 mb-4 flex-wrap">
+                    <span class="text-[11px] font-medium px-2 py-1 rounded-md bg-ink-100 text-ink-700">{{ modeLabel(activeMode()) }}</span>
                     <button class="text-sm font-medium px-3.5 py-2 rounded-lg border border-ink-200 text-ink-700 hover:bg-ink-50 disabled:opacity-40 flex items-center gap-2"
                       [disabled]="testing()" (click)="overviewMode() === 'v5' ? runTest() : runExternal()">
                       @if (testing()) { <span class="w-3.5 h-3.5 border-2 border-ink-300 border-t-ink-600 rounded-full tf-spin"></span> Running… }
@@ -191,10 +187,11 @@ const TOKENS_STUDIO_HINT =
                       @else { <span class="text-forge-600">▶</span> Run build }
                     </button>
                     <button class="text-sm font-medium px-3.5 py-2 rounded-lg bg-ink-950 text-white hover:bg-ink-800" (click)="modify()">Edit</button>
+                    <button class="text-sm px-3.5 py-2 rounded-lg border border-ink-200 text-ink-700 hover:bg-ink-50" (click)="goConfigure()">Change mode</button>
                     @if (openablePath()) {
                       <button class="text-sm px-3.5 py-2 rounded-lg border border-ink-200 text-ink-700 hover:bg-ink-50" (click)="openFiles()">Open files</button>
                     }
-                    @if (overviewMode() === 'external') {
+                    @if (activeMode() === 'linked') {
                       <button class="text-sm px-3.5 py-2 rounded-lg border border-ink-200 text-ink-500 hover:bg-red-50 hover:text-red-600 hover:border-red-200" [disabled]="unlinking()" (click)="doUnlink()">Unlink</button>
                     }
                     <span class="flex-1"></span>
@@ -205,7 +202,7 @@ const TOKENS_STUDIO_HINT =
                     }
                   </div>
 
-                  @if (overviewMode() === 'external') {
+                  @if (activeMode() === 'linked') {
                     <div class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-[11px] text-amber-800 mb-4">
                       ⚠️ "Run build" executes your project's real command and <b>writes its outputs</b> to disk (not a sandbox test).
                     </div>
@@ -218,7 +215,7 @@ const TOKENS_STUDIO_HINT =
                     </div>
                   } @else {
                     <div class="border border-ink-200 rounded-lg p-4 mb-4">
-                      <div class="text-[11px] uppercase tracking-wide text-ink-400 mb-2">Pipeline managed by TFM (Style Dictionary v5)</div>
+                      <div class="text-[11px] uppercase tracking-wide text-ink-400 mb-2">Pipeline managed by TFM ({{ modeLabel(activeMode()) }})</div>
                       @if (state()?.v5ScriptPath) {
                         <div class="text-xs text-ink-500 mb-3">Script: <code class="font-mono">{{ state()!.v5ScriptPath }}</code></div>
                       }
@@ -250,6 +247,8 @@ const TOKENS_STUDIO_HINT =
                             </div>
                           </div>
                         </div>
+                      } @else {
+                        <p class="text-xs text-ink-400">Open "Edit" to review or change this pipeline.</p>
                       }
                     </div>
                   }
@@ -258,8 +257,46 @@ const TOKENS_STUDIO_HINT =
                   @else { <p class="text-ink-400 text-xs">{{ overviewHint() }}</p> }
                 }
 
-                @case ('assistant') {
-                  <tf-resolver-wizard [state]="state()!" (done)="backToLanding()" />
+                @case ('configure') {
+                  <div>
+                    <!-- Engine selector (segmented control) -->
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                      <span class="text-xs font-medium text-ink-500">Engine</span>
+                      <div class="inline-flex items-center gap-1 rounded-xl bg-ink-100 p-1">
+                        <button type="button" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] transition-all duration-150"
+                          [class.bg-white]="engine() === 'resolver'" [class.text-forge-700]="engine() === 'resolver'" [class.shadow-sm]="engine() === 'resolver'" [class.font-medium]="engine() === 'resolver'"
+                          [class.text-ink-500]="engine() !== 'resolver'" [class.hover:text-ink-800]="engine() !== 'resolver'"
+                          (click)="setEngine('resolver')">
+                          Deterministic resolver
+                          <span class="text-[9px] uppercase tracking-wide font-semibold px-1.5 py-0.5 rounded-full leading-none"
+                            [class.bg-forge-100]="engine() === 'resolver'" [class.text-forge-700]="engine() === 'resolver'"
+                            [class.bg-ink-200]="engine() !== 'resolver'" [class.text-ink-500]="engine() !== 'resolver'">rec</span>
+                        </button>
+                        <button type="button" class="px-3.5 py-1.5 rounded-lg text-[13px] transition-all duration-150"
+                          [class.bg-white]="engine() === 'style-dictionary'" [class.text-forge-700]="engine() === 'style-dictionary'" [class.shadow-sm]="engine() === 'style-dictionary'" [class.font-medium]="engine() === 'style-dictionary'"
+                          [class.text-ink-500]="engine() !== 'style-dictionary'" [class.hover:text-ink-800]="engine() !== 'style-dictionary'"
+                          (click)="setEngine('style-dictionary')">Style Dictionary</button>
+                      </div>
+                    </div>
+
+                    <!-- Switch warning banner -->
+                    @if (switchWarning(); as w) {
+                      <div class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-[11px] text-amber-800 mt-4">
+                        <div class="font-medium mb-0.5">⚠️ Switching mode</div>
+                        <div>{{ w }}</div>
+                        <label class="flex items-center gap-1.5 mt-2 cursor-pointer"><input type="checkbox" [ngModel]="cleanPrevious()" (ngModelChange)="cleanPrevious.set($event)" /> {{ cleanLabel() }}</label>
+                      </div>
+                    }
+
+                    <!-- The engine's wizard (separated from the selector) -->
+                    <div class="mt-6 pt-6 border-t border-ink-100">
+                      @if (engine() === 'resolver') {
+                        <tf-resolver-wizard [state]="state()!" [cleanPrevious]="cleanPrevious()" (persisted)="onPersisted()" (done)="backToLanding()" />
+                      } @else {
+                        <tf-sd-wizard [state]="state()!" [cleanPrevious]="cleanPrevious()" (persisted)="onPersisted()" (done)="backToLanding()" />
+                      }
+                    </div>
+                  </div>
                 }
               }
             </div>
@@ -267,14 +304,13 @@ const TOKENS_STUDIO_HINT =
             <div class="shrink-0 border-t border-ink-200 px-5 py-3 flex items-center gap-3">
               <span class="text-[11px] text-ink-400">Saved locally</span>
               <span class="flex-1"></span>
-              @if (view() === 'overview' || view() === 'link') {
+              @if (view() === 'overview' || view() === 'link' || view() === 'configure') {
                 <button class="text-sm px-3 py-1.5 rounded-md border border-ink-200 text-ink-700 hover:bg-ink-50" (click)="backToLanding()">Home</button>
               }
             </div>
           }
         </div>
       </div>
-      <datalist id="tf-formats">@for (f of formatOptions; track f) { <option [value]="f"></option> }</datalist>
 
       <ng-template #reportBlock>
         @if (report(); as r) {
@@ -340,33 +376,20 @@ export class DistributionComponent {
   private readonly api = inject(ApiService);
   readonly ui = inject(UiService);
 
-  readonly steps: { n: Step; label: string }[] = [
-    { n: 1, label: 'Variants' },
-    { n: 2, label: 'Outputs' },
-    { n: 3, label: 'Build & test' },
-  ];
-  readonly presets = TARGET_PRESETS;
-  readonly strategies = STRATEGY_LABELS;
-  readonly formatOptions = [...new Set(TARGET_PRESETS.map((p) => p.format))];
-  readonly tokensStudioHint = TOKENS_STUDIO_HINT;
-
   readonly state = signal<DistributionState | null>(null);
-  readonly matrix = signal<DistMatrix | null>(null);
   readonly view = signal<View>('landing');
-  readonly step = signal<Step>(1);
+  readonly engine = signal<Engine>('resolver');
+  /** Opt-in: also remove the previously-active mode's sidecar when saving a switch. */
+  readonly cleanPrevious = signal(false);
   readonly loading = signal(false);
   readonly testing = signal(false);
-  readonly saving = signal(false);
   readonly linking = signal(false);
   readonly unlinking = signal(false);
   readonly report = signal<DistBuildReport | null>(null);
-  readonly written = signal<WriteDistributionResult | null>(null);
-  readonly newPreset = signal(TARGET_PRESETS[0]!.label);
-  readonly addDraft = signal<Record<string, string>>({});
   readonly linkConfigPath = signal('');
   readonly linkCommand = signal('');
 
-  readonly sdMode = computed(() => this.state()?.sdVersion.mode ?? 'none');
+  readonly activeMode = computed<DistributionMode>(() => this.state()?.activeMode ?? 'none');
   readonly sdInstalled = computed(() => !!this.state()?.sdVersion.installed);
   readonly sdLabel = computed(() => {
     const v = this.state()?.sdVersion;
@@ -374,32 +397,53 @@ export class DistributionComponent {
   });
   readonly sdTitle = computed(() => {
     const v = this.state()?.sdVersion;
-    if (!v?.installed) return 'Style Dictionary is not installed in this project — the v5 wizard build needs it. (External builds run your own command regardless.)';
-    if (v.mode === 'v5') return `Style Dictionary v${v.installed} detected — the v5 wizard can generate and test a build.`;
-    return `Style Dictionary v${v.installed} detected. The v5 wizard targets SD v5+; use "I already have my config" to run your existing v${v.installed} build.`;
+    if (!v?.installed) return 'Style Dictionary is not installed in this project — the Style Dictionary build script needs it. (The deterministic resolver needs no dependency.)';
+    if (v.mode === 'v5') return `Style Dictionary v${v.installed} detected — the Style Dictionary wizard can generate and test a build.`;
+    return `Style Dictionary v${v.installed} detected. The wizard targets SD v5+; use "I already have my config" to run your existing v${v.installed} build.`;
   });
-  readonly sourcesWithVariants = computed(() => (this.matrix()?.sources ?? []).filter((s) => s.variants.length > 0));
+  /** The Style Dictionary badge is only meaningful when SD is the current context. */
+  readonly showSdBadge = computed(() => {
+    const v = this.view();
+    if (v === 'configure') return this.engine() === 'style-dictionary';
+    if (v === 'overview') return this.activeMode() === 'style-dictionary';
+    if (v === 'link') return true;
+    return false;
+  });
+
   readonly linked = computed(() => this.state()?.linked ?? null);
   readonly detectedConfigs = computed(() => this.state()?.detectedConfigs ?? []);
   readonly hasCollections = computed(() => (this.state()?.collections?.length ?? 0) > 0);
   readonly npmScripts = computed(() => this.state()?.npmScripts ?? []);
   readonly suggestedCommand = computed(() => suggestCommand(this.state()));
-  /** In overview: the project is TFM-managed (v5) when a matrix/script exists, else external. */
-  readonly overviewMode = computed<'v5' | 'external'>(() => {
-    const s = this.state();
-    return s?.savedMatrix || s?.v5ScriptPath ? 'v5' : 'external';
-  });
+
+  /** Read-only view of the persisted SD matrix (drives the overview summary + test build). */
+  readonly matrix = computed<DistMatrix | null>(() => (this.state()?.savedMatrix as DistMatrix | null) ?? null);
+  /** In overview: an external (linked) build runs its own command; everything else tests a sandboxed build. */
+  readonly overviewMode = computed<'v5' | 'external'>(() => (this.activeMode() === 'linked' ? 'external' : 'v5'));
   readonly overviewHint = computed(() =>
     this.overviewMode() === 'v5'
       ? '"Test build" runs the conversion in a sandbox — your project is never written.'
       : '"Run build" executes your command — its output files will be written to disk.',
   );
-  /** Best-effort file to open from the overview (the v5 script, or the linked config). */
+  /** Best-effort file to open from the overview (the build script, or the linked config). */
   readonly openablePath = computed(() => {
     const s = this.state();
     if (!s) return null;
-    if (this.overviewMode() === 'v5') return s.v5ScriptPath ?? s.buildScriptPath ?? null;
-    return s.linked?.configPath || null;
+    if (this.activeMode() === 'linked') return s.linked?.configPath || null;
+    return s.v5ScriptPath ?? s.buildScriptPath ?? null;
+  });
+
+  /** Warning shown in `configure` when the chosen engine differs from the active mode. */
+  readonly switchWarning = computed<string | null>(() => this.warnFor(this.engine()));
+  /** Warning shown in `link` when linking would take over a managed build. */
+  readonly linkWarning = computed<string | null>(() => this.warnFor('linked'));
+  readonly cleanLabel = computed(() => {
+    switch (this.activeMode()) {
+      case 'resolver': return 'Also remove the old resolver config (.tokenflow/distribution.config.json)';
+      case 'style-dictionary': return 'Also remove the old Style Dictionary matrix + its style-dictionary devDependency';
+      case 'linked': return 'Also unlink the external build';
+      default: return '';
+    }
   });
 
   constructor() {
@@ -408,20 +452,29 @@ export class DistributionComponent {
     });
   }
 
-  m(): DistMatrix {
-    return this.matrix()!;
-  }
   close(): void {
     this.ui.distributionOpen.set(false);
   }
-  prev(): Step {
-    return Math.max(1, this.step() - 1) as Step;
-  }
-  next(): Step {
-    return Math.min(3, this.step() + 1) as Step;
-  }
   kb(b: number): string {
     return b < 1024 ? `${b} B` : `${(b / 1024).toFixed(1)} kB`;
+  }
+  modeLabel(m: DistributionMode): string {
+    return MODE_LABEL[m] ?? m;
+  }
+
+  /** Build the switch-mode warning when `target` differs from the active mode. */
+  private warnFor(target: DistributionMode): string | null {
+    const am = this.activeMode();
+    if (am === 'none' || am === target) return null;
+    const targetLabel = MODE_LABEL[target];
+    if (am === 'resolver' || am === 'style-dictionary') {
+      return `This project is already configured with ${MODE_LABEL[am]}. Continuing in ${targetLabel} will replace the active build (scripts/tokens.build.mjs) and switch the active mode.`;
+    }
+    if (am === 'linked') {
+      const cmd = this.linked()?.buildCommand ?? 'external build';
+      return `This project is linked to an external build (${cmd}). Configuring a TFM-managed build will take over at launch; the link will be ignored.`;
+    }
+    return null;
   }
 
   /** Collapsed state per output-format group (expanded by default). */
@@ -478,9 +531,6 @@ export class DistributionComponent {
     a.click();
     URL.revokeObjectURL(url);
   }
-  variantNames(s: MatrixSource): string[] {
-    return s.variants.map((v) => v.name);
-  }
 
   private async load(): Promise<void> {
     this.loading.set(true);
@@ -488,31 +538,53 @@ export class DistributionComponent {
     try {
       const s = await firstValueFrom(this.api.getDistribution());
       this.state.set(s);
-      this.written.set(null);
-      // Prefer the server-persisted matrix, then the local draft, then a derived one.
-      this.matrix.set((s.savedMatrix as DistMatrix | null) ?? this.restore(s) ?? deriveMatrix(s));
       // Prefill the link fields from the existing pointer or detections.
       this.linkConfigPath.set(s.linked?.configPath ?? s.detectedConfigs[0] ?? '');
       this.linkCommand.set(s.linked?.buildCommand ?? suggestCommand(s) ?? '');
-      // Route to the opening view: a saved resolver config opens its editor;
-      // a legacy SD matrix / external link opens the overview; else the landing.
-      this.view.set(s.resolverConfigured ? 'assistant' : s.savedMatrix || s.linked ? 'overview' : 'landing');
+      this.routeForMode(s.activeMode);
     } catch {
       this.state.set(null);
-      this.matrix.set(null);
       this.view.set('landing');
     } finally {
       this.loading.set(false);
     }
   }
 
-  // ---- navigation between the 3 states ----
-  goAssistant(): void {
+  /** Open the view of the detected active mode. */
+  private routeForMode(mode: DistributionMode): void {
+    switch (mode) {
+      case 'resolver':
+        this.engine.set('resolver');
+        this.cleanPrevious.set(false);
+        this.view.set('configure');
+        break;
+      case 'style-dictionary':
+      case 'linked':
+        this.view.set('overview');
+        break;
+      default:
+        this.view.set('landing');
+    }
+  }
+
+  // ---- navigation ----
+  /** Enter the configure flow with an engine (defaults to the active mode's engine, else resolver). */
+  goConfigure(engine?: Engine): void {
     if (!this.state()?.collections?.length) return;
-    this.view.set('assistant');
+    const am = this.activeMode();
+    this.engine.set(engine ?? (am === 'style-dictionary' ? 'style-dictionary' : 'resolver'));
+    this.cleanPrevious.set(false);
+    this.report.set(null);
+    this.view.set('configure');
+  }
+  setEngine(engine: Engine): void {
+    if (this.engine() === engine) return;
+    this.engine.set(engine);
+    this.cleanPrevious.set(false);
   }
   goLink(): void {
     this.report.set(null);
+    this.cleanPrevious.set(false);
     this.view.set('link');
   }
   backToLanding(): void {
@@ -521,140 +593,21 @@ export class DistributionComponent {
   }
   /** Overview "Edit" → the right flow for the current mode. */
   modify(): void {
-    if (this.overviewMode() === 'v5') this.goAssistant();
-    else this.goLink();
+    if (this.activeMode() === 'linked') this.goLink();
+    else this.goConfigure(this.activeMode() === 'style-dictionary' ? 'style-dictionary' : 'resolver');
   }
 
-  // ---- persistence ----
-  // Drafts are scoped by projectId (the project root) — keying by manifestPath
-  // collided across projects that have no manifest (both keyed by ''), leaking
-  // the previous project's files into the wizard.
-  private draftKey(s: DistributionState): string {
-    return `tf.dist.matrix:${s.projectId}`;
-  }
-  private key(): string {
-    const s = this.state();
-    return s ? this.draftKey(s) : 'tf.dist.matrix:';
-  }
-  private restore(s: DistributionState): DistMatrix | null {
+  /** A wizard saved — refresh state so the active mode/badges/overview reflect it. */
+  async onPersisted(): Promise<void> {
     try {
-      const raw = localStorage.getItem(this.draftKey(s));
-      return raw ? (JSON.parse(raw) as DistMatrix) : null;
+      this.state.set(await firstValueFrom(this.api.getDistribution()));
+      this.cleanPrevious.set(false);
     } catch {
-      return null;
-    }
-  }
-  private persist(): void {
-    try {
-      localStorage.setItem(this.key(), JSON.stringify(this.matrix()));
-    } catch {
-      /* ignore */
-    }
-  }
-  private mutate(fn: (m: DistMatrix) => void): void {
-    const m = this.matrix();
-    if (!m) return;
-    const next = structuredClone(m);
-    fn(next);
-    this.matrix.set(next);
-    this.persist();
-  }
-
-  // ---- step 1: variants ----
-  setWrap(i: number, v: string): void {
-    this.mutate((m) => { const s = m.sources[i]; if (s) { if (v.trim()) s.wrapUnder = v.trim(); else delete s.wrapUnder; } });
-  }
-  setSourceRoot(v: string): void {
-    this.mutate((m) => { m.sourceRoot = v; });
-  }
-  removeVariant(i: number, vi: number): void {
-    this.mutate((m) => m.sources[i]?.variants.splice(vi, 1));
-  }
-  setAddDraft(id: string, v: string): void {
-    this.addDraft.update((d) => ({ ...d, [id]: v }));
-  }
-  addVariant(i: number): void {
-    const s = this.matrix()?.sources[i];
-    if (!s) return;
-    const name = (this.addDraft()[s.id] || '').trim();
-    if (!name) return;
-    this.mutate((m) => { if (!m.sources[i]!.variants.some((v) => v.name === name)) m.sources[i]!.variants.push({ name }); });
-    this.setAddDraft(s.id, '');
-  }
-
-  // ---- step 2: targets ----
-  addTarget(): void {
-    const p = TARGET_PRESETS.find((x) => x.label === this.newPreset()) ?? TARGET_PRESETS[0]!;
-    this.mutate((m) => {
-      const id = uniqueId(m.targets.map((t) => t.id), p.format.split('/')[0]!);
-      m.targets.push({ id, label: p.label, format: p.format, destination: p.dest, sources: 'all' });
-    });
-  }
-  setTarget(i: number, key: 'label' | 'format' | 'destination' | 'prefix', v: string): void {
-    this.mutate((m) => {
-      const t = m.targets[i];
-      if (!t) return;
-      if (key === 'label') t.label = v;
-      else if (key === 'format') t.format = v;
-      else if (key === 'destination') t.destination = v;
-      else if (v.trim()) t.prefix = v;
-      else delete t.prefix;
-    });
-  }
-  removeTarget(i: number): void {
-    this.mutate((m) => m.targets.splice(i, 1));
-  }
-
-  /** Effective rendering for (target, source): explicit override else heuristic default. */
-  rendering(t: MatrixTarget, s: MatrixSource): TargetRendering {
-    return t.rendering?.[s.id] ?? defaultRendering(s, t.format);
-  }
-  mapOf(t: MatrixTarget, s: MatrixSource, variant: string): string {
-    return this.rendering(t, s).map?.[variant] ?? '';
-  }
-  private ensureRendering(t: MatrixTarget, sid: string): TargetRendering {
-    const s = this.matrix()!.sources.find((x) => x.id === sid)!;
-    return t.rendering?.[sid] ?? defaultRendering(s, t.format);
-  }
-  setStrategy(ti: number, sid: string, strategy: RenderStrategy): void {
-    this.mutate((m) => {
-      const t = m.targets[ti]!;
-      const cur = this.ensureRendering(t, sid);
-      t.rendering = { ...(t.rendering ?? {}), [sid]: { strategy, map: cur.map } };
-    });
-  }
-  setMap(ti: number, sid: string, variant: string, value: string): void {
-    this.mutate((m) => {
-      const t = m.targets[ti]!;
-      const cur = this.ensureRendering(t, sid);
-      const map = { ...(cur.map ?? {}) };
-      if (value.trim()) map[variant] = value;
-      else delete map[variant];
-      t.rendering = { ...(t.rendering ?? {}), [sid]: { strategy: cur.strategy, map } };
-    });
-  }
-  setTokensStudio(e: Event): void {
-    const on = (e.target as HTMLInputElement).checked;
-    this.mutate((m) => { if (on) m.tokensStudio = true; else delete m.tokensStudio; });
-  }
-
-  // ---- step 3: write files ----
-  async create(): Promise<void> {
-    const m = this.matrix();
-    if (!m) return;
-    this.saving.set(true);
-    try {
-      const res = await firstValueFrom(this.api.writeDistribution(m));
-      this.written.set(res);
-      this.ui.showToast(res.npmAdded ? `Created · npm run ${res.npmScript.name}` : `Build script written: ${res.scriptPath}`);
-    } catch (err) {
-      this.ui.showToast(errMsg(err, 'Write failed'), 4000);
-    } finally {
-      this.saving.set(false);
+      /* keep current state */
     }
   }
 
-  // ---- test (v5 sandbox) ----
+  // ---- test / run (overview) ----
   async runTest(): Promise<void> {
     const m = this.matrix();
     if (!m) return;
@@ -669,7 +622,6 @@ export class DistributionComponent {
     }
   }
 
-  // ---- external build (real — writes outputs) ----
   async runExternal(): Promise<void> {
     const cmd = this.linked()?.buildCommand;
     if (!cmd) return;
@@ -689,9 +641,10 @@ export class DistributionComponent {
     if (!cmd) return;
     this.linking.set(true);
     try {
-      const s = await firstValueFrom(this.api.linkExisting(this.linkConfigPath().trim(), cmd));
+      const s = await firstValueFrom(this.api.linkExisting(this.linkConfigPath().trim(), cmd, this.cleanPrevious()));
       this.state.set(s);
       this.report.set(null);
+      this.cleanPrevious.set(false);
       this.view.set('overview');
       this.ui.showToast('External build linked');
     } catch (err) {
@@ -707,7 +660,7 @@ export class DistributionComponent {
       const s = await firstValueFrom(this.api.unlinkDistribution());
       this.state.set(s);
       this.report.set(null);
-      this.view.set(s.resolverConfigured ? 'assistant' : s.savedMatrix ? 'overview' : 'landing');
+      this.routeForMode(s.activeMode);
       this.ui.showToast('External build unlinked');
     } catch (err) {
       this.ui.showToast(errMsg(err, 'Unlink failed'), 4000);
@@ -728,24 +681,6 @@ export class DistributionComponent {
   }
 }
 
-/** Build a starter matrix from the detected collections. */
-function deriveMatrix(s: DistributionState): DistMatrix | null {
-  if (!s.collections.length) return null;
-  const sources: MatrixSource[] = s.collections.map((c) => {
-    const id = c.name.replace(/[^a-zA-Z0-9]+/g, '-');
-    let variants: MatrixSource['variants'] = [];
-    if (c.files.length > 1 && c.modes.length === c.files.length) variants = c.files.map((f, i) => ({ name: c.modes[i] ?? baseName(f), file: f }));
-    else if (c.modes.length > 1) variants = c.modes.map((mn) => ({ name: mn }));
-    const src: MatrixSource = { id, label: c.name, files: c.files, variants };
-    if (/primitive/i.test(c.name)) src.wrapUnder = 'primitives';
-    return src;
-  });
-  const targets: MatrixTarget[] = [
-    { id: 'css', label: 'CSS variables', format: 'css/variables', destination: 'src/styles/generated', sources: 'all' },
-  ];
-  return { sourceRoot: '', sources, targets };
-}
-
 /** Suggest a build command from the project's token-related npm scripts. */
 function suggestCommand(s: DistributionState | null): string {
   if (!s?.npmScripts.length) return '';
@@ -754,34 +689,6 @@ function suggestCommand(s: DistributionState | null): string {
   return `npm run ${hit.name}`;
 }
 
-/** Client mirror of the server heuristic, so the UI shows sensible defaults. */
-function defaultRendering(s: MatrixSource, format: string): TargetRendering {
-  const modes = s.variants.filter((v) => !v.file).map((v) => v.name);
-  const fileVars = s.variants.some((v) => v.file);
-  const css = format === 'css/variables';
-  let strategy: RenderStrategy;
-  if (fileVars) strategy = 'files';
-  else if (!modes.length) strategy = 'single';
-  else if (!css) strategy = 'single';
-  else if (modes.every((mn) => /light|dark|theme/i.test(mn))) strategy = 'selectors';
-  else if (modes.some((mn) => /desktop|tablet|mobile|width|screen|^(xs|sm|md|lg|xl)$/i.test(mn))) strategy = 'media';
-  else strategy = 'files';
-  const map: Record<string, string> = {};
-  for (const mn of modes) {
-    if (strategy === 'selectors') map[mn] = /dark/i.test(mn) ? "[data-theme='dark']" : ':root';
-    else if (strategy === 'media') map[mn] = /tablet/i.test(mn) ? '(min-width: 1024px)' : /desktop/i.test(mn) ? '(min-width: 1440px)' : '';
-  }
-  return { strategy, map };
-}
-
-function baseName(p: string): string {
-  return (p.split('/').pop() ?? p).replace(/\.(json|tokens\.json)$/i, '');
-}
-function uniqueId(taken: string[], base: string): string {
-  const set = new Set(taken);
-  if (!set.has(base)) return base;
-  for (let i = 2; ; i++) if (!set.has(`${base}${i}`)) return `${base}${i}`;
-}
 function errMsg(err: unknown, fallback: string): string {
   const e = err as { error?: { error?: string }; message?: string };
   return e?.error?.error ?? e?.message ?? fallback;

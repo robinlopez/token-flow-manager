@@ -206,6 +206,18 @@ export const DistConfigSchema = z.object({
 });
 export type DistConfig = z.infer<typeof DistConfigSchema>;
 
+/**
+ * The one build mode a project is actively configured in. A project can hold
+ * several sidecars on disk (they are independent), so the active mode is the
+ * source of truth for routing and for arbitrating the shared build script:
+ * - `resolver`         → deterministic SD-free build (`distribution.config.json`).
+ * - `style-dictionary` → Style Dictionary matrix build (`distribution.json`).
+ * - `linked`           → an external build the project owns (`distribution-link.json`).
+ * - `none`             → nothing configured yet.
+ */
+export const DistributionModeSchema = z.enum(['resolver', 'style-dictionary', 'linked', 'none']);
+export type DistributionMode = z.infer<typeof DistributionModeSchema>;
+
 /** Full snapshot the Distribution UI renders from. */
 export const DistributionStateSchema = z.object({
   /** Stable id of the open project (its root) — scopes client-side drafts so they never leak across projects. */
@@ -240,6 +252,13 @@ export const DistributionStateSchema = z.object({
   proposedConfig: DistConfigSchema,
   /** A deterministic-resolver config was saved to this project (the new sidecar exists). */
   resolverConfigured: z.boolean(),
+  /**
+   * The build mode this project is actively configured in — the explicit
+   * mode-file (`.tokenflow/distribution.mode.json`) if present, else inferred
+   * from which sidecars exist (`resolver > style-dictionary > linked`). Drives
+   * routing and the "switch mode" warnings.
+   */
+  activeMode: DistributionModeSchema,
   /** Relative path of a written v5 build script, if present. */
   v5ScriptPath: z.string().nullable(),
   /** Pointer to an external build the project already owns ("I have my config"). */
@@ -351,7 +370,11 @@ export const TestBuildRequestSchema = z.object({ matrix: DistMatrixSchema });
 export type TestBuildRequest = z.infer<typeof TestBuildRequestSchema>;
 
 /** Write the v5 build script + npm script, and persist the matrix. */
-export const WriteDistributionRequestSchema = z.object({ matrix: DistMatrixSchema });
+export const WriteDistributionRequestSchema = z.object({
+  matrix: DistMatrixSchema,
+  /** Also remove the previously-active mode's sidecar (and unused deps) so detection stays unambiguous. */
+  cleanPrevious: z.boolean().optional(),
+});
 export type WriteDistributionRequest = z.infer<typeof WriteDistributionRequestSchema>;
 
 // ---- Deterministic-resolver requests (collection-centric config) ----
@@ -361,13 +384,20 @@ export const ResolverTestBuildRequestSchema = z.object({ config: DistConfigSchem
 export type ResolverTestBuildRequest = z.infer<typeof ResolverTestBuildRequestSchema>;
 
 /** Write the resolver build script + npm script, and persist the config. */
-export const ResolverWriteRequestSchema = z.object({ config: DistConfigSchema });
+export const ResolverWriteRequestSchema = z.object({
+  config: DistConfigSchema,
+  /** Also remove the previously-active mode's sidecar (and unused deps) so detection stays unambiguous. */
+  cleanPrevious: z.boolean().optional(),
+});
 export type ResolverWriteRequest = z.infer<typeof ResolverWriteRequestSchema>;
 
 // ---- "I have my own config" — link an external build ----
 
 /** Link an existing config + build command (persisted to a sidecar). */
-export const LinkConfigRequestSchema = LinkedConfigSchema;
+export const LinkConfigRequestSchema = LinkedConfigSchema.extend({
+  /** Also remove the previously-active managed mode's sidecar so detection stays unambiguous. */
+  cleanPrevious: z.boolean().optional(),
+});
 export type LinkConfigRequest = z.infer<typeof LinkConfigRequestSchema>;
 
 /** Run the project's real build command (cwd = root). WRITES real outputs. */

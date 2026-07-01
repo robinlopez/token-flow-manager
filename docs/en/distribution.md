@@ -19,6 +19,26 @@ build** you already have.
 
 ## Configure the conversion
 
+### Choosing the engine
+
+At the top of the configurator an **engine** selector lets you pick how the build is
+generated:
+
+- **Deterministic resolver** (recommended) - the SD-free build described above. It writes a
+  self-contained `tokens.build.mjs` with **no runtime dependency**.
+- **Style Dictionary** - a classic [Style Dictionary](https://styledictionary.com) v5
+  pipeline (sources × targets × per-source render strategy). The generated
+  `tokens.build.mjs` imports `style-dictionary`, so it is added to your `devDependencies`
+  (run `npm install` before building). A badge in the header reminds you whether Style
+  Dictionary is installed - it only appears when Style Dictionary is the current context.
+
+A project is configured in **one active mode** at a time (resolver, Style Dictionary, or a
+linked external build). Both managed engines share the same `scripts/tokens.build.mjs`, so
+switching engines **replaces** the active build. When you pick an engine that differs from
+the current mode, a warning banner appears with an opt-in **clean-up** checkbox that removes
+the previous mode's sidecar (and, when leaving Style Dictionary, its `style-dictionary`
+devDependency) so detection stays unambiguous.
+
 The editor has two parts: **Outputs** (where and in which format) and **Collections &
 modes** (what, and how each mode is written). A sandboxed **Test build** never touches your
 project; **Save script** writes a self-contained `tokens.build.mjs` plus an npm script.

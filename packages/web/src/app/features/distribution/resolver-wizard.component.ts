@@ -246,7 +246,11 @@ export class ResolverWizardComponent {
   private readonly api = inject(ApiService);
 
   readonly state = input.required<DistributionState>();
+  /** Also clean the previously-active mode's sidecar on save (opt-in from the host). */
+  readonly cleanPrevious = input(false);
   readonly done = output<void>();
+  /** Emitted after a successful save so the host can refresh its state (activeMode, badges). */
+  readonly persisted = output<void>();
 
   readonly config = signal<DistConfig | null>(null);
   readonly active = signal(0);
@@ -350,8 +354,9 @@ export class ResolverWizardComponent {
     if (!cfg || this.saving()) return;
     this.saving.set(true);
     try {
-      const res = await firstValueFrom(this.api.writeResolver(cfg));
+      const res = await firstValueFrom(this.api.writeResolver(cfg, this.cleanPrevious()));
       this.saved.set({ scriptPath: res.scriptPath });
+      this.persisted.emit();
     } catch (err) {
       this.report.set({ ok: false, outputs: [], diagnostics: [{ level: 'error', message: (err as Error).message }] });
     } finally {
