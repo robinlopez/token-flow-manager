@@ -32,6 +32,8 @@ import {
   InitManifestRequestSchema,
   TestBuildRequestSchema,
   WriteDistributionRequestSchema,
+  ResolverTestBuildRequestSchema,
+  ResolverWriteRequestSchema,
   LinkConfigRequestSchema,
   RunCommandRequestSchema,
   type RealtimeEvent,
@@ -484,7 +486,30 @@ function registerApiRoutes(
     const parsed = WriteDistributionRequestSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
     try {
-      return await project.writeDistribution(parsed.data.matrix);
+      return await project.writeDistribution(parsed.data.matrix, parsed.data.cleanPrevious ?? false);
+    } catch (err) {
+      return reply.code(400).send({ error: (err as Error).message });
+    }
+  });
+
+  // Deterministic resolver (collection-centric config) — the path the redesigned
+  // wizard drives. Dry-run is sandboxed; write embeds the config + adds an npm script.
+
+  app.post<{ Body: unknown }>('/api/distribution/resolver/test-build', async (req, reply) => {
+    const parsed = ResolverTestBuildRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    try {
+      return await project.testBuildResolver(parsed.data.config);
+    } catch (err) {
+      return reply.code(400).send({ error: (err as Error).message });
+    }
+  });
+
+  app.post<{ Body: unknown }>('/api/distribution/resolver/write', async (req, reply) => {
+    const parsed = ResolverWriteRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    try {
+      return await project.writeResolver(parsed.data.config, parsed.data.cleanPrevious ?? false);
     } catch (err) {
       return reply.code(400).send({ error: (err as Error).message });
     }
@@ -496,7 +521,8 @@ function registerApiRoutes(
     const parsed = LinkConfigRequestSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
     try {
-      return await project.linkExisting(parsed.data);
+      const { cleanPrevious, ...link } = parsed.data;
+      return await project.linkExisting(link, cleanPrevious ?? false);
     } catch (err) {
       return reply.code(400).send({ error: (err as Error).message });
     }

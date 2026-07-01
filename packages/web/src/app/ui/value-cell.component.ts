@@ -24,7 +24,7 @@ const NUMERIC = new Set(['number', 'dimension', 'duration']);
           <!-- Figma-style leading bullet: the resolved colour for colour aliases,
                otherwise the type glyph. -->
           @if (swatch()) {
-            <span class="w-3.5 h-3.5 rounded-[4px] border border-black/10 shrink-0 checker">
+            <span class="w-3.5 h-3.5 rounded-[4px] border border-black/10 shrink-0 checker cursor-pointer">
               <span class="block w-full h-full rounded-[4px]" [style.background]="swatch()"></span>
             </span>
           } @else {
@@ -39,7 +39,7 @@ const NUMERIC = new Set(['number', 'dimension', 'duration']);
       </span>
     } @else if (swatch()) {
       <span class="inline-flex items-center gap-2">
-        <span class="w-4 h-4 rounded-[4px] border border-black/10 checker">
+        <span class="w-4 h-4 rounded-[4px] border border-black/10 checker cursor-pointer shrink-0" title="Open the colour picker">
           <span class="block w-full h-full rounded-[4px]" [style.background]="swatch()"></span>
         </span>
         <span class="font-mono text-xs text-ink-700">{{ resolvedText() }}</span>

@@ -75,12 +75,18 @@ import {
   type DistributionCollection,
   type TokenConfigManifest,
   type DistMatrix,
+  type DistConfig,
   type DistBuildReport,
   type WriteDistributionResult,
   type LinkedConfig,
+  type DistributionMode,
+  matrixToConfig,
+  DistConfigSchema,
   makeDiagnostic,
 } from '@tokenflow/shared';
 import { detectSdVersion, runTestBuild, generateV5Script, runExternalCommand } from './distribution-v5.js';
+import { generateResolverScript, runResolverBuild } from './distribution-resolver.js';
+import { proposeConfig, type ProposeCollection } from './distribution-propose.js';
 import {
   detectManifest,
   readManifestRaw,
@@ -841,6 +847,10 @@ export class ProjectManager extends EventEmitter {
       hasBuildScript,
       buildScriptPath,
       savedMatrix: this.readSavedMatrix(),
+      savedConfig: this.readSavedConfig(),
+      proposedConfig: this.proposeResolverConfig(),
+      resolverConfigured: existsSync(join(pkgRoot, this.configSidecarRel)),
+      activeMode: this.readActiveMode(),
       v5ScriptPath,
       linked: this.readLinked(),
       detectedConfigs: this.detectConfigCandidates(),
@@ -909,8 +919,82 @@ export class ProjectManager extends EventEmitter {
   /** Where a generated v5 build script lives, and the matrix sidecar. */
   private readonly v5ScriptRel = 'scripts/tokens.build.mjs';
   private readonly distSidecarRel = '.tokenflow/distribution.json';
+  /** Sidecar for the deterministic-resolver config (new path). */
+  private readonly configSidecarRel = '.tokenflow/distribution.config.json';
   /** Sidecar pointing at an external build the project already owns. */
   private readonly linkSidecarRel = '.tokenflow/distribution-link.json';
+  /** Source-of-truth pointer to the actively-configured mode (arbitrates the shared build script). */
+  private readonly modeSidecarRel = '.tokenflow/distribution.mode.json';
+
+  /**
+   * The actively-configured build mode. The explicit mode-file wins; absent it
+   * (older projects), infer from which sidecars exist with a fixed priority
+   * (`resolver > style-dictionary > linked`) so detection is deterministic even
+   * when several sidecars coexist on disk.
+   */
+  private readActiveMode(): DistributionMode {
+    const root = this.pkgRoot();
+    const modeAbs = join(root, this.modeSidecarRel);
+    if (existsSync(modeAbs)) {
+      try {
+        const raw = JSON.parse(readFileSync(modeAbs, 'utf8')) as { mode?: unknown };
+        if (raw.mode === 'resolver' || raw.mode === 'style-dictionary' || raw.mode === 'linked') return raw.mode;
+      } catch {
+        /* fall through to inference */
+      }
+    }
+    if (existsSync(join(root, this.configSidecarRel))) return 'resolver';
+    if (existsSync(join(root, this.distSidecarRel))) return 'style-dictionary';
+    if (existsSync(join(root, this.linkSidecarRel))) return 'linked';
+    return 'none';
+  }
+
+  /** Persist the active-mode pointer (posted on every save/link). */
+  private async writeActiveMode(mode: DistributionMode): Promise<void> {
+    const abs = join(this.pkgRoot(), this.modeSidecarRel);
+    await mkdir(dirname(abs), { recursive: true });
+    await writeFileAtomic(abs, JSON.stringify({ mode }, null, 2) + '\n');
+  }
+
+  /**
+   * Remove the sidecar (and now-unused devDependencies) of a previous mode when
+   * switching, so the shared build script has one unambiguous owner. The shared
+   * `tokens.build.mjs` is always overwritten by the new mode, so only the stale
+   * sidecar + Style-Dictionary deps need clearing.
+   */
+  private async cleanupMode(mode: DistributionMode): Promise<void> {
+    const root = this.pkgRoot();
+    if (mode === 'style-dictionary') {
+      await rm(join(root, this.distSidecarRel), { force: true });
+      await this.removeBuildDependencies(['style-dictionary', '@tokens-studio/sd-transforms']);
+    } else if (mode === 'resolver') {
+      await rm(join(root, this.configSidecarRel), { force: true });
+    } else if (mode === 'linked') {
+      await rm(join(root, this.linkSidecarRel), { force: true });
+    }
+  }
+
+  /** Remove the given package names from package.json devDependencies (best-effort). */
+  private async removeBuildDependencies(names: string[]): Promise<void> {
+    const pkgPath = join(this.pkgRoot(), 'package.json');
+    if (!existsSync(pkgPath)) return;
+    try {
+      const pkg = JSON.parse(await readFile(pkgPath, 'utf8')) as {
+        devDependencies?: Record<string, string>;
+        [k: string]: unknown;
+      };
+      const dev = pkg.devDependencies;
+      if (!dev) return;
+      let changed = false;
+      for (const name of names) if (name in dev) { delete dev[name]; changed = true; }
+      if (!changed) return;
+      pkg.devDependencies = dev;
+      await this.backupArbitrary(pkgPath);
+      await writeFileAtomic(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+    } catch {
+      /* best-effort */
+    }
+  }
 
   /** Common token-build config filenames to suggest when linking an existing setup. */
   private detectConfigCandidates(): string[] {
@@ -945,17 +1029,25 @@ export class ProjectManager extends EventEmitter {
     }
   }
 
-  /** Link an existing external build: persist the pointer sidecar. */
-  async linkExisting(link: LinkedConfig): Promise<DistributionState> {
+  /** Link an existing external build: persist the pointer sidecar + mode. */
+  async linkExisting(link: LinkedConfig, cleanPrevious = false): Promise<DistributionState> {
+    const prev = this.readActiveMode();
     const sidecar = join(this.pkgRoot(), this.linkSidecarRel);
     await mkdir(dirname(sidecar), { recursive: true });
-    await writeFileAtomic(sidecar, JSON.stringify(link, null, 2) + '\n');
+    // Persist only the LinkedConfig shape (never leak a request-only flag).
+    await writeFileAtomic(sidecar, JSON.stringify({ configPath: link.configPath, buildCommand: link.buildCommand }, null, 2) + '\n');
+    await this.writeActiveMode('linked');
+    if (cleanPrevious && prev !== 'linked') await this.cleanupMode(prev);
     return this.getDistribution();
   }
 
   /** Remove the external-build pointer (does not touch the project's own config). */
   async unlinkExisting(): Promise<DistributionState> {
-    await rm(join(this.pkgRoot(), this.linkSidecarRel), { force: true });
+    const root = this.pkgRoot();
+    await rm(join(root, this.linkSidecarRel), { force: true });
+    // Drop the mode pointer when it named this (now-removed) link, so the active
+    // mode re-infers from whatever managed sidecar remains (else `none`).
+    if (this.readActiveMode() === 'linked') await rm(join(root, this.modeSidecarRel), { force: true });
     return this.getDistribution();
   }
 
@@ -980,12 +1072,89 @@ export class ProjectManager extends EventEmitter {
   }
 
   /**
+   * The deterministic-resolver config to hydrate the wizard from: the new
+   * sidecar if present, else a best-effort migration of the legacy matrix
+   * sidecar, else null.
+   */
+  private readSavedConfig(): DistConfig | null {
+    const abs = join(this.pkgRoot(), this.configSidecarRel);
+    if (existsSync(abs)) {
+      try {
+        return DistConfigSchema.parse(JSON.parse(readFileSync(abs, 'utf8')));
+      } catch {
+        /* fall through to migration */
+      }
+    }
+    const matrix = this.readSavedMatrix();
+    return matrix ? matrixToConfig(matrix) : null;
+  }
+
+  /**
+   * Auto-detect each collection's topology (nested path-segment modes vs. one
+   * file per mode) and propose a deterministic-resolver config the wizard can
+   * start from (mode → selector map editable in the UI).
+   */
+  private proposeResolverConfig(): DistConfig {
+    const cols: ProposeCollection[] = this.config.collections.map((c) => {
+      const col = this.collections.get(c.name);
+      const rt = this.runtimes.get(c.name);
+      const modes = (col?.modes ?? []).map((m) => m.id).filter((id) => id !== 'default');
+      let topology: ProposeCollection['topology'] = 'none';
+      let fileModes: Record<string, string> | undefined;
+      if (rt?.fileModes && rt.fileModes.size > 0) {
+        topology = 'files';
+        fileModes = Object.fromEntries(rt.fileModes);
+      } else if (rt?.modeDimension !== undefined && modes.length >= 2) {
+        topology = 'nested';
+      }
+      return { id: c.name, files: col?.files ?? [], modes, topology, ...(fileModes ? { fileModes } : {}) };
+    });
+    // Collection files are relative to the project root; the generated script
+    // resolves its ROOT to the package root, so point sourceRoot at the project.
+    const sourceRoot = relative(this.pkgRoot(), this.root);
+    const savedDest = this.readSavedConfig()?.outputs?.[0]?.destination;
+    return proposeConfig(cols, { sourceRoot, destination: savedDest });
+  }
+
+  /** Dry-run the deterministic resolver (sandboxed; the project is never written). */
+  async testBuildResolver(config: DistConfig): Promise<DistBuildReport> {
+    return runResolverBuild(this.pkgRoot(), config, Date.now());
+  }
+
+  /**
+   * Write the deterministic resolver build script (config embedded) + ensure an
+   * npm script runs it, and persist the config to its sidecar. The script has no
+   * runtime dependencies (no Style Dictionary), so nothing is added to
+   * package.json beyond the npm script.
+   */
+  async writeResolver(config: DistConfig, cleanPrevious = false): Promise<WriteDistributionResult> {
+    const root = this.pkgRoot();
+    const prev = this.readActiveMode();
+    const scriptAbs = join(root, this.v5ScriptRel);
+    await mkdir(dirname(scriptAbs), { recursive: true });
+    await this.backupArbitrary(scriptAbs);
+    await writeFileAtomic(scriptAbs, generateResolverScript(config));
+
+    const sidecar = join(root, this.configSidecarRel);
+    await mkdir(dirname(sidecar), { recursive: true });
+    await writeFileAtomic(sidecar, JSON.stringify(config, null, 2) + '\n');
+
+    await this.writeActiveMode('resolver');
+    if (cleanPrevious && prev !== 'resolver') await this.cleanupMode(prev);
+
+    const npmScript = { name: 'tokens:build', command: `node ${this.v5ScriptRel}` };
+    const npmAdded = await this.ensureNpmScript(npmScript);
+    return { ok: true, scriptPath: this.v5ScriptRel, npmScript, npmAdded, addedDependencies: [] };
+  }
+
+  /**
    * Write the v5 build script (matrix embedded) + ensure an npm script runs it,
    * and persist the matrix to a sidecar so reopening restores it. Does NOT run
    * the build — that stays the project's `npm run` (only test-build runs, sandboxed).
    */
-  async writeDistribution(matrix: DistMatrix): Promise<WriteDistributionResult> {
+  async writeDistribution(matrix: DistMatrix, cleanPrevious = false): Promise<WriteDistributionResult> {
     const root = this.pkgRoot();
+    const prev = this.readActiveMode();
     const scriptAbs = join(root, this.v5ScriptRel);
     await mkdir(dirname(scriptAbs), { recursive: true });
     await this.backupArbitrary(scriptAbs);
@@ -995,6 +1164,9 @@ export class ProjectManager extends EventEmitter {
     const sidecar = join(root, this.distSidecarRel);
     await mkdir(dirname(sidecar), { recursive: true });
     await writeFileAtomic(sidecar, JSON.stringify(matrix, null, 2) + '\n');
+
+    await this.writeActiveMode('style-dictionary');
+    if (cleanPrevious && prev !== 'style-dictionary') await this.cleanupMode(prev);
 
     const npmScript = { name: 'tokens:build', command: `node ${this.v5ScriptRel}` };
     const npmAdded = await this.ensureNpmScript(npmScript);

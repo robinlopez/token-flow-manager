@@ -8,6 +8,7 @@ import type {
   ConfigPatch,
   DistBuildReport,
   DistMatrix,
+  DistConfig,
   DistributionState,
   DtcgType,
   MutationResult,
@@ -353,13 +354,23 @@ export class ApiService {
   }
 
   /** Write the v5 build script + npm script and persist the matrix. */
-  writeDistribution(matrix: DistMatrix): Observable<WriteDistributionResult> {
-    return this.http.post<WriteDistributionResult>('/api/distribution/write', { matrix }, { params: this.params() });
+  writeDistribution(matrix: DistMatrix, cleanPrevious = false): Observable<WriteDistributionResult> {
+    return this.http.post<WriteDistributionResult>('/api/distribution/write', { matrix, cleanPrevious }, { params: this.params() });
+  }
+
+  /** Dry-run the deterministic resolver for a config (sandboxed; no writes). */
+  testBuildResolver(config: DistConfig): Observable<DistBuildReport> {
+    return this.http.post<DistBuildReport>('/api/distribution/resolver/test-build', { config }, { params: this.params() });
+  }
+
+  /** Write the resolver build script + npm script and persist the config. */
+  writeResolver(config: DistConfig, cleanPrevious = false): Observable<WriteDistributionResult> {
+    return this.http.post<WriteDistributionResult>('/api/distribution/resolver/write', { config, cleanPrevious }, { params: this.params() });
   }
 
   /** Link an existing external config + build command ("I have my config"). */
-  linkExisting(configPath: string, buildCommand: string): Observable<DistributionState> {
-    return this.http.post<DistributionState>('/api/distribution/link', { configPath, buildCommand }, { params: this.params() });
+  linkExisting(configPath: string, buildCommand: string, cleanPrevious = false): Observable<DistributionState> {
+    return this.http.post<DistributionState>('/api/distribution/link', { configPath, buildCommand, cleanPrevious }, { params: this.params() });
   }
 
   /** Remove the external-build pointer. */

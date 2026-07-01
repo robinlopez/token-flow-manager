@@ -117,6 +117,107 @@ export const DistributionCollectionSchema = z.object({
 });
 export type DistributionCollection = z.infer<typeof DistributionCollectionSchema>;
 
+// ---- Deterministic resolver (collection-centric, SD-free) ----
+//
+// The legacy matrix (sources × targets) drove a Style-Dictionary build that
+// *resolved* references to literal values and rendered each input topology
+// differently. The model below drives a deterministic, SD-free resolver whose
+// output is identical regardless of input topology (nested modes vs one file
+// per mode), keeps cross-collection references as `var(--…)` (outputReferences),
+// and emits one file per collection under a single destination. See
+// `packages/server/src/distribution-resolver.ts`.
+
+/** Where an axis' mode comes from in the INPUT. */
+export const ModeAxisSourceSchema = z.enum(['nested', 'files']);
+export type ModeAxisSource = z.infer<typeof ModeAxisSourceSchema>;
+
+/** How an axis' modes are rendered in the OUTPUT. */
+export const ModeStrategySchema = z.enum(['selectors', 'media', 'files']);
+export type ModeStrategy = z.infer<typeof ModeStrategySchema>;
+
+/**
+ * Output flavour (chosen per OUTPUT):
+ * - `css-vars`  → CSS custom properties under `:root` / attribute selectors (wrap).
+ * - `scss-vars` → flat SCSS `$variables` (e.g. breakpoints); no selectors.
+ * - `scss-mixin`→ a SCSS themes map + `@mixin` emitting CSS custom properties,
+ *   with per-brand activation classes (runtime switching from SCSS).
+ * - `ts`        → nested TypeScript objects (modes as keys); references inlined.
+ * - `json`      → nested JSON (modes as keys); references inlined.
+ */
+export const TokenFormatSchema = z.enum(['css-vars', 'scss-vars', 'scss-mixin', 'ts', 'json']);
+export type TokenFormat = z.infer<typeof TokenFormatSchema>;
+
+/**
+ * One mode dimension of a collection (brand, theme, viewport…). `default` is the
+ * mode emitted to `:root` (never duplicated); other modes go to `map[mode]`
+ * (a selector for `selectors`, a media condition for `media`, a file suffix for
+ * `files`). `fileMap` is required only when `source === 'files'`.
+ */
+export const ModeAxisSchema = z.object({
+  name: z.string(),
+  source: ModeAxisSourceSchema,
+  strategy: ModeStrategySchema,
+  /** Canonical mode id rendered to `:root` (no duplication). */
+  default: z.string(),
+  /** Mode id → selector (`selectors`) / media condition (`media`) / file suffix (`files`). */
+  map: z.record(z.string()).default({}),
+  /** Source file → canonical mode id. Required when `source === 'files'`. */
+  fileMap: z.record(z.string()).optional(),
+});
+export type ModeAxis = z.infer<typeof ModeAxisSchema>;
+
+/**
+ * One token collection: its tokens, naming, and mode topology/mapping. The
+ * mapping is interpreted per output format (selectors for CSS / SCSS-mixin,
+ * nested keys for TS / JSON, ignored by flat SCSS vars). Format is NOT here — it
+ * is chosen per {@link OutputSchema}, so the same collection can emit in several
+ * formats to different folders.
+ */
+export const DistCollectionConfigSchema = z.object({
+  id: z.string(),
+  /** Variable namespace; '' for none. Also the key references resolve against (`{id.path}`). */
+  prefix: z.string().default(''),
+  /** Keep the last segment's case (e.g. `$breakpoint-tabletPortrait`). SCSS only. */
+  preserveCase: z.boolean().default(false),
+  files: z.array(z.string()).default([]),
+  modeAxes: z.array(ModeAxisSchema).default([]),
+});
+export type DistCollectionConfig = z.infer<typeof DistCollectionConfigSchema>;
+
+/** One emitter: a format + destination folder + the collections it writes. */
+export const OutputSchema = z.object({
+  id: z.string(),
+  format: TokenFormatSchema.default('css-vars'),
+  /** Output directory (relative to project root). */
+  destination: z.string().default('src/styles/generated'),
+  /** Collection ids this output emits, or 'all'. */
+  collections: z.union([z.array(z.string()), z.literal('all')]).default('all'),
+});
+export type Output = z.infer<typeof OutputSchema>;
+
+/** The deterministic-resolver configuration (one per project). */
+export const DistConfigSchema = z.object({
+  sourceRoot: z.string().default(''),
+  /** Emit `tokens.manifest.json` (drives docs) into each output destination. */
+  manifest: z.boolean().default(true),
+  collections: z.array(DistCollectionConfigSchema).default([]),
+  /** One or more emitters (format × destination × collections). */
+  outputs: z.array(OutputSchema).default([]),
+});
+export type DistConfig = z.infer<typeof DistConfigSchema>;
+
+/**
+ * The one build mode a project is actively configured in. A project can hold
+ * several sidecars on disk (they are independent), so the active mode is the
+ * source of truth for routing and for arbitrating the shared build script:
+ * - `resolver`         → deterministic SD-free build (`distribution.config.json`).
+ * - `style-dictionary` → Style Dictionary matrix build (`distribution.json`).
+ * - `linked`           → an external build the project owns (`distribution-link.json`).
+ * - `none`             → nothing configured yet.
+ */
+export const DistributionModeSchema = z.enum(['resolver', 'style-dictionary', 'linked', 'none']);
+export type DistributionMode = z.infer<typeof DistributionModeSchema>;
+
 /** Full snapshot the Distribution UI renders from. */
 export const DistributionStateSchema = z.object({
   /** Stable id of the open project (its root) — scopes client-side drafts so they never leak across projects. */
@@ -141,6 +242,23 @@ export const DistributionStateSchema = z.object({
   sdVersion: SdVersionInfoSchema,
   /** Previously-saved v5 matrix (sidecar `.tokenflow/distribution.json`), if any. */
   savedMatrix: z.unknown().nullable(),
+  /**
+   * Deterministic-resolver config to hydrate the wizard from: the new sidecar
+   * (`.tokenflow/distribution.config.json`) if present, else a best-effort
+   * migration of `savedMatrix`, else null.
+   */
+  savedConfig: DistConfigSchema.nullable(),
+  /** Auto-detected config proposal (topology + editable mode→selector map) the wizard starts from. */
+  proposedConfig: DistConfigSchema,
+  /** A deterministic-resolver config was saved to this project (the new sidecar exists). */
+  resolverConfigured: z.boolean(),
+  /**
+   * The build mode this project is actively configured in — the explicit
+   * mode-file (`.tokenflow/distribution.mode.json`) if present, else inferred
+   * from which sidecars exist (`resolver > style-dictionary > linked`). Drives
+   * routing and the "switch mode" warnings.
+   */
+  activeMode: DistributionModeSchema,
   /** Relative path of a written v5 build script, if present. */
   v5ScriptPath: z.string().nullable(),
   /** Pointer to an external build the project already owns ("I have my config"). */
@@ -252,13 +370,34 @@ export const TestBuildRequestSchema = z.object({ matrix: DistMatrixSchema });
 export type TestBuildRequest = z.infer<typeof TestBuildRequestSchema>;
 
 /** Write the v5 build script + npm script, and persist the matrix. */
-export const WriteDistributionRequestSchema = z.object({ matrix: DistMatrixSchema });
+export const WriteDistributionRequestSchema = z.object({
+  matrix: DistMatrixSchema,
+  /** Also remove the previously-active mode's sidecar (and unused deps) so detection stays unambiguous. */
+  cleanPrevious: z.boolean().optional(),
+});
 export type WriteDistributionRequest = z.infer<typeof WriteDistributionRequestSchema>;
+
+// ---- Deterministic-resolver requests (collection-centric config) ----
+
+/** Dry-run the deterministic resolver for a config (sandboxed, no writes). */
+export const ResolverTestBuildRequestSchema = z.object({ config: DistConfigSchema });
+export type ResolverTestBuildRequest = z.infer<typeof ResolverTestBuildRequestSchema>;
+
+/** Write the resolver build script + npm script, and persist the config. */
+export const ResolverWriteRequestSchema = z.object({
+  config: DistConfigSchema,
+  /** Also remove the previously-active mode's sidecar (and unused deps) so detection stays unambiguous. */
+  cleanPrevious: z.boolean().optional(),
+});
+export type ResolverWriteRequest = z.infer<typeof ResolverWriteRequestSchema>;
 
 // ---- "I have my own config" — link an external build ----
 
 /** Link an existing config + build command (persisted to a sidecar). */
-export const LinkConfigRequestSchema = LinkedConfigSchema;
+export const LinkConfigRequestSchema = LinkedConfigSchema.extend({
+  /** Also remove the previously-active managed mode's sidecar so detection stays unambiguous. */
+  cleanPrevious: z.boolean().optional(),
+});
 export type LinkConfigRequest = z.infer<typeof LinkConfigRequestSchema>;
 
 /** Run the project's real build command (cwd = root). WRITES real outputs. */
@@ -278,3 +417,88 @@ export const WriteDistributionResultSchema = z.object({
   error: z.string().optional(),
 });
 export type WriteDistributionResult = z.infer<typeof WriteDistributionResultSchema>;
+
+// ---- Migration: legacy DistMatrix → DistConfig ----
+
+/** Pick the mode best suited to be the `:root` default (light / brand1 / mobile / first). */
+function pickDefaultMode(modes: string[]): string {
+  return (
+    modes.find((m) => /(^|[^a-z])(light|default)([^a-z]|$)/i.test(m)) ??
+    modes.find((m) => /(brand|theme)?-?0*1$/i.test(m)) ??
+    modes.find((m) => /mobile|base|phone/i.test(m)) ??
+    modes[0] ??
+    ''
+  );
+}
+
+/** Map a legacy Style Dictionary format string to a resolver output format. */
+function mapLegacyFormat(f: string): TokenFormat {
+  if (f.startsWith('scss')) return 'scss-vars';
+  if (f.startsWith('css') || f.startsWith('less')) return 'css-vars';
+  if (f.startsWith('javascript') || f.startsWith('typescript')) return 'ts';
+  if (f.startsWith('json')) return 'json';
+  return 'css-vars';
+}
+
+/**
+ * Best-effort migration of a saved legacy matrix (sources × targets, SD-based)
+ * to the deterministic-resolver config. Each source becomes a collection (with
+ * its `modeAxes` folded from the first styled target's rendering); each target
+ * becomes an output (format × destination × collections). Degrades gracefully.
+ */
+export function matrixToConfig(raw: unknown): DistConfig {
+  const m = DistMatrixSchema.safeParse(raw);
+  if (!m.success) return DistConfigSchema.parse({});
+  const matrix = m.data;
+
+  const styled = matrix.targets.filter((t) => mapLegacyFormat(t.format) !== 'ts' && mapLegacyFormat(t.format) !== 'json');
+  const primary = styled[0] ?? matrix.targets[0];
+
+  const collections: DistCollectionConfig[] = matrix.sources.map((s) => {
+    // The first styled target that emits this source supplies prefix/rendering.
+    const t = styled.find((x) => x.sources === 'all' || x.sources.includes(s.id)) ?? primary;
+    const rendering = t?.rendering?.[s.id];
+
+    const fileVariants = s.variants.filter((v) => v.file);
+    const modeVariants = s.variants.filter((v) => !v.file);
+    const modeAxes: ModeAxis[] = [];
+
+    const explicit = rendering?.strategy;
+    const strategy: ModeStrategy =
+      explicit === 'selectors' || explicit === 'media' || explicit === 'files'
+        ? explicit
+        : fileVariants.length
+          ? 'files'
+          : 'selectors';
+
+    if (fileVariants.length) {
+      const modes = fileVariants.map((v) => v.name);
+      modeAxes.push({
+        name: 'variant', source: 'files', strategy, default: pickDefaultMode(modes),
+        map: { ...(rendering?.map ?? {}) },
+        fileMap: Object.fromEntries(fileVariants.map((v) => [v.file as string, v.name])),
+      });
+    } else if (modeVariants.length) {
+      const modes = modeVariants.map((v) => v.name);
+      modeAxes.push({ name: 'mode', source: 'nested', strategy, default: pickDefaultMode(modes), map: { ...(rendering?.map ?? {}) } });
+    }
+
+    return DistCollectionConfigSchema.parse({
+      id: s.id,
+      prefix: t?.prefix ?? s.wrapUnder ?? '',
+      preserveCase: /break\s*points?/i.test(s.id),
+      files: s.files,
+      modeAxes,
+    });
+  });
+
+  const targets = matrix.targets.length ? matrix.targets : [{ id: 'css', format: 'css/variables', destination: 'src/styles/generated', sources: 'all' as const }];
+  const outputs: Output[] = targets.map((t, i) => ({
+    id: t.id || `out-${i}`,
+    format: mapLegacyFormat(t.format),
+    destination: t.destination || 'src/styles/generated',
+    collections: t.sources === 'all' ? 'all' : [...t.sources],
+  }));
+
+  return DistConfigSchema.parse({ sourceRoot: matrix.sourceRoot, manifest: true, collections, outputs });
+}

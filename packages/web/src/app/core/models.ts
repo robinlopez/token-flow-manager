@@ -302,6 +302,8 @@ export interface LinkedConfig {
   configPath: string;
   buildCommand: string;
 }
+/** The one build mode a project is actively configured in. */
+export type DistributionMode = 'resolver' | 'style-dictionary' | 'linked' | 'none';
 export interface DistributionState {
   /** Stable id of the open project (its root) — scopes client-side drafts. */
   projectId: string;
@@ -317,6 +319,14 @@ export interface DistributionState {
   sdVersion: SdVersionInfo;
   /** Previously-saved v5 matrix (server sidecar), if any. */
   savedMatrix: DistMatrix | null;
+  /** Deterministic-resolver config to hydrate the wizard from (new sidecar or migrated), if any. */
+  savedConfig: DistConfig | null;
+  /** Auto-detected config proposal (topology + editable mode→selector map). */
+  proposedConfig: DistConfig;
+  /** A deterministic-resolver config was saved to this project (new sidecar exists). */
+  resolverConfigured: boolean;
+  /** The build mode this project is actively configured in (drives routing + switch warnings). */
+  activeMode: DistributionMode;
   /** Relative path of a written v5 build script, if present. */
   v5ScriptPath: string | null;
   /** Pointer to an external build the project already owns ("I have my config"). */
@@ -370,6 +380,41 @@ export interface DistMatrix {
   sources: MatrixSource[];
   targets: MatrixTarget[];
   tokensStudio?: boolean;
+}
+
+// ---- Deterministic resolver (collection-centric, SD-free) — Phase 5 ----
+export type ModeAxisSource = 'nested' | 'files';
+export type ModeStrategy = 'selectors' | 'media' | 'files';
+export type TokenFormat = 'css-vars' | 'scss-vars' | 'scss-mixin' | 'ts' | 'json';
+export interface ModeAxis {
+  name: string;
+  source: ModeAxisSource;
+  strategy: ModeStrategy;
+  /** Canonical mode id rendered to `:root`. */
+  default: string;
+  /** Mode id → selector / media condition / file suffix. */
+  map: Record<string, string>;
+  /** Source file → canonical mode id (required when source === 'files'). */
+  fileMap?: Record<string, string>;
+}
+export interface DistCollectionConfig {
+  id: string;
+  prefix: string;
+  preserveCase: boolean;
+  files: string[];
+  modeAxes: ModeAxis[];
+}
+export interface Output {
+  id: string;
+  format: TokenFormat;
+  destination: string;
+  collections: string[] | 'all';
+}
+export interface DistConfig {
+  sourceRoot: string;
+  manifest: boolean;
+  collections: DistCollectionConfig[];
+  outputs: Output[];
 }
 export interface BuildDiagnostic {
   level: 'error' | 'warn';
