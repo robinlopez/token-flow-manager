@@ -416,7 +416,8 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                     } @else {
                       <div
                         class="flex-1 min-w-0 overflow-hidden"
-                        [class.cursor-pointer]="isAliasValue(token.rawValuesByMode[mode.id]) || token.type === 'color' || isCompositeValue(token, mi)"
+                        [class.cursor-pointer]="isAliasValue(token.rawValuesByMode[mode.id]) || isCompositeValue(token, mi)"
+                        [class.cursor-text]="token.type === 'color' && !isAliasValue(token.rawValuesByMode[mode.id]) && !isCompositeValue(token, mi)"
                         (click)="onCellClick(token, mi, $event); $event.stopPropagation()"
                       >
                         <tf-value-cell
@@ -1271,18 +1272,23 @@ export class VariablesTableComponent {
    * Single click on a value cell:
    *  - composite (object) → open the structured field editor,
    *  - alias → open the token picker (Libraries) to re-link, type-aware,
-   *  - colour literal → open the colour picker (Custom tab),
+   *  - colour literal → the swatch bullet opens the colour picker (Custom tab);
+   *    clicking the hex value text edits the cell inline (type a new value),
    *  - otherwise nothing (double-click edits the raw value).
    */
   onCellClick(token: ParsedToken, modeIndex: number, event: Event): void {
     const mode = this.modes()[modeIndex];
     if (!mode) return;
     const raw = token.rawValuesByMode[mode.id];
-    // Composite object → open the structured field editor (also reachable via the
-    // cell's edit icon); alias → re-link picker; colour literal → colour picker.
     if (this.isCompositeValue(token, modeIndex)) this.openComposite(token, modeIndex);
     else if (isAliasValue(raw)) this.openPicker(token, modeIndex, 'libraries', event);
-    else if (token.type === 'color' && raw != null) this.openPicker(token, modeIndex, 'custom', event);
+    else if (token.type === 'color' && raw != null) {
+      // The colour picker opens only from the swatch bullet; clicking the value
+      // text edits the cell so a hex can be typed directly.
+      const onSwatch = (event.target as HTMLElement | null)?.closest('.checker');
+      if (onSwatch) this.openPicker(token, modeIndex, 'custom', event);
+      else this.startEditRaw(token, modeIndex);
+    }
   }
 
   // ---- Numeric quick-edit (dimension / number): steppers + ↑/↓ ----
