@@ -39,6 +39,14 @@ export class UiService {
   readonly settingsTab = signal<string | null>(null);
   readonly helpOpen = signal(false);
   readonly distributionOpen = signal(false);
+  readonly paletteEditorTarget = signal<{ collection: string; groupPath: string[] } | null>(null);
+
+  openPaletteEditor(collection: string, groupPath: string[]): void {
+    this.paletteEditorTarget.set({ collection, groupPath });
+  }
+  closePaletteEditor(): void {
+    this.paletteEditorTarget.set(null);
+  }
 
   /** Transient status message (e.g. after undo/redo). Auto-clears. */
   readonly toast = signal<string | null>(null);

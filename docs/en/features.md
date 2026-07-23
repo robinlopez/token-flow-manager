@@ -23,6 +23,37 @@ icon: lucide/sparkles
   rows immediately and moves them on paste; copy duplicates.
 - **Undo / redo** (++cmd+z++ / ++cmd+shift+z++): byte-exact and server-side.
 
+## Colour palettes (shading)
+
+Generate and edit a full shaded scale (50 → 900) from a single base colour — no more
+copy-pasting each step from an external tool.
+
+Open the **palette editor** from the palette icon on a colour group's header. It detects
+the group's steps, uses `500` as the base (or the middle step), and builds a
+perceptually-even **OKLCH** ramp you tune live:
+
+- **Base colour per mode**: each mode (light/dark, brands…) has its own anchor, picked
+  with the app's colour picker; each mode's column is generated independently.
+- **Steps**: click a chip to set the base, ++x++ to remove a step, or type a name to add
+  one.
+- **Ramp**: lightest / darkest lightness, chroma falloff (desaturation towards the
+  extremes), hue shift, and the lightness distribution (linear / ease / …), with a live
+  preview.
+- **Generate** writes the step tokens; the base keeps its exact colour.
+
+A step you edit by hand becomes **detached**: it is preserved on regenerate (its preview
+is frozen too) until you re-link it. In the variables table, a group driven by a recipe
+shows a **Palette** badge, the base step a ◆ marker, and generated steps a link icon.
+
+!!! tip "Recipes survive a Figma round-trip"
+
+    The shading recipe (base, steps, curve) is stored in `tokenflow.config.json` — a
+    versioned, tool-only file that is **never sent to Figma**, so an export can't wipe it
+    (Figma has no group entity to carry it). The generated steps themselves are ordinary,
+    portable DTCG colour tokens.
+
+![Palette shading editor open on a colour group](assets/screenshots/palette-shader.webp)
+
 ## Finding & fixing
 
 - **Search** (++cmd+s++) and filters: aliases, deprecated, orphans, errors, plus a

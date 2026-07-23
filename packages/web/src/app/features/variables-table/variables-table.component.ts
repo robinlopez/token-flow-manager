@@ -243,6 +243,27 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                 <path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
               </svg>
             </button>
+            @if (isPaletteGroup(g)) {
+              <button
+                type="button"
+                class="ml-0.5 flex items-center gap-1 h-5 px-1.5 rounded text-[11px] font-medium transition-colors"
+                [class.text-forge-700]="hasPaletteRecipe(g)"
+                [class.bg-forge-50]="hasPaletteRecipe(g)"
+                [class.text-ink-400]="!hasPaletteRecipe(g)"
+                [class.hover:text-forge-600]="!hasPaletteRecipe(g)"
+                [class.hover:bg-ink-100]="!hasPaletteRecipe(g)"
+                [class.opacity-0]="!hasPaletteRecipe(g)"
+                [class.group-hover/header:opacity-100]="!hasPaletteRecipe(g)"
+                [title]="hasPaletteRecipe(g) ? 'Edit this palette' : 'Generate a shaded palette from a base colour'"
+                (click)="openPalette(g)"
+              >
+                <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="13.5" cy="6.5" r="2.5" /><circle cx="17.5" cy="10.5" r="2.5" /><circle cx="8.5" cy="7.5" r="2.5" /><circle cx="6.5" cy="12.5" r="2.5" />
+                  <path d="M12 2a10 10 0 1 0 0 20 2.5 2.5 0 0 0 2-4 2.5 2.5 0 0 1 2-4h1a4 4 0 0 0 4-4 10 10 0 0 0-9-8Z" />
+                </svg>
+                @if (hasPaletteRecipe(g)) { <span>Palette</span> }
+              </button>
+            }
           </div>
 
           <div
@@ -332,6 +353,25 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                         >{{ glyph(token) }}</span
                       >
                       <span class="text-sm text-ink-900 truncate">{{ leaf(token) }}</span>
+                      @if (paletteRole(token); as role) {
+                        @switch (role) {
+                          @case ('base') {
+                            <svg class="w-3.5 h-3.5 shrink-0 text-forge-600" viewBox="0 0 24 24" fill="currentColor" title="Palette base (reference colour)">
+                              <circle cx="12" cy="12" r="5" />
+                            </svg>
+                          }
+                          @case ('derived') {
+                            <svg class="w-3.5 h-3.5 shrink-0 text-ink-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="Generated from the palette base">
+                              <path d="M9 17H7A5 5 0 0 1 7 7h2" /><path d="M15 7h2a5 5 0 0 1 0 10h-2" /><line x1="8" y1="12" x2="16" y2="12" />
+                            </svg>
+                          }
+                          @case ('detached') {
+                            <svg class="w-3.5 h-3.5 shrink-0 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="Detached — edited by hand, preserved on regenerate">
+                              <path d="M9 17H7A5 5 0 0 1 5.5 8.5" /><path d="M15 7h2a5 5 0 0 1 1.5 8.5" /><line x1="4" y1="4" x2="20" y2="20" />
+                            </svg>
+                          }
+                        }
+                      }
                       @if (token.deprecated) {
                         <span
                           class="text-[10px] uppercase text-ink-400 border border-ink-200 rounded px-1"
@@ -819,6 +859,36 @@ export class VariablesTableComponent {
     const first = section.tokens[0]?.type;
     const type: DtcgType = first && first !== 'unknown' ? (first as DtcgType) : 'color';
     void this.store.createVariable(type, section.parentPath);
+  }
+
+  // ---- Palette shading ----
+
+  isPaletteGroup(section: Section): boolean {
+    if (!section.parentPath.length) return false;
+    if (this.hasPaletteRecipe(section)) return true;
+    const colors = section.tokens.filter((t) => t.type === 'color');
+    return colors.length >= 1 && colors.length === section.tokens.length;
+  }
+
+  hasPaletteRecipe(section: Section): boolean {
+    const col = this.store.currentCollectionName();
+    return !!col && !!this.store.paletteFor(col, section.parentPath);
+  }
+
+  openPalette(section: Section): void {
+    const col = this.store.currentCollectionName();
+    if (col) this.ui.openPaletteEditor(col, section.parentPath);
+  }
+
+  paletteRole(token: ParsedToken): 'base' | 'derived' | 'detached' | null {
+    if (token.path.length < 2) return null;
+    const recipe = this.store.paletteFor(token.collection, token.path.slice(0, -1));
+    if (!recipe) return null;
+    const step = token.path[token.path.length - 1]!;
+    if (step === recipe.baseStep) return 'base';
+    if (recipe.detached.includes(step)) return 'detached';
+    if (recipe.steps.includes(step)) return 'derived';
+    return null;
   }
 
   // ---- Rename a group via its divider ----

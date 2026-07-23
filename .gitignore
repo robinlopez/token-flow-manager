@@ -22,6 +22,7 @@ sandbox/
 
 # GitHub release notes (drafted locally, pasted into the GitHub Releases UI)
 /RELEASE-*.md
+/PALETTE-SHADING.md
 
 # npm pack tarballs (release artifacts, attached to GitHub Releases)
 *.tgz

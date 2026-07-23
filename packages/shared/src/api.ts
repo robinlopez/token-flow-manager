@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { DtcgTypeSchema, ParsedTokenSchema, ModeDefinitionSchema } from './model.js';
 import { DiagnosticSchema } from './diagnostics.js';
+import { PaletteRecipeSchema } from './palette.js';
 
 /** Lightweight collection summary (no tokens) for the sidebar/list. */
 export const CollectionSummarySchema = z.object({
@@ -337,6 +338,24 @@ export const CopyTokenToRequestSchema = z.object({
   targetParentPath: z.array(z.string()),
 });
 export type CopyTokenToRequest = z.infer<typeof CopyTokenToRequestSchema>;
+
+// ---- Palette shading recipes ----
+
+export const PalettesResponseSchema = z.object({
+  palettes: z.array(PaletteRecipeSchema),
+});
+export type PalettesResponse = z.infer<typeof PalettesResponseSchema>;
+
+export const SavePaletteRequestSchema = z.object({
+  recipe: PaletteRecipeSchema,
+});
+export type SavePaletteRequest = z.infer<typeof SavePaletteRequestSchema>;
+
+export const DeletePaletteRequestSchema = z.object({
+  collection: z.string(),
+  groupPath: z.array(z.string()),
+});
+export type DeletePaletteRequest = z.infer<typeof DeletePaletteRequestSchema>;
 
 export const ApplyQuickFixRequestSchema = z.object({
   tokenId: z.string(),

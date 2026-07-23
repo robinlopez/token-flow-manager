@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { ContextMenuService, type ContextMenuItem } from '../core/context-menu.service';
 
 /** Renders the app's single floating context menu (driven by ContextMenuService). */
@@ -8,7 +16,6 @@ import { ContextMenuService, type ContextMenuItem } from '../core/context-menu.s
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(document:keydown.escape)': 'menu.close()',
-    '(document:contextmenu)': 'onGlobalContextMenu($event)',
   },
   template: `
     @if (menu.state(); as s) {
@@ -20,9 +27,10 @@ import { ContextMenuService, type ContextMenuItem } from '../core/context-menu.s
         (contextmenu)="menu.close(); $event.preventDefault()"
       ></div>
       <div
+        #menuEl
         class="fixed z-[101] min-w-[180px] py-1 bg-white border border-ink-200 rounded-lg shadow-xl text-sm"
-        [style.left.px]="clampX(s.x)"
-        [style.top.px]="clampY(s.y)"
+        [style.left.px]="pos().left"
+        [style.top.px]="pos().top"
       >
         @for (item of s.items; track item.label) {
           <button
@@ -41,22 +49,53 @@ import { ContextMenuService, type ContextMenuItem } from '../core/context-menu.s
 })
 export class ContextMenuComponent {
   readonly menu = inject(ContextMenuService);
+  private readonly menuEl = viewChild<ElementRef<HTMLElement>>('menuEl');
+
+  /** Where the menu is actually painted, kept inside the viewport. */
+  readonly pos = signal<{ left: number; top: number }>({ left: 0, top: 0 });
+
+  private static readonly MARGIN = 8;
+  /** Fallback item height (px) used to seed the position before measuring. */
+  private static readonly EST_ITEM_H = 33;
+
+  constructor() {
+    // On open, seed a viewport-safe position (estimated), then refine it against
+    // the menu's real measured size once it is in the DOM.
+    effect(() => {
+      const s = this.menu.state();
+      if (!s) return;
+      const estH = s.items.length * ContextMenuComponent.EST_ITEM_H + 8;
+      this.pos.set(this.fit(s.x, s.y, 200, estH));
+      queueMicrotask(() => {
+        const el = this.menuEl()?.nativeElement;
+        if (el) this.pos.set(this.fit(s.x, s.y, el.offsetWidth, el.offsetHeight));
+      });
+    });
+  }
+
+  /**
+   * Clamp/flip a menu of size `w`×`h` so it stays fully on screen: prefer opening
+   * to the right/below the cursor, flip to the left/above when it would overflow,
+   * and clamp as a last resort so no edge is ever clipped.
+   */
+  private fit(x: number, y: number, w: number, h: number): { left: number; top: number } {
+    const m = ContextMenuComponent.MARGIN;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    let left = x;
+    if (left + w + m > vw) left = x - w; // flip to the left of the cursor
+    left = Math.max(m, Math.min(left, vw - w - m));
+
+    let top = y;
+    if (top + h + m > vh) top = y - h >= m ? y - h : vh - h - m; // flip above, else clamp
+    top = Math.max(m, Math.min(top, vh - h - m));
+
+    return { left, top };
+  }
 
   run(item: ContextMenuItem): void {
     this.menu.close();
     if (!item.disabled) item.action();
-  }
-
-  /** Close our own menu when a NEW context menu opens elsewhere is handled by the
-   * service; here we just keep the menu from overflowing the viewport. */
-  onGlobalContextMenu(_event: MouseEvent): void {
-    /* the element handlers call menu.open() which replaces the state */
-  }
-
-  clampX(x: number): number {
-    return Math.min(x, window.innerWidth - 200);
-  }
-  clampY(y: number): number {
-    return Math.min(y, window.innerHeight - 160);
   }
 }

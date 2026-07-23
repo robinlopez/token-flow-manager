@@ -1,6 +1,7 @@
 export * from './dtcg.js';
 export * from './diagnostics.js';
 export * from './model.js';
+export * from './palette.js';
 export * from './config.js';
 export * from './manifest.js';
 export * from './distribution.js';

@@ -14,6 +14,7 @@ import type {
   MutationResult,
   TokenConfigManifest,
   ParsedToken,
+  PaletteRecipe,
   ProjectConfig,
   ProjectState,
   RecentProject,
@@ -324,6 +325,27 @@ export class ApiService {
       { tokenId, action, mode, data },
       { params: this.params() },
     );
+  }
+
+  // ---- Palette shading recipes ----
+
+  getPalettes(): Observable<{ palettes: PaletteRecipe[] }> {
+    return this.http.get<{ palettes: PaletteRecipe[] }>('/api/palettes', { params: this.params() });
+  }
+
+  savePalette(recipe: PaletteRecipe): Observable<{ palettes: PaletteRecipe[] }> {
+    return this.http.put<{ palettes: PaletteRecipe[] }>(
+      '/api/palettes',
+      { recipe },
+      { params: this.params() },
+    );
+  }
+
+  deletePalette(collection: string, groupPath: string[]): Observable<{ palettes: PaletteRecipe[] }> {
+    return this.http.delete<{ palettes: PaletteRecipe[] }>('/api/palettes', {
+      params: this.params(),
+      body: { collection, groupPath },
+    });
   }
 
   // ---- Distribution (Phase 4 — token-config.json) ----

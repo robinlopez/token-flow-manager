@@ -52,6 +52,7 @@ async function loadSettings(root: string): Promise<{
   writeDebounceMs: number;
   strictTypes: boolean;
   inferTypes: boolean;
+  palettes: TokenflowConfig['palettes'];
 }> {
   for (const name of CANDIDATES) {
     const file = join(root, name);
@@ -74,6 +75,7 @@ async function loadSettings(root: string): Promise<{
         writeDebounceMs: parsed.writeDebounceMs,
         strictTypes: parsed.strictTypes,
         inferTypes: parsed.inferTypes,
+        palettes: parsed.palettes,
       };
     } catch {
       break;
@@ -84,6 +86,7 @@ async function loadSettings(root: string): Promise<{
     writeDebounceMs: 200,
     strictTypes: false,
     inferTypes: true,
+    palettes: undefined,
   };
 }
 
@@ -108,6 +111,7 @@ export async function loadConfig(root: string): Promise<LoadedConfig> {
             writeDebounceMs: settings.writeDebounceMs,
             strictTypes: settings.strictTypes,
             inferTypes: settings.inferTypes,
+            palettes: settings.palettes,
           }),
           source: join(root, ORG_MANIFEST_NAME),
           organizationSource: 'manifest',
@@ -163,6 +167,7 @@ export async function loadConfig(root: string): Promise<LoadedConfig> {
       writeDebounceMs: parsed.writeDebounceMs,
       strictTypes: parsed.strictTypes,
       inferTypes: parsed.inferTypes,
+      palettes: parsed.palettes,
     });
   }
 
@@ -184,6 +189,7 @@ async function autoOrganization(root: string, settings: Settings): Promise<Loade
       writeDebounceMs: settings.writeDebounceMs,
       strictTypes: settings.strictTypes,
       inferTypes: settings.inferTypes,
+      palettes: settings.palettes,
     }),
     source: null,
     organizationSource: 'auto',

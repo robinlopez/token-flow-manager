@@ -11,6 +11,8 @@ import {
   ApplyQuickFixRequestSchema,
   SearchFiltersSchema,
   UpdateConfigRequestSchema,
+  SavePaletteRequestSchema,
+  DeletePaletteRequestSchema,
   ReorderRequestSchema,
   MoveTokensRequestSchema,
   AddModeRequestSchema,
@@ -183,6 +185,24 @@ function registerApiRoutes(
     if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
     const config = await project.updateSettings(parsed.data);
     return { config };
+  });
+
+  // ---- Palette shading recipes ----
+
+  app.get('/api/palettes', async () => ({ palettes: project.getPalettes() }));
+
+  app.put<{ Body: unknown }>('/api/palettes', async (req, reply) => {
+    const parsed = SavePaletteRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    const palettes = await project.savePalette(parsed.data.recipe);
+    return { palettes };
+  });
+
+  app.delete<{ Body: unknown }>('/api/palettes', async (req, reply) => {
+    const parsed = DeletePaletteRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    const palettes = await project.deletePalette(parsed.data.collection, parsed.data.groupPath);
+    return { palettes };
   });
 
   app.get<{ Params: { name: string } }>('/api/collections/:name', async (req, reply) => {
