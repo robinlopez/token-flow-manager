@@ -15,6 +15,7 @@ import { WelcomeComponent } from './features/welcome/welcome.component';
 import { ProjectSwitcherComponent } from './features/project-switcher/project-switcher.component';
 import { ContextMenuComponent } from './ui/context-menu.component';
 import { CellPickerComponent } from './ui/cell-picker.component';
+import { PaletteEditorComponent } from './features/palette-editor/palette-editor.component';
 import { SetupBannerComponent } from './features/setup/setup-banner.component';
 import { APP_VERSION } from './core/version';
 
@@ -36,6 +37,7 @@ import { APP_VERSION } from './core/version';
     ProjectSwitcherComponent,
     ContextMenuComponent,
     CellPickerComponent,
+    PaletteEditorComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -234,6 +236,7 @@ import { APP_VERSION } from './core/version';
     <tf-shortcuts-help />
     <tf-context-menu />
     <tf-cell-picker />
+    <tf-palette-editor />
 
     @if (toast()) {
       <div
@@ -293,7 +296,7 @@ export class AppComponent {
       target?.closest(
         '.tf-row, tf-sidebar, tf-inspector, tf-toolbar, tf-context-menu, ' +
           'tf-cell-picker, tf-command-palette, tf-settings, tf-distribution, ' +
-          'tf-diagnostics, tf-shortcuts-help',
+          'tf-diagnostics, tf-shortcuts-help, tf-palette-editor',
       )
     ) {
       return;

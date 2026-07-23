@@ -24,6 +24,40 @@ icon: lucide/sparkles
   couper masque les lignes immédiatement et les déplace au collage ; copier duplique.
 - **Annuler / Rétablir** (++cmd+z++ / ++cmd+shift+z++) : exact à l'octet, côté serveur.
 
+## Palettes de couleurs (shading)
+
+Générez et éditez une échelle complète (50 → 900) à partir d'une seule couleur de base —
+fini le copier-coller de chaque niveau depuis un outil externe.
+
+Ouvrez l'**éditeur de palette** via l'icône palette sur l'en-tête d'un groupe de couleurs.
+Il détecte les niveaux du groupe, prend `500` comme base (ou le niveau du milieu) et
+construit une rampe **OKLCH** perceptuellement régulière, réglable en direct :
+
+- **Couleur de base par mode** : chaque mode (clair/sombre, marques…) a sa propre couleur
+  d'ancrage, choisie avec le color picker de l'application ; la colonne de chaque mode est
+  générée indépendamment.
+- **Niveaux** : cliquez un chip pour définir la base, ++x++ pour retirer un niveau, ou
+  saisissez un nom pour en ajouter un.
+- **Rampe** : luminosité la plus claire / la plus sombre, atténuation du chroma
+  (désaturation vers les extrêmes), décalage de teinte et distribution de la luminosité
+  (linéaire / ease / …), avec un aperçu en direct.
+- **Générer** écrit les tokens de niveau ; la base garde sa couleur exacte.
+
+Un niveau édité à la main devient **détaché** : il est préservé à la régénération (son
+aperçu est figé lui aussi) jusqu'à ce que vous le re-liiez. Dans le tableau des variables,
+un groupe piloté par une recette affiche un badge **Palette**, le niveau de base un
+marqueur ◆, et les niveaux générés une icône de lien.
+
+!!! tip "Les recettes survivent à un aller-retour Figma"
+
+    La recette de shading (base, niveaux, courbe) est stockée dans
+    `tokenflow.config.json` — un fichier versionné, propre à l'outil, qui n'est **jamais
+    envoyé à Figma**, donc un export ne peut pas l'effacer (Figma n'a pas de notion de
+    groupe pour la porter). Les niveaux générés, eux, sont des tokens couleur DTCG
+    ordinaires et portables.
+
+![Éditeur de palette (shading) ouvert sur un groupe de couleurs](assets/screenshots/palette-shader.webp)
+
 ## Rechercher et corriger
 
 - **Recherche** (++cmd+s++) et filtres : alias, dépréciés, orphelins, erreurs, ainsi

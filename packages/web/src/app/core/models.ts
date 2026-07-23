@@ -210,6 +210,53 @@ export interface ProjectConfig {
   writeDebounceMs: number;
   strictTypes: boolean;
   inferTypes: boolean;
+  palettes?: PaletteRecipe[];
+}
+
+// ---- Palette shading recipes (mirror of @tokenflow/shared) ----
+
+export type PaletteEasing = 'linear' | 'ease' | 'ease-in' | 'ease-out';
+
+export interface PaletteCurve {
+  /** OKLCH lightness of the lightest step (0..1). */
+  lightMax: number;
+  /** OKLCH lightness of the darkest step (0..1). */
+  lightMin: number;
+  /** 0 = keep base chroma flat; 1 = fully desaturate towards the extremes. */
+  chromaFalloff: number;
+  easing: PaletteEasing;
+  /** Hue rotation (deg) at the lightest end. */
+  hueShiftLight: number;
+  /** Hue rotation (deg) at the darkest end. */
+  hueShiftDark: number;
+}
+
+export interface PaletteRecipe {
+  collection: string;
+  /** Path of the palette group; its children are the steps. */
+  groupPath: string[];
+  /** Step leaf names, lightest → darkest (e.g. `['50',…,'900']`). */
+  steps: string[];
+  /** Anchor step whose colour is user-set, not generated. */
+  baseStep: string;
+  /** Per-mode anchor colour as a hex string. */
+  bases: Record<string, string>;
+  curve: PaletteCurve;
+  /** Steps detached from the recipe (manual overrides preserved on regen). */
+  detached: string[];
+}
+
+export const DEFAULT_CURVE: PaletteCurve = {
+  lightMax: 0.97,
+  lightMin: 0.15,
+  chromaFalloff: 0.4,
+  easing: 'ease',
+  hueShiftLight: 0,
+  hueShiftDark: 0,
+};
+
+export function paletteKey(collection: string, groupPath: string[]): string {
+  return collection + ' ' + groupPath.join('.');
 }
 
 /** Partial config patch sent to PATCH /api/config. */

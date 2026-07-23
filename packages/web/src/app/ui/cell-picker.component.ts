@@ -76,13 +76,15 @@ interface LibGroup {
               (click)="tab.set('custom')"
             >Custom</button>
           }
-          <button
-            class="px-2.5 py-1 rounded-md text-xs font-medium transition-colors"
-            [class.bg-ink-100]="tab() === 'libraries'"
-            [class.text-ink-900]="tab() === 'libraries'"
-            [class.text-ink-400]="tab() !== 'libraries'"
-            (click)="tab.set('libraries')"
-          >Libraries</button>
+          @if (!tgt.customOnly) {
+            <button
+              class="px-2.5 py-1 rounded-md text-xs font-medium transition-colors"
+              [class.bg-ink-100]="tab() === 'libraries'"
+              [class.text-ink-900]="tab() === 'libraries'"
+              [class.text-ink-400]="tab() !== 'libraries'"
+              (click)="tab.set('libraries')"
+            >Libraries</button>
+          }
           <span class="flex-1"></span>
           <button
             class="w-6 h-6 flex items-center justify-center rounded text-ink-400 hover:bg-ink-100"
@@ -375,9 +377,9 @@ export class CellPickerComponent {
     effect(() => {
       const tgt = this.t();
       if (!tgt) return;
-      this.scrolledFor = null; // a fresh open should re-scroll to its alias
+      this.scrolledFor = null;
       const isColor = effectiveType(tgt.type, tgt.resolved, tgt.raw) === 'color';
-      this.tab.set(tgt.tab === 'custom' && isColor ? 'custom' : 'libraries');
+      this.tab.set(tgt.customOnly || (tgt.tab === 'custom' && isColor) ? 'custom' : 'libraries');
       this.query.set('');
       const rgba = parseColor(tgt.resolved) ?? parseColor(tgt.raw);
       if (rgba) {

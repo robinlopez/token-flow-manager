@@ -4,17 +4,20 @@ import { ApiService } from '../core/api.service';
 import { RealtimeService } from '../core/realtime.service';
 import { UiService } from '../core/ui.service';
 import { defaultValueForType } from '../core/format';
-import type {
-  Collection,
-  ConfigPatch,
-  DtcgType,
-  HistoryState,
-  ParsedToken,
-  ProjectConfig,
-  ProjectState,
-  ReferenceInfo,
-  SearchFilters,
-  UndoRedoResult,
+import { generateScale } from '../core/palette';
+import {
+  paletteKey,
+  type Collection,
+  type ConfigPatch,
+  type DtcgType,
+  type HistoryState,
+  type PaletteRecipe,
+  type ParsedToken,
+  type ProjectConfig,
+  type ProjectState,
+  type ReferenceInfo,
+  type SearchFilters,
+  type UndoRedoResult,
 } from '../core/models';
 
 /**
@@ -39,6 +42,8 @@ export class ProjectStore {
     for (const t of this.globalTokens()) m.set(t.path.join('.'), t);
     return m;
   });
+  /** Persisted colour-palette shading recipes (tokenflow.config.json). */
+  readonly palettes = signal<PaletteRecipe[]>([]);
   readonly currentCollectionName = signal<string | null>(null);
   /** The "focused" row: selection anchor + scroll/ring target. Does NOT open the
    * inspector — that is driven by `inspectedTokenId` so a plain click only selects. */
@@ -442,6 +447,10 @@ export class ProjectStore {
       // Global token index (best-effort) for alias-target previews.
       this.fetch(this.api.getAllTokens())
         .then((r) => this.globalTokens.set(r.tokens))
+        .catch(() => {});
+      // Palette recipes (best-effort) for the shading editor + table indicators.
+      this.fetch(this.api.getPalettes())
+        .then((r) => this.palettes.set(r.palettes))
         .catch(() => {});
     } catch (err) {
       this.error.set(errMessage(err));
@@ -1167,6 +1176,105 @@ export class ProjectStore {
         this.ui.showToast(res.diagnostics[0].message, 4000);
       }
       return res.ok;
+    } catch (err) {
+      this.ui.showToast(errMessage(err), 4000);
+      await this.refresh();
+      return false;
+    }
+  }
+
+  // ---- Palette shading ----
+
+  /** The stored recipe for a palette group, if any. */
+  paletteFor(collection: string, groupPath: string[]): PaletteRecipe | undefined {
+    const key = paletteKey(collection, groupPath);
+    return this.palettes().find((p) => paletteKey(p.collection, p.groupPath) === key);
+  }
+
+  /** Persist a recipe (upsert by collection + group path) without regenerating values. */
+  async savePalette(recipe: PaletteRecipe): Promise<boolean> {
+    try {
+      const res = await this.fetch(this.api.savePalette(recipe));
+      this.palettes.set(res.palettes);
+      return true;
+    } catch (err) {
+      this.ui.showToast(errMessage(err), 4000);
+      return false;
+    }
+  }
+
+  /** Forget a recipe. The generated tokens are left untouched on disk. */
+  async deletePalette(collection: string, groupPath: string[]): Promise<boolean> {
+    try {
+      const res = await this.fetch(this.api.deletePalette(collection, groupPath));
+      this.palettes.set(res.palettes);
+      this.ui.showToast('Palette recipe removed');
+      return true;
+    } catch (err) {
+      this.ui.showToast(errMessage(err), 4000);
+      return false;
+    }
+  }
+
+  /**
+   * Persist the recipe and (re)generate every non-detached step's colour for each
+   * mode. Existing steps are updated in one batch transaction; missing steps are
+   * created (sequentially, to avoid racing writes to the same file). Detached
+   * steps — manual overrides — are preserved untouched. Any step name in
+   * `deleteSteps` has its token removed (a level dropped from the editor).
+   */
+  async applyPalette(recipe: PaletteRecipe, deleteSteps: string[] = []): Promise<boolean> {
+    const collection = recipe.collection;
+    const modeIds = this.modes().map((m) => m.id);
+    const modes = modeIds.length ? modeIds : ['default'];
+    const detached = new Set(recipe.detached);
+
+    // step → (mode → hex)
+    const byStep = new Map<string, Record<string, string>>();
+    for (const mode of modes) {
+      for (const { step, hex } of generateScale(recipe, mode)) {
+        const rec = byStep.get(step) ?? {};
+        rec[mode] = hex;
+        byStep.set(step, rec);
+      }
+    }
+
+    const existingByPath = new Map(this.allTokens().map((t) => [t.path.join('.'), t]));
+    const changes: { id: string; mode: string; value: unknown }[] = [];
+    const creates: { collection: string; path: string[]; type: DtcgType; valuesByMode: Record<string, unknown> }[] = [];
+
+    for (const step of recipe.steps) {
+      if (detached.has(step)) continue;
+      const values = byStep.get(step);
+      if (!values) continue; // base unparsable for every mode → skip
+      const path = [...recipe.groupPath, step];
+      const existing = existingByPath.get(path.join('.'));
+      if (existing) {
+        for (const mode of modes) {
+          if (values[mode] !== undefined) changes.push({ id: existing.id, mode, value: values[mode] });
+        }
+      } else {
+        const valuesByMode: Record<string, unknown> = {};
+        for (const mode of modes) if (values[mode] !== undefined) valuesByMode[mode] = values[mode];
+        creates.push({ collection, path, type: 'color', valuesByMode });
+      }
+    }
+
+    // Tokens of steps dropped from the palette (delete after regenerating).
+    const deleteIds = deleteSteps
+      .map((step) => existingByPath.get([...recipe.groupPath, step].join('.'))?.id)
+      .filter((id): id is string => !!id);
+
+    try {
+      // Persist the recipe first so the editor + indicators reflect it even if a
+      // later value write fails.
+      await this.savePalette(recipe);
+      for (const req of creates) await this.fetch(this.api.createToken(req));
+      if (changes.length) await this.fetch(this.api.updateValuesBatch(changes));
+      for (const id of deleteIds) await this.fetch(this.api.deleteToken(id));
+      await this.refresh();
+      this.ui.showToast(`Generated ${recipe.steps.length - detached.size} palette steps`);
+      return true;
     } catch (err) {
       this.ui.showToast(errMessage(err), 4000);
       await this.refresh();

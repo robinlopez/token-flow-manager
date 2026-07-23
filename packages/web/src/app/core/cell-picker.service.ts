@@ -14,6 +14,8 @@ export interface CellPickerTarget {
   anchor: { x: number; y: number; width: number; height: number };
   /** Initial tab. */
   tab: 'custom' | 'libraries';
+
+  customOnly?: boolean;
   /**
    * When set, the chosen value (a CSS colour or an `{alias}`) is delivered here
    * instead of writing the token cell directly. Used to edit a composite
