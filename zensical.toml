@@ -322,8 +322,8 @@ toggle.name = "Switch to light mode"
 # Language selector in the header. English is served at the site root, French
 # under /fr/. Paths include the GitHub Pages project base path.
 alternate = [
-  { name = "English", link = "/token-flow-manager/", lang = "en" },
-  { name = "Français", link = "/token-flow-manager/fr/", lang = "fr" },
+  { name = "English", link = "../", lang = "en" },
+  { name = "Français", link = "fr/", lang = "fr" },
 ]
 
 # Documentation versioning. The header shows a version selector that reads
