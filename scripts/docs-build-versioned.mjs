@@ -30,7 +30,8 @@ const SITE = 'site';
 // Newest first. `aliases` are advisory (shown in the selector); the directory
 // is always named by `version`.
 const VERSIONS = [
-  { version: '0.1.4', title: '0.1.4 (latest)', aliases: ['latest'], en: 'docs/en', fr: 'docs/fr' },
+  { version: '0.1.5', title: '0.1.5 (latest)', aliases: ['latest'], en: 'docs/en', fr: 'docs/fr' },
+  { version: '0.1.4', title: '0.1.4', aliases: [], en: 'docs-archive/0.1.4/en', fr: 'docs-archive/0.1.4/fr' },
   { version: '0.1.3', title: '0.1.3', aliases: [], en: 'docs-archive/0.1.3/en', fr: 'docs-archive/0.1.3/fr' },
 ];
 const latest = VERSIONS[0];
