@@ -216,6 +216,7 @@ export interface ProjectConfig {
 // ---- Palette shading recipes (mirror of @tokenflow/shared) ----
 
 export type PaletteEasing = 'linear' | 'ease' | 'ease-in' | 'ease-out';
+export type PaletteFormat = 'hex' | 'oklch' | 'p3';
 
 export interface PaletteCurve {
   /** OKLCH lightness of the lightest step (0..1). */
@@ -244,6 +245,8 @@ export interface PaletteRecipe {
   curve: PaletteCurve;
   /** Steps detached from the recipe (manual overrides preserved on regen). */
   detached: string[];
+  /** Colour notation the generated steps are written in. */
+  format: PaletteFormat;
 }
 
 export const DEFAULT_CURVE: PaletteCurve = {
