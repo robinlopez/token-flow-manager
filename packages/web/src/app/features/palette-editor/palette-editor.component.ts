@@ -12,8 +12,28 @@ import { ProjectStore } from '../../stores/project.store';
 import { UiService } from '../../core/ui.service';
 import { CellPickerService } from '../../core/cell-picker.service';
 import { cssColor } from '../../core/format';
-import { generateScale, inferRecipe, DEFAULT_STEPS, type ObservedStep } from '../../core/palette';
-import { DEFAULT_CURVE, type PaletteCurve, type PaletteRecipe } from '../../core/models';
+import {
+  generateScale,
+  inferRecipe,
+  DEFAULT_STEPS,
+  detectFormat,
+  isValidStepName,
+  suggestNextStep,
+  toFormat,
+  type ObservedStep,
+} from '../../core/palette';
+import {
+  DEFAULT_CURVE,
+  type PaletteCurve,
+  type PaletteFormat,
+  type PaletteRecipe,
+} from '../../core/models';
+
+const FORMATS: { id: PaletteFormat; label: string }[] = [
+  { id: 'hex', label: 'Hex' },
+  { id: 'oklch', label: 'OKLCH' },
+  { id: 'p3', label: 'P3' },
+];
 
 interface PreviewCell {
   step: string;
@@ -71,7 +91,29 @@ interface PreviewCell {
               }
             </div>
           </section>
-          
+
+          <!-- Output colour notation (follows the base picker, overridable here) -->
+          <section>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] uppercase tracking-wide text-ink-400 w-16">Output</span>
+              <div class="inline-flex rounded-md border border-ink-200 overflow-hidden text-xs">
+                @for (f of formats; track f.id) {
+                  <button
+                    type="button"
+                    class="px-2.5 py-1 transition-colors border-l first:border-l-0 border-ink-200"
+                    [class.bg-forge-600]="r.format === f.id"
+                    [class.text-white]="r.format === f.id"
+                    [class.text-ink-600]="r.format !== f.id"
+                    [class.hover:bg-ink-100]="r.format !== f.id"
+                    (click)="setFormat(f.id)"
+                  >
+                    {{ f.label }}
+                  </button>
+                }
+              </div>
+            </div>
+          </section>
+
           <section>
             <div class="flex items-center justify-between mb-2">
               <div class="text-[11px] uppercase tracking-wide text-ink-400">Steps</div>
@@ -107,13 +149,15 @@ interface PreviewCell {
                 </div>
               }
               <input
-                class="w-16 h-7 text-xs border border-dashed border-ink-300 rounded px-1.5 focus:outline-none focus:border-forge-400"
-                placeholder="+ step"
+                class="w-20 h-7 text-xs border border-dashed border-ink-300 rounded px-1.5 focus:outline-none focus:border-forge-400"
+                inputmode="numeric"
+                [placeholder]="'+ ' + suggestedStep()"
                 [ngModel]="newStep()"
-                (ngModelChange)="newStep.set($event)"
-                (keydown.enter)="addStep()"
-                (blur)="addStep()"
+                (ngModelChange)="onNewStep($event)"
+                (keydown.enter)="addStep(true)"
+                (blur)="addStep(false)"
                 spellcheck="false"
+                title="Numeric steps only (50, 100, 900…). Enter adds the suggestion."
               />
             </div>
           </section>
@@ -296,18 +340,29 @@ export class PaletteEditorComponent {
       bases,
       curve: { ...DEFAULT_CURVE },
       detached: [],
+      format: detectFormat(bases[this.modeIds()[0]]),
     });
   }
 
+  /**
+   * Base colour of a mode shown in the current output notation, so every mode
+   * field stays consistent when the format switches (a mode still stored as hex
+   * displays as OKLCH once OKLCH is selected — matching what Generate writes).
+   */
   baseValue(mode: string): string {
-    return this.recipe()?.bases[mode] ?? '';
+    const r = this.recipe();
+    if (!r) return '';
+    const raw = r.bases[mode];
+    return raw ? toFormat(raw, r.format) : '';
   }
 
   openBasePicker(mode: string, event: MouseEvent): void {
     const r = this.recipe();
     if (!r) return;
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const current = r.bases[mode] ?? '#000000';
+    // Seed in the current output notation so the picker opens in the matching
+    // sub-mode (an `oklch(…)` value opens the OKLCH tab).
+    const current = this.baseValue(mode) || r.bases[mode] || '#000000';
     this.picker.open({
       tokenId: 'palette-base:' + mode,
       mode,
@@ -317,12 +372,32 @@ export class PaletteEditorComponent {
       anchor: { x: rect.left, y: rect.top, width: rect.width, height: rect.height },
       tab: 'custom',
       customOnly: true,
-      onPick: (value) => this.setBase(mode, value),
+      onPick: (value) => {
+        // Follow the notation the user picked (OKLCH stays OKLCH, hex stays hex).
+        this.setBase(mode, value);
+        this.setFormat(detectFormat(value));
+      },
     });
   }
 
   setBase(mode: string, hex: string): void {
     this.patch((r) => ({ ...r, bases: { ...r.bases, [mode]: hex } }));
+  }
+
+  readonly formats = FORMATS;
+  setFormat(format: PaletteFormat): void {
+    this.patch((r) => ({ ...r, format }));
+  }
+
+  /** The next sensible step name, shown as the add-input placeholder. */
+  suggestedStep(): string {
+    const r = this.recipe();
+    return r ? suggestNextStep(r.steps) : '';
+  }
+
+  /** Keep the add-step input to digits only (shading steps are numeric). */
+  onNewStep(value: string): void {
+    this.newStep.set(value.replace(/[^0-9]/g, ''));
   }
 
   private stepSort(a: string, b: string): number {
@@ -332,11 +407,22 @@ export class PaletteEditorComponent {
     return a.localeCompare(b);
   }
 
-  addStep(): void {
-    const name = this.newStep().trim();
+  /**
+   * Add a step. `useSuggestion` (Enter) falls back to the suggested next step
+   * when the input is empty; blur never auto-adds. Names must be numeric so the
+   * scale stays coherent (50, 100, 900…) — a non-numeric entry is rejected.
+   */
+  addStep(useSuggestion = false): void {
+    const raw = this.newStep().trim();
+    const name = raw || (useSuggestion ? this.suggestedStep() : '');
     this.newStep.set('');
     const r = this.recipe();
-    if (!r || !name || r.steps.includes(name)) return;
+    if (!r || !name) return;
+    if (!isValidStepName(name)) {
+      this.ui.showToast('Step names must be numeric (50, 100, 900…).', 3500);
+      return;
+    }
+    if (r.steps.includes(name)) return;
     this.pendingDeletes.update((s) => {
       const n = new Set(s);
       n.delete(name);

@@ -1,9 +1,54 @@
-import { DEFAULT_CURVE, type PaletteCurve, type PaletteRecipe } from './models';
-import { parseOklch, oklchToHex, type Oklcha } from './oklch';
+import { DEFAULT_CURVE, type PaletteCurve, type PaletteFormat, type PaletteRecipe } from './models';
+import { parseOklch, oklchToHex, formatOklch, formatP3, type Oklcha } from './oklch';
 
 export interface RampStep {
   step: string;
+  /** Generated colour, in the recipe's notation (hex, `oklch(…)` or `color(display-p3 …)`). */
   hex: string;
+}
+
+/** Detect the colour notation of a value, so the ramp keeps the space you picked. */
+export function detectFormat(value: unknown): PaletteFormat {
+  const s = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (s.startsWith('oklch(')) return 'oklch';
+  if (s.startsWith('color(display-p3')) return 'p3';
+  return 'hex';
+}
+
+/** Render an OKLCH colour in the requested notation. */
+function formatColor(o: Oklcha, format: PaletteFormat): string {
+  switch (format) {
+    case 'oklch':
+      return formatOklch(o);
+    case 'p3':
+      return formatP3(o);
+    default:
+      return oklchToHex(o);
+  }
+}
+
+/** Re-express any colour value in the target notation (unparsable → unchanged). */
+export function toFormat(value: unknown, format: PaletteFormat): string {
+  const s = typeof value === 'string' ? value : '';
+  const o = parseOklch(s);
+  return o ? formatColor(o, format) : s;
+}
+
+/** The conventional shading scale — used to validate + suggest step names. */
+export const STANDARD_STEPS = ['25', '50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'];
+
+/** A step name is valid when it is a small positive integer (50, 100, 900, …). */
+export function isValidStepName(name: string): boolean {
+  return /^\d{1,4}$/.test(name.trim());
+}
+
+/** Suggest the next sensible step: the first missing standard rung, else last + 100. */
+export function suggestNextStep(steps: string[]): string {
+  const have = new Set(steps);
+  const missing = STANDARD_STEPS.find((s) => !have.has(s));
+  if (missing) return missing;
+  const nums = steps.map(Number).filter((n) => Number.isFinite(n));
+  return String((nums.length ? Math.max(...nums) : 0) + 100);
 }
 
 /** Ease a 0..1 fraction according to the curve's distribution. */
@@ -39,21 +84,21 @@ function stepColor(base: Oklcha, f: number, side: 'light' | 'dark', curve: Palet
 }
 
 /**
- * Generate every step's hex value for one mode. The base step's colour is emitted
- * unchanged (round-tripped through OKLCH). Returns [] if the base colour for the
- * mode can't be parsed.
+ * Generate every step's colour for one mode, in the recipe's notation (hex,
+ * OKLCH or Display P3). The base step is emitted in that same notation (its
+ * OKLCH value round-tripped). Returns [] if the base colour can't be parsed.
  */
 export function generateScale(recipe: PaletteRecipe, mode: string): RampStep[] {
-  const baseHex = recipe.bases[mode];
-  const base = parseOklch(baseHex);
+  const base = parseOklch(recipe.bases[mode]);
   if (!base) return [];
   const curve = { ...DEFAULT_CURVE, ...recipe.curve };
+  const format = recipe.format ?? 'hex';
   const steps = recipe.steps;
   const baseIdx = Math.max(0, steps.indexOf(recipe.baseStep));
   const lastIdx = steps.length - 1;
 
   return steps.map((step, i) => {
-    if (i === baseIdx) return { step, hex: oklchToHex(base) };
+    if (i === baseIdx) return { step, hex: formatColor(base, format) };
     let color: Oklcha;
     if (i < baseIdx) {
       const f = baseIdx === 0 ? 0 : (baseIdx - i) / baseIdx;
@@ -62,7 +107,7 @@ export function generateScale(recipe: PaletteRecipe, mode: string): RampStep[] {
       const f = lastIdx === baseIdx ? 0 : (i - baseIdx) / (lastIdx - baseIdx);
       color = stepColor(base, f, 'dark', curve);
     }
-    return { step, hex: oklchToHex(color) };
+    return { step, hex: formatColor(color, format) };
   });
 }
 
@@ -128,6 +173,7 @@ export function inferRecipe(
     bases,
     curve: { ...DEFAULT_CURVE, lightMax, lightMin, chromaFalloff },
     detached: [],
+    format: detectFormat(bases[mode]),
   };
 }
 
