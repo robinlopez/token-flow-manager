@@ -4,23 +4,43 @@ icon: lucide/palette
 
 # Token types & pickers
 
-Token Flow Manager understands the DTCG token types and gives each one a fitting editor,
-from a simple text field to a full colour picker or a structured editor for composite
-tokens.
+Every token type gets a fitting editor, from a text field to a full colour picker or a
+structured editor for composite tokens.
 
 ![Variables table with colour tokens across modes](assets/screenshots/table-colors.webp)
+
+## Two dialects, one model
+
+The same tokens ship in two JSON dialects, and both open the same way:
+
+| On disk | Written by |
+|---|---|
+| `$value` / `$type` / `$description` | DTCG 2025.10, the spec |
+| `value` / `type` / `description` | the Tokens Studio Figma plugin |
+
+The dialect is detected per token, so a mixed file works too, and the diagnostics panel
+tells you what was found. Two rules matter in practice:
+
+- **A file is written back in its own dialect.** Editing a token in a Tokens Studio file
+  rewrites that one `value` and nothing else, so the file keeps working with the Figma
+  plugin. A token you create there is written the same way, under the name the plugin
+  expects (`boxShadow`, not `shadow`).
+- **Only type *names* are translated, never values.** `fontSizes` reads as `dimension`,
+  `boxShadow` as `shadow`, `lineHeights` and `opacity` as `number`, `fontFamilies` and
+  `fontWeights` as `fontFamily` and `fontWeight`. A shadow keeps its `x` / `y` / `spread`
+  fields, a line height keeps `"150%"`. Names with no DTCG equivalent (`textCase`,
+  `textDecoration`, `composition`, `asset`, `other`) stay untyped and untouched.
+
+Arithmetic values such as `"{fontSize.base} * 0.75"` are kept verbatim rather than
+evaluated, and the references inside them count as references: renaming `fontSize.base`
+updates every expression pointing at it.
 
 ## Simple types
 
 Edited inline in the table (double-click a cell, or press Enter on a focused cell):
-
-| Type | Editor |
-|---|---|
-| `color` | Colour picker (see below) |
-| `dimension`, `number` | Text input with ↑/↓ steppers |
-| `fontFamily`, `fontWeight`, `duration` | Text input |
-| `cubicBezier` | Four numbers `[x1, y1, x2, y2]` |
-| `strokeStyle` | Text / select |
+`color` opens the colour picker, `dimension` and `number` a text input with ↑/↓ steppers,
+`fontFamily`, `fontWeight`, `duration` and `strokeStyle` a text input, and `cubicBezier`
+its four numbers `[x1, y1, x2, y2]`.
 
 ## Colour picker
 

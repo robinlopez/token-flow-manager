@@ -2,13 +2,17 @@ import jsonMap from 'json-source-map';
 import {
   type Diagnostic,
   type DtcgType,
+  type TokenEnvelope,
   type TokenPath,
   type TokenSource,
+  envelopeOf,
   isDtcgType,
-  isDtcgToken,
   isReservedKey,
   inferType,
   makeDiagnostic,
+  mapLegacyType,
+  scanDialect,
+  SOURCE_TYPE_EXTENSION,
   UNTYPED,
 } from '@tokenflow/shared';
 
@@ -99,6 +103,27 @@ export function parseFile(content: string, opts: ParseFileOptions): ParseFileRes
     diagnostics,
   });
 
+  const scan = scanDialect(root);
+  if (scan.dialect === 'legacy') {
+    diagnostics.push(
+      makeDiagnostic(
+        'legacy-format',
+        'info',
+        `Legacy Tokens Studio dialect ("value"/"type"): ${scan.legacy} token(s) read. Edits keep this dialect.`,
+        { file: opts.file },
+      ),
+    );
+  } else if (scan.dialect === 'mixed') {
+    diagnostics.push(
+      makeDiagnostic(
+        'legacy-format',
+        'warning',
+        `Mixed dialects: ${scan.dtcg} DTCG token(s) and ${scan.legacy} legacy Tokens Studio token(s). Each node keeps its own dialect on write.`,
+        { file: opts.file },
+      ),
+    );
+  }
+
   return { tokens, diagnostics };
 }
 
@@ -115,12 +140,20 @@ function walk(
   inheritedType: DtcgType | undefined,
   ctx: WalkCtx,
 ): void {
-  // A node's `$type` cascades to descendants (group default type).
-  const declaredType = node['$type'];
+  const env = envelopeOf(node);
+  if (env) {
+    const token = buildToken(node, env, path, inheritedType, ctx);
+    if (token) ctx.tokens.push(token);
+    return;
+  }
+
+  // A group's `$type` (or legacy `type`) cascades to descendants as a default.
+  const declaredType = node['$type'] ?? node['type'];
   let groupType = inheritedType;
   if (typeof declaredType === 'string') {
-    if (isDtcgType(declaredType)) {
-      groupType = declaredType;
+    const resolved = isDtcgType(declaredType) ? declaredType : mapLegacyType(declaredType);
+    if (resolved) {
+      groupType = resolved;
     } else if (ctx.opts.strictTypes) {
       ctx.diagnostics.push(
         makeDiagnostic('unknown-type', 'warning', `Unknown $type "${declaredType}"`, {
@@ -133,12 +166,6 @@ function walk(
     // so descendants fall back to inference rather than inheriting a bad type.
   }
 
-  if (isDtcgToken(node)) {
-    const token = buildToken(node, path, groupType, ctx);
-    if (token) ctx.tokens.push(token);
-    return;
-  }
-
   for (const [key, child] of Object.entries(node)) {
     if (isReservedKey(key)) continue;
     if (typeof child === 'object' && child !== null && !Array.isArray(child)) {
@@ -149,23 +176,41 @@ function walk(
 
 function buildToken(
   node: Record<string, unknown>,
+  env: TokenEnvelope,
   path: TokenPath,
   inheritedType: DtcgType | undefined,
   ctx: WalkCtx,
 ): RawToken | null {
   const source: TokenSource = { file: ctx.opts.file, ...positionOf(ctx.pointers, path) };
 
-  const explicitType = node['$type'];
-  let type: string | undefined = inheritedType;
-  if (typeof explicitType === 'string' && isDtcgType(explicitType)) {
-    type = explicitType;
-  }
-
   const strict = ctx.opts.strictTypes ?? false;
   const infer = ctx.opts.inferTypes ?? true;
 
+  const explicitType = node[env.type];
+  let type: string | undefined = inheritedType;
+  let sourceType: string | undefined;
+  if (typeof explicitType === 'string') {
+    if (isDtcgType(explicitType)) {
+      type = explicitType;
+    } else {
+      const mapped = mapLegacyType(explicitType);
+      if (mapped) {
+        type = mapped;
+        sourceType = explicitType;
+      } else if (strict) {
+        ctx.diagnostics.push(
+          makeDiagnostic('unknown-type', 'warning', `Unknown $type "${explicitType}"`, {
+            file: ctx.opts.file,
+            line: source.line,
+            column: source.column,
+          }),
+        );
+      }
+    }
+  }
+
   if (!type && infer) {
-    type = inferType(node['$value']);
+    type = inferType(node[env.value]);
   }
 
   if (!type) {
@@ -184,7 +229,15 @@ function buildToken(
     type = UNTYPED;
   }
 
-  const rawValuesByMode = splitByMode(node['$value'], type, ctx.opts);
+  const rawValuesByMode = splitByMode(node[env.value], type, ctx.opts);
+
+  const declaredExtensions =
+    typeof node['$extensions'] === 'object' && node['$extensions'] !== null
+      ? (node['$extensions'] as Record<string, unknown>)
+      : undefined;
+  const extensions = sourceType
+    ? { ...declaredExtensions, [SOURCE_TYPE_EXTENSION]: sourceType }
+    : declaredExtensions;
 
   return {
     path,
@@ -192,15 +245,12 @@ function buildToken(
     group: path[0] ?? '',
     type,
     rawValuesByMode,
-    description: typeof node['$description'] === 'string' ? node['$description'] : undefined,
+    description: typeof node[env.description] === 'string' ? (node[env.description] as string) : undefined,
     deprecated:
       typeof node['$deprecated'] === 'boolean' || typeof node['$deprecated'] === 'string'
         ? (node['$deprecated'] as boolean | string)
         : undefined,
-    extensions:
-      typeof node['$extensions'] === 'object' && node['$extensions'] !== null
-        ? (node['$extensions'] as Record<string, unknown>)
-        : undefined,
+    extensions,
     source,
   };
 }

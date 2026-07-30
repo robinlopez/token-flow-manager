@@ -4,24 +4,45 @@ icon: lucide/palette
 
 # Types de tokens & pickers
 
-Token Flow Manager comprend les types de tokens DTCG et donne à chacun un éditeur
-adapté, du simple champ texte au picker de couleur complet, ou à un éditeur structuré
-pour les tokens composites.
+Chaque type de token reçoit un éditeur adapté, du simple champ texte au picker de couleur
+complet, ou à un éditeur structuré pour les tokens composites.
 
 ![Tableau des variables avec des tokens couleur sur plusieurs modes](assets/screenshots/table-colors.webp)
+
+## Deux dialectes, un seul modèle
+
+Les mêmes tokens circulent sous deux dialectes JSON, et les deux s'ouvrent de la même
+façon :
+
+| Sur le disque | Écrit par |
+|---|---|
+| `$value` / `$type` / `$description` | DTCG 2025.10, la spec |
+| `value` / `type` / `description` | le plugin Figma Tokens Studio |
+
+Le dialecte est détecté token par token, donc un fichier mixte fonctionne aussi, et le
+panneau de diagnostics indique ce qui a été trouvé. Deux règles comptent en pratique :
+
+- **Un fichier est réécrit dans son propre dialecte.** Modifier un token d'un fichier
+  Tokens Studio réécrit ce seul `value` et rien d'autre : le fichier continue de
+  fonctionner avec le plugin Figma. Un token que vous y créez est écrit de la même façon,
+  sous le nom attendu par le plugin (`boxShadow`, pas `shadow`).
+- **Seuls les *noms de types* sont traduits, jamais les valeurs.** `fontSizes` est lu
+  comme `dimension`, `boxShadow` comme `shadow`, `lineHeights` et `opacity` comme
+  `number`, `fontFamilies` et `fontWeights` comme `fontFamily` et `fontWeight`. Une ombre
+  conserve ses champs `x` / `y` / `spread`, une hauteur de ligne conserve `"150%"`. Les
+  noms sans équivalent DTCG (`textCase`, `textDecoration`, `composition`, `asset`,
+  `other`) restent non typés et intacts.
+
+Les valeurs arithmétiques comme `"{fontSize.base} * 0.75"` sont conservées telles quelles
+plutôt qu'évaluées, et les références qu'elles contiennent comptent comme des références :
+renommer `fontSize.base` met à jour toutes les expressions qui le visent.
 
 ## Types simples
 
 Édités en ligne dans le tableau (double-clic sur une cellule, ou Entrée sur une cellule
-sélectionnée) :
-
-| Type | Éditeur |
-|---|---|
-| `color` | Picker de couleur (voir plus bas) |
-| `dimension`, `number` | Champ texte avec incréments ↑/↓ |
-| `fontFamily`, `fontWeight`, `duration` | Champ texte |
-| `cubicBezier` | Quatre nombres `[x1, y1, x2, y2]` |
-| `strokeStyle` | Texte / liste déroulante |
+sélectionnée) : `color` ouvre le picker de couleur, `dimension` et `number` un champ texte
+avec incréments ↑/↓, `fontFamily`, `fontWeight`, `duration` et `strokeStyle` un champ
+texte, et `cubicBezier` ses quatre nombres `[x1, y1, x2, y2]`.
 
 ## Picker de couleur
 

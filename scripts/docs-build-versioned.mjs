@@ -29,8 +29,11 @@ const SITE = 'site';
 
 // Newest first. `aliases` are advisory (shown in the selector); the directory
 // is always named by `version`.
+// 0.1.6 has no snapshot of its own: it shipped without a docs cut, so its docs
+// are the frozen 0.1.5 ones.
 const VERSIONS = [
-  { version: '0.1.5', title: '0.1.5 (latest)', aliases: ['latest'], en: 'docs/en', fr: 'docs/fr' },
+  { version: '0.1.7', title: '0.1.7 (latest)', aliases: ['latest'], en: 'docs/en', fr: 'docs/fr' },
+  { version: '0.1.5', title: '0.1.5', aliases: [], en: 'docs-archive/0.1.5/en', fr: 'docs-archive/0.1.5/fr' },
   { version: '0.1.4', title: '0.1.4', aliases: [], en: 'docs-archive/0.1.4/en', fr: 'docs-archive/0.1.4/fr' },
   { version: '0.1.3', title: '0.1.3', aliases: [], en: 'docs-archive/0.1.3/en', fr: 'docs-archive/0.1.3/fr' },
 ];

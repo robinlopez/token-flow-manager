@@ -1,12 +1,24 @@
-import { type TokenPath, isDtcgToken } from '@tokenflow/shared';
+import {
+  type TokenDialect,
+  type TokenPath,
+  documentDialect,
+  envelopeFor,
+  envelopeOf,
+  isTokenNode,
+  toLegacyType,
+} from '@tokenflow/shared';
 
 /**
- * Surgical, format-preserving mutation of a DTCG JSON document.
+ * Surgical, format-preserving mutation of a token JSON document.
  *
  * Rather than reconstructing JSON from the internal model (lossy), we parse the
- * file to a plain object — JS preserves key insertion order — mutate the target
+ * file to a plain object (JS preserves key insertion order), mutate the target
  * node in place, and re-stringify with the file's detected indentation. This
  * keeps key order and structure intact; only the edited value changes.
+ *
+ * Every helper here reads the *dialect of the node it touches* rather than
+ * assuming DTCG, so a legacy Tokens Studio file (`value`/`type`) round-trips
+ * unchanged: editing one token rewrites that token's value and nothing else.
  */
 
 export type JsonObject = Record<string, unknown>;
@@ -46,17 +58,17 @@ export function getTokenNode(data: JsonObject, path: TokenPath): JsonObject | nu
     if (typeof node !== 'object' || node === null) return null;
     node = (node as JsonObject)[segment];
   }
-  if (typeof node === 'object' && node !== null && isDtcgToken(node)) {
-    return node as unknown as JsonObject;
+  if (isTokenNode(node)) {
+    return node as JsonObject;
   }
   return null;
 }
 
 /**
- * Set a token's `$value` for a given mode.
+ * Set a token's value for a given mode, in the node's own dialect.
  *
- * - Single-mode (`isInlineMode` false): replaces `$value` wholesale.
- * - Inline-mode: `$value` is an object keyed by mode; only `mode` is replaced.
+ * - Single-mode (`isInlineMode` false): replaces the value wholesale.
+ * - Inline-mode: the value is an object keyed by mode; only `mode` is replaced.
  */
 export function setTokenValue(
   data: JsonObject,
@@ -67,24 +79,26 @@ export function setTokenValue(
 ): boolean {
   const node = getTokenNode(data, path);
   if (!node) return false;
+  const valueKey = envelopeOf(node)!.value;
 
   if (opts.inlineMode) {
-    const current = node['$value'];
+    const current = node[valueKey];
     const obj =
       typeof current === 'object' && current !== null && !Array.isArray(current)
         ? { ...(current as JsonObject) }
         : {};
     obj[mode] = value;
-    node['$value'] = obj;
+    node[valueKey] = obj;
   } else {
-    node['$value'] = value;
+    node[valueKey] = value;
   }
   return true;
 }
 
 /**
- * Set (or clear) a token's `$description`. An empty/whitespace string removes
- * the key so we don't leave `"$description": ""` cluttering the file.
+ * Set (or clear) a token's description, in the node's own dialect. An
+ * empty/whitespace string removes the key so we don't leave `"$description": ""`
+ * cluttering the file.
  */
 export function setTokenDescription(
   data: JsonObject,
@@ -93,10 +107,34 @@ export function setTokenDescription(
 ): boolean {
   const node = getTokenNode(data, path);
   if (!node) return false;
+  const key = envelopeOf(node)!.description;
   const trimmed = description.trim();
-  if (trimmed) node['$description'] = trimmed;
-  else delete node['$description'];
+  if (trimmed) node[key] = trimmed;
+  else delete node[key];
   return true;
+}
+
+/**
+ * Build a token node in `dialect`, so a token created inside a legacy file is
+ * written as `value`/`type` and stays readable by the Figma plugin.
+ */
+export function makeTokenNode(
+  dialect: TokenDialect,
+  fields: { type?: string; value: unknown; description?: string },
+): JsonObject {
+  const env = envelopeFor(dialect);
+  const node: JsonObject = {};
+  if (fields.type !== undefined) {
+    node[env.type] = dialect === 'legacy' ? toLegacyType(fields.type) : fields.type;
+  }
+  if (fields.description) node[env.description] = fields.description;
+  node[env.value] = fields.value;
+  return node;
+}
+
+/** The dialect a new node should use to keep `data` homogeneous. */
+export function dialectOfDocument(data: JsonObject): TokenDialect {
+  return documentDialect(data);
 }
 
 /** Create or replace a token node at `path` (creating intermediate groups). */
@@ -138,9 +176,14 @@ export function reorderChildren(
   const node = getGroupNode(data, groupPath);
   if (!node) return false;
 
+  // Metadata is anything `$`-prefixed plus, for legacy files, the scalar
+  // `description`/`type` keys: a child token or group is always an object, so
+  // "not an object" is a dialect-free test for metadata.
   const entries = Object.entries(node);
-  const reserved = entries.filter(([k]) => k.startsWith('$'));
-  const childMap = new Map(entries.filter(([k]) => !k.startsWith('$')));
+  const isMeta = (k: string, v: unknown): boolean =>
+    k.startsWith('$') || typeof v !== 'object' || v === null;
+  const reserved = entries.filter(([k, v]) => isMeta(k, v));
+  const childMap = new Map(entries.filter(([k, v]) => !isMeta(k, v)));
 
   const orderedChildren: [string, unknown][] = [];
   for (const k of orderedKeys) {
@@ -206,7 +249,7 @@ function forEachModeContainer(
       return;
     }
     for (const [k, v] of Object.entries(node)) {
-      if (k.startsWith('$') || !isObj(v) || isDtcgToken(v)) continue;
+      if (k.startsWith('$') || !isObj(v) || isTokenNode(v)) continue;
       walk(v, depth + 1);
     }
   };
@@ -256,11 +299,12 @@ export function removeModeAtDimension(data: JsonObject, dimension: number, mode:
   return n;
 }
 
-/** Visit every DTCG token node in the document. */
-function forEachTokenNode(data: JsonObject, fn: (node: JsonObject) => void): void {
+/** Visit every token node in the document, with the key its value lives under. */
+function forEachTokenNode(data: JsonObject, fn: (node: JsonObject, valueKey: string) => void): void {
   const walk = (node: JsonObject): void => {
-    if (isDtcgToken(node)) {
-      fn(node);
+    const env = envelopeOf(node);
+    if (env) {
+      fn(node, env.value);
       return;
     }
     for (const [k, v] of Object.entries(node)) {
@@ -271,11 +315,11 @@ function forEachTokenNode(data: JsonObject, fn: (node: JsonObject) => void): voi
   walk(data);
 }
 
-/** Duplicate an inline `$value` mode (`from` → `to`) on every token. */
+/** Duplicate an inline value mode (`from` → `to`) on every token. */
 export function duplicateInlineMode(data: JsonObject, from: string, to: string): number {
   let n = 0;
-  forEachTokenNode(data, (node) => {
-    const val = node['$value'];
+  forEachTokenNode(data, (node, valueKey) => {
+    const val = node[valueKey];
     if (isObj(val) && from in val && !(to in val)) {
       val[to] = structuredClone(val[from]);
       n++;
@@ -284,21 +328,21 @@ export function duplicateInlineMode(data: JsonObject, from: string, to: string):
   return n;
 }
 
-/** Rename an inline `$value` mode key (`from` → `to`) on every token, in place. */
+/** Rename an inline value mode key (`from` → `to`) on every token, in place. */
 export function renameInlineMode(data: JsonObject, from: string, to: string): number {
   let n = 0;
-  forEachTokenNode(data, (node) => {
-    const val = node['$value'];
+  forEachTokenNode(data, (node, valueKey) => {
+    const val = node[valueKey];
     if (isObj(val) && renameKeyInPlace(val, from, to)) n++;
   });
   return n;
 }
 
-/** Remove an inline `$value` mode key on every token. */
+/** Remove an inline value mode key on every token. */
 export function removeInlineMode(data: JsonObject, mode: string): number {
   let n = 0;
-  forEachTokenNode(data, (node) => {
-    const val = node['$value'];
+  forEachTokenNode(data, (node, valueKey) => {
+    const val = node[valueKey];
     if (isObj(val) && mode in val) {
       delete val[mode];
       n++;
@@ -309,8 +353,8 @@ export function removeInlineMode(data: JsonObject, mode: string): number {
 
 /**
  * Convert a single-mode collection to inline modes: wrap every token's scalar
- * (or composite) `$value` into `{ [existing]: value, [added]: copy }`. Tokens
- * already inline (a `$value` carrying `existing`) are left untouched.
+ * (or composite) value into `{ [existing]: value, [added]: copy }`. Tokens
+ * already inline (a value carrying `existing`) are left untouched.
  */
 export function wrapValuesAsInline(
   data: JsonObject,
@@ -318,11 +362,10 @@ export function wrapValuesAsInline(
   added: string,
 ): number {
   let n = 0;
-  forEachTokenNode(data, (node) => {
-    if (!('$value' in node)) return;
-    const val = node['$value'];
+  forEachTokenNode(data, (node, valueKey) => {
+    const val = node[valueKey];
     if (isObj(val) && existing in val) return; // already inline for this mode
-    node['$value'] = { [existing]: val, [added]: structuredClone(val) };
+    node[valueKey] = { [existing]: val, [added]: structuredClone(val) };
     n++;
   });
   return n;

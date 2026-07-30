@@ -26,12 +26,15 @@ function resolveWebDir(): string | undefined {
   return candidates.find((c) => existsSync(join(c, 'index.html')));
 }
 
+/** Injected by tsup from packages/cli/package.json (see tsup.config.ts). */
+declare const __CLI_VERSION__: string;
+
 const program = new Command();
 
 program
   .name('token-flow-manager')
   .description('Local Design Tokens manager — DTCG 2025.10')
-  .version('0.1.4');
+  .version(__CLI_VERSION__);
 
 program
   .argument('[path]', 'project directory to open (omit to pick one from the welcome screen)')
