@@ -1,4 +1,11 @@
-import { type TokenPath, isAlias, parseAliasPath, pathToAlias } from '@tokenflow/shared';
+import {
+  type TokenPath,
+  extractEmbeddedRefs,
+  isAlias,
+  parseAliasPath,
+  pathToAlias,
+  rewriteEmbeddedRefs,
+} from '@tokenflow/shared';
 import type { JsonObject } from './document.js';
 import { getTokenNode } from './document.js';
 
@@ -18,9 +25,19 @@ function reAlias(original: string, newPath: TokenPath): string {
   return pathToAlias(newPath);
 }
 
+function refsInString(value: unknown, path: TokenPath): number {
+  if (typeof value !== 'string') return 0;
+  if (aliasPathEquals(value, path)) return 1;
+  return extractEmbeddedRefs(value).filter(
+    (ref) => ref.length === path.length && ref.every((seg, i) => seg === path[i]),
+  ).length;
+}
+
 /**
- * Walk the whole document and rewrite every alias string that points at
- * `oldPath` so it points at `newPath` (preserving curly vs JSON-Pointer syntax).
+ * Walk the whole document and rewrite every reference to `oldPath` so it points
+ * at `newPath`. Handles whole-string aliases (preserving curly vs JSON-Pointer
+ * syntax) and references embedded in Tokens Studio expressions
+ * (`"{fontSize.base} * 0.75"`), which a rename would otherwise leave dangling.
  * Recurses into nested objects and arrays (composite sub-properties). Returns
  * the number of references rewritten.
  */
@@ -31,24 +48,29 @@ export function rewriteAliasReferences(
 ): number {
   let count = 0;
 
-  const visit = (container: Record<string, unknown> | unknown[]): void => {
-    if (Array.isArray(container)) {
-      for (let i = 0; i < container.length; i++) {
-        const v = container[i];
-        if (aliasPathEquals(v, oldPath)) {
-          container[i] = reAlias(v as string, newPath);
-          count++;
-        } else if (v && typeof v === 'object') {
-          visit(v as Record<string, unknown> | unknown[]);
-        }
-      }
-      return;
+  const rewritten = (v: unknown): string | null => {
+    if (typeof v !== 'string') return null;
+    if (aliasPathEquals(v, oldPath)) {
+      count++;
+      return reAlias(v, newPath);
     }
-    for (const key of Object.keys(container)) {
-      const v = container[key];
-      if (aliasPathEquals(v, oldPath)) {
-        container[key] = reAlias(v as string, newPath);
-        count++;
+    const embedded = rewriteEmbeddedRefs(v, oldPath, newPath);
+    if (embedded.count > 0) {
+      count += embedded.count;
+      return embedded.value;
+    }
+    return null;
+  };
+
+  const visit = (container: Record<string, unknown> | unknown[]): void => {
+    const keys: Array<string | number> = Array.isArray(container)
+      ? container.map((_, i) => i)
+      : Object.keys(container);
+    for (const key of keys) {
+      const v = (container as Record<string | number, unknown>)[key];
+      const next = rewritten(v);
+      if (next !== null) {
+        (container as Record<string | number, unknown>)[key] = next;
       } else if (v && typeof v === 'object') {
         visit(v as Record<string, unknown> | unknown[]);
       }
@@ -59,13 +81,13 @@ export function rewriteAliasReferences(
   return count;
 }
 
-/** Count alias references to `targetPath` in a document (impact preview). */
 export function countAliasReferences(data: JsonObject, targetPath: TokenPath): number {
   let count = 0;
   const visit = (container: Record<string, unknown> | unknown[]): void => {
     const values = Array.isArray(container) ? container : Object.values(container);
     for (const v of values) {
-      if (aliasPathEquals(v, targetPath)) count++;
+      const n = refsInString(v, targetPath);
+      if (n > 0) count += n;
       else if (v && typeof v === 'object') visit(v as Record<string, unknown> | unknown[]);
     }
   };
@@ -128,7 +150,9 @@ function pruneEmptyGroups(data: JsonObject, groupPath: TokenPath): void {
       group &&
       typeof group === 'object' &&
       !Array.isArray(group) &&
-      Object.keys(group as JsonObject).filter((k) => !k.startsWith('$')).length === 0
+      Object.entries(group as JsonObject).filter(
+        ([k, v]) => !k.startsWith('$') && typeof v === 'object' && v !== null,
+      ).length === 0
     ) {
       delete parent[key];
     } else {

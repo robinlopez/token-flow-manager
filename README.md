@@ -3,7 +3,9 @@
 <img src="https://res.cloudinary.com/dq7rnye43/image/upload/v1782284307/TokenFlow/token-flow-manager.png" alt="Token Flow Manager" width="100%"/>
 
 Local Design Tokens manager, visualize, edit and govern your **DTCG 2025.10** token
-files from a Variables-style dashboard, without leaving your project.
+files from a Variables-style dashboard, without leaving your project. Files written in
+the legacy **Tokens Studio** dialect (`value` / `type`) are read natively and written back
+in that same dialect.
 
 It starts a local Node server (bound to `127.0.0.1`), parses every `*.tokens.json`,
 resolves aliases across collections and modes, and opens a dashboard. It **never**
@@ -60,8 +62,8 @@ node packages/cli/dist/cli.js
 
 | Package | Role |
 |---|---|
-| [`@tokenflow/shared`](packages/shared) | Zod schemas + types: DTCG nodes, internal model, diagnostics, config, API payloads. |
-| [`@tokenflow/core`](packages/core) | Engine: DTCG parser (source positions), alias resolver (cycles, broken refs, cross-collection ordering, multi-mode), value validator, format-preserving document mutation. |
+| [`@tokenflow/shared`](packages/shared) | Zod schemas + types: DTCG nodes, token dialects (DTCG / legacy Tokens Studio), internal model, diagnostics, config, API payloads. |
+| [`@tokenflow/core`](packages/core) | Engine: token parser (both dialects, source positions), alias resolver (cycles, broken refs, cross-collection ordering, multi-mode), value validator, format-preserving document mutation. |
 | [`@tokenflow/server`](packages/server) | Fastify REST + WebSocket, `Session` (runtime project switching + folder browser + recents), `ProjectManager` (load/resolve/mutate), chokidar watcher, atomic writes with rotating backups. |
 | [`token-flow-manager`](packages/cli) | `npx` entry point (commander): default `serve`, `validate`, `init`. Self-contained bundle — inlines the workspace packages and embeds the built dashboard. |
 | [`@tokenflow/web`](packages/web) | Angular 21 dashboard: welcome screen, shell, sidebar, variables table, inspector, realtime. |

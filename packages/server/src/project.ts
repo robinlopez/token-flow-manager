@@ -19,6 +19,8 @@ import {
   setTokenValue,
   setTokenDescription,
   setTokenNode,
+  makeTokenNode,
+  dialectOfDocument,
   getTokenNode,
   getGroupNode,
   deleteTokenNode,
@@ -42,7 +44,12 @@ import {
   type CollectionInput,
   type JsonObject,
 } from '@tokenflow/core';
-import { isAlias, isCompositeType, parseAliasPath } from '@tokenflow/shared';
+import {
+  envelopeOf,
+  extractEmbeddedRefs,
+  isAlias,
+  parseAliasPath,
+} from '@tokenflow/shared';
 import { detectCollections, loadConfig } from './config-loader.js';
 import {
   ORG_MANIFEST_NAME,
@@ -441,21 +448,11 @@ export class ProjectManager extends EventEmitter {
     }
   }
 
-  /** Direct alias target paths declared by a token across all modes (top-level + composite). */
+  /** Reference target paths declared by a token across all of its modes. */
   private aliasTargetsOf(token: ParsedToken): string[][] {
     const out: string[][] = [];
     for (const raw of Object.values(token.rawValuesByMode)) {
-      if (isAlias(raw)) {
-        const p = parseAliasPath(raw);
-        if (p) out.push(p);
-      } else if (isCompositeType(token.type) && raw && typeof raw === 'object') {
-        for (const v of Object.values(raw as Record<string, unknown>)) {
-          if (isAlias(v)) {
-            const p = parseAliasPath(v);
-            if (p) out.push(p);
-          }
-        }
-      }
+      out.push(...this.aliasTargetsForValue(raw));
     }
     return out;
   }
@@ -1971,12 +1968,12 @@ export class ProjectManager extends EventEmitter {
 
     const valueFor = (mode: string): unknown =>
       req.valuesByMode[mode] ?? req.valuesByMode[info.defaultMode] ?? Object.values(req.valuesByMode)[0];
-    const makeNode = (value: unknown): Record<string, unknown> => {
-      const node: Record<string, unknown> = { $type: req.type };
-      if (req.description) node['$description'] = req.description;
-      node['$value'] = value;
-      return node;
-    };
+    const makeNode = (value: unknown, data: JsonObject): Record<string, unknown> =>
+      makeTokenNode(dialectOfDocument(data), {
+        type: req.type,
+        value,
+        ...(req.description ? { description: req.description } : {}),
+      });
 
     const files = this.collectionFiles(req.collection);
     const staged: Array<{ entry: FileEntry; content: string }> = [];
@@ -1987,7 +1984,7 @@ export class ProjectManager extends EventEmitter {
         const entry = this.files.get(join(this.root, rel));
         if (!entry || entry.readOnly) continue;
         const data = parseDocument(entry.content);
-        setTokenNode(data, req.path, makeNode(valueFor(mode)));
+        setTokenNode(data, req.path, makeNode(valueFor(mode), data));
         staged.push({ entry, content: stringifyDocument(data, detectFormat(entry.content)) });
       }
     } else {
@@ -1998,13 +1995,15 @@ export class ProjectManager extends EventEmitter {
       if (info.storage === 'dimension' && info.dimension !== undefined) {
         const phys = this.physicalPaths(req.collection, req.path);
         const modes = this.modeDims.get(req.collection)?.modes ?? info.modes;
-        phys.forEach((p, i) => setTokenNode(data, p, makeNode(valueFor(modes[i] ?? info.defaultMode))));
+        phys.forEach((p, i) =>
+          setTokenNode(data, p, makeNode(valueFor(modes[i] ?? info.defaultMode), data)),
+        );
       } else if (info.storage === 'inline') {
         const valuesByMode: Record<string, unknown> = {};
         for (const mode of info.modes) valuesByMode[mode] = valueFor(mode);
-        setTokenNode(data, req.path, makeNode(valuesByMode));
+        setTokenNode(data, req.path, makeNode(valuesByMode, data));
       } else {
-        setTokenNode(data, req.path, makeNode(valueFor(info.defaultMode)));
+        setTokenNode(data, req.path, makeNode(valueFor(info.defaultMode), data));
       }
       staged.push({ entry, content: stringifyDocument(data, detectFormat(entry.content)) });
     }
@@ -2058,7 +2057,7 @@ export class ProjectManager extends EventEmitter {
       if (t.id === id) continue;
       const modes = new Set<string>();
       for (const [mode, raw] of Object.entries(t.rawValuesByMode)) {
-        for (const p of this.aliasTargetsForValue(raw, t.type)) {
+        for (const p of this.aliasTargetsForValue(raw)) {
           if (this.resolveTargetId(t.collection, p) === id) modes.add(mode);
         }
       }
@@ -2069,24 +2068,23 @@ export class ProjectManager extends EventEmitter {
     return out;
   }
 
-  private aliasTargetsForValue(raw: unknown, type: ParsedToken['type']): string[][] {
+  private aliasTargetsForValue(raw: unknown): string[][] {
     const out: string[][] = [];
-    if (isAlias(raw)) {
-      const p = parseAliasPath(raw);
-      if (p) out.push(p);
-    } else if (isCompositeType(type) && raw && typeof raw === 'object') {
-      // Composite sub-properties may alias — including gradient stops, which are
-      // an array of objects. Recurse one level into objects and arrays.
-      const visit = (v: unknown): void => {
+    const visit = (v: unknown, depth: number): void => {
+      if (typeof v === 'string') {
         if (isAlias(v)) {
           const p = parseAliasPath(v);
           if (p) out.push(p);
-        } else if (v && typeof v === 'object') {
-          for (const inner of Object.values(v as Record<string, unknown>)) visit(inner);
+        } else {
+          out.push(...extractEmbeddedRefs(v));
         }
-      };
-      visit(raw);
-    }
+        return;
+      }
+      if (depth < 4 && v !== null && typeof v === 'object') {
+        for (const inner of Object.values(v as Record<string, unknown>)) visit(inner, depth + 1);
+      }
+    };
+    visit(raw, 0);
     return out;
   }
 
@@ -3022,7 +3020,9 @@ function isInlineModeNode(data: Record<string, unknown>, path: string[]): boolea
     node = (node as Record<string, unknown>)[seg];
   }
   if (typeof node !== 'object' || node === null) return false;
-  const value = (node as Record<string, unknown>)['$value'];
+  const env = envelopeOf(node);
+  if (!env) return false;
+  const value = (node as Record<string, unknown>)[env.value];
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 

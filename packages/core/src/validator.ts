@@ -1,4 +1,4 @@
-import { type Diagnostic, isAlias, makeDiagnostic } from '@tokenflow/shared';
+import { type Diagnostic, isAlias, isExpression, makeDiagnostic } from '@tokenflow/shared';
 
 /**
  * Lightweight value validation per DTCG type. Aliases are always accepted here
@@ -10,6 +10,7 @@ import { type Diagnostic, isAlias, makeDiagnostic } from '@tokenflow/shared';
  */
 export function validateValue(value: unknown, type: string): string | null {
   if (isAlias(value)) return null;
+  if (isExpression(value)) return null;
   if (value === undefined || value === null) return 'Value is missing';
 
   switch (type) {
@@ -18,8 +19,8 @@ export function validateValue(value: unknown, type: string): string | null {
     case 'dimension':
       return isDimensionLike(value) ? null : 'Expected a dimension (number+unit or string)';
     case 'number':
-      // Accept numeric strings too ("0", "1.5") — real files often quote numbers.
-      return typeof value === 'number' || (typeof value === 'string' && /^-?\d*\.?\d+$/.test(value.trim()))
+      return typeof value === 'number' ||
+        (typeof value === 'string' && /^-?\d*\.?\d+%?$/.test(value.trim()))
         ? null
         : 'Expected a number';
     case 'fontWeight':

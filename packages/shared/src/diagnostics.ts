@@ -17,6 +17,7 @@ export const DiagnosticCodeSchema = z.enum([
   'duplicate-token',
   'incomplete-mode-override',
   'merge-conflict',
+  'legacy-format',
 ]);
 export type DiagnosticCode = z.infer<typeof DiagnosticCodeSchema>;
 

@@ -1,4 +1,5 @@
 export * from './dtcg.js';
+export * from './dialect.js';
 export * from './diagnostics.js';
 export * from './model.js';
 export * from './palette.js';
