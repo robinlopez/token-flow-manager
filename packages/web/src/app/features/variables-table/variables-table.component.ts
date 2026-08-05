@@ -83,6 +83,9 @@ interface AliasSuggestion {
 /** DTCG composite types that get a structured sub-property editor. */
 const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', 'transition']);
 
+
+const ACTION_COL_W = 40;
+
 @Component({
   selector: 'tf-variables-table',
   standalone: true,
@@ -123,6 +126,7 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
           @for (mode of modes(); track mode.id; let last = $last) {
             <div
               class="relative shrink-0 px-4 py-2 border-l border-ink-200 bg-ink-50"
+              [class.border-r]="last"
               [style.width.px]="modeW(mode.id)"
               cdkDrag
               cdkDragLockAxis="x"
@@ -160,11 +164,10 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                   >{{ mode.label || mode.id }}</span
                 >
               }
-              <!-- Resize handle. For the LAST mode it does NOT overhang (no -mr-px)
-                   so it never reaches into the pinned action column to its right. -->
+              <!-- Resize handle. The last mode overhangs like the others: the
+                   spacer's gutter keeps it clear of the pinned action column. -->
               <div
-                class="absolute top-0 right-0 h-full w-1.5 cursor-col-resize hover:bg-forge-300/60 z-10"
-                [class.-mr-px]="!last"
+                class="absolute top-0 right-0 h-full w-1.5 -mr-px cursor-col-resize hover:bg-forge-300/60 z-10"
                 title="Drag to resize · double-click to reset"
                 (pointerdown)="startColResize($event, 'mode', mode.id)"
                 (dblclick)="ui.setModeColWidth(mode.id, 224)"
@@ -172,11 +175,7 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
             </div>
           }
           </div>
-          <!-- Flexible spacer fills any width left over so the pinned action
-               column sits flush at the right edge (no gap) when columns are narrow. -->
-          <div class="flex-1 min-w-0"></div>
-          <!-- Action column: pinned to the right (always visible) + non-resizable.
-               Click to add a new mode (column). -->
+          <div class="flex-1 min-w-[2.5rem]"></div>
           <button
             type="button"
             class="shrink-0 w-10 border-l border-ink-200 sticky right-0 bg-ink-50 z-30 text-ink-400 hover:text-forge-600 hover:bg-ink-100 flex items-center justify-center"
@@ -425,9 +424,10 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                   }
                 </div>
 
-                @for (mode of modes(); track mode.id; let mi = $index) {
+                @for (mode of modes(); track mode.id; let mi = $index; let last = $last) {
                   <div
                     class="relative shrink-0 px-3 py-1.5 border-l border-ink-100 flex items-center gap-1 overflow-visible outline-none"
+                    [class.border-r]="last"
                     [style.width.px]="modeW(mode.id)"
                     [attr.tabindex]="isEditing(token, mi) ? null : -1"
                     [attr.data-cell]="cellKey(token, mi)"
@@ -649,8 +649,7 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                     }
                   </div>
                 }
-                <!-- Spacer: fills leftover width so the pinned action cell is flush right. -->
-                <div class="flex-1 min-w-0"></div>
+                <div class="flex-1 min-w-[2.5rem]"></div>
                 <div
                   class="w-10 shrink-0 border-l flex items-center justify-center sticky right-0 z-[5]"
                   [class.border-ink-100]="!isFocused(token)"
@@ -703,13 +702,12 @@ export class VariablesTableComponent {
   modeW(modeId: string): number {
     return this.ui.modeColWidth(modeId);
   }
-  /** Total width of all columns — drives section-header / row min-width so their
-   * backgrounds and borders span the full horizontally-scrollable area. */
   readonly totalWidth = computed(
     () =>
       this.ui.nameColWidth() +
       this.modes().reduce((sum, m) => sum + this.ui.modeColWidth(m.id), 0) +
-      40, // trailing action column (w-10)
+      ACTION_COL_W +
+      ACTION_COL_W,
   );
   /** Rows/section headers are at least the columns' total, but stretch to fill the
    * viewport when wider — so a flex spacer can push the pinned action column right. */
