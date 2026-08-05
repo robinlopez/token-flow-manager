@@ -2,6 +2,7 @@ import {
   type Diagnostic,
   type ParsedToken,
   type TokenPath,
+  collectionNamespaceVariants,
   isAlias,
   isCompositeType,
   parseAliasPath,
@@ -83,14 +84,8 @@ export function resolveProject(
   // prefix it: its name, its path leaf, and a singular/plural variant.
   const collectionNamespaces = new Map<string, string>();
   for (const col of collections) {
-    const n = col.name.toLowerCase();
-    // Candidate namespaces: the full name plus each "/"-separated segment
-    // (handles both manifest names like "primitives" and auto-detected names
-    // like "primitives/themeOne"), each with a singular/plural variant.
-    const bases = new Set<string>([n, ...n.split('/')]);
-    for (const base of bases) {
-      const variant = base.endsWith('s') ? base.slice(0, -1) : `${base}s`;
-      for (const v of [base, variant]) if (!collectionNamespaces.has(v)) collectionNamespaces.set(v, col.name);
+    for (const v of collectionNamespaceVariants(col.name)) {
+      if (!collectionNamespaces.has(v)) collectionNamespaces.set(v, col.name);
     }
   }
 

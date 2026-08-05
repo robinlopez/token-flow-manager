@@ -95,6 +95,8 @@ export class ShortcutsHelpComponent {
         { keys: ['⌘', '⇧', 'Z'], label: 'Redo' },
         { keys: ['Enter'], label: 'Edit focused cell' },
         { keys: ['Esc'], label: 'Cancel edit' },
+        { keys: ['⌘', 'C'], label: 'Copy the focused cell value' },
+        { keys: ['⌘', 'V'], label: 'Paste a value into the focused cell(s)' },
       ],
     },
     {

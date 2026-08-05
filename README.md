@@ -51,6 +51,10 @@ node packages/cli/dist/cli.js
   Shift-click to move several at once.
 - **Copy / Cut / Paste variables** (⌘C / ⌘X / ⌘V) : cut hides the rows immediately and
   moves them on paste; copy duplicates.
+- **Copy / Paste a value** (⌘C / ⌘V on a focused cell, or right-click) : through the
+  **system clipboard**, so a value travels to another cell, another mode or another app.
+  Pasted text is normalised and type-checked (`1a2b3c` → `#1a2b3c`, `1600` over `1440px`
+  → `1600px`, aliases re-link); pasting into a multi-selection is one undo.
 - **Search** (⌘S) + filters (aliases, deprecated, orphans, errors) and a **command
   palette**.
 - **Undo / redo** (⌘Z / ⌘⇧Z), byte-exact and server-side.
@@ -134,6 +138,9 @@ If step 4 starts the server and serves the dashboard with **no `ERR_MODULE_NOT_F
 the package is publish-ready. (Then a real user does `npm i -g token-flow-manager` once
 it is published, and runs `tokenflow`.)
 
-> **Bumping the version:** keep `packages/cli/package.json` and
-> `packages/web/src/app/core/version.ts` (`APP_VERSION`, shown in the footer) in sync,
-> add a CHANGELOG entry — see [plan.md](plan.md) §10.1.
+> **Bumping the version:** keep the **6** `package.json` (root + 5 packages) and
+> `packages/web/src/app/core/version.ts` (`APP_VERSION`, shown in the footer) in sync, bump
+> the docs version selector (`zensical*.toml` `default` + `VERSIONS` in
+> `scripts/docs-build-versioned.mjs`), add a CHANGELOG entry, then rebuild the CLI so the
+> SPA is re-embedded (`pnpm --filter token-flow-manager build`). See
+> [plan.md](plan.md) §10.1.

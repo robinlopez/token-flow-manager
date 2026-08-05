@@ -39,6 +39,15 @@ Comment les alias se résolvent entre vos collections. Enregistré dans
   collections du haut se résolvent en premier ; une collection ne peut référencer que
   celles au-dessus d'elle.
 
+!!! info "Les alias inter-collections gardent l'écriture de votre projet"
+
+    Certains projets préfixent une référence avec la collection cible
+    (`{primitives.red.200}`), parce que le build fusionne toutes les collections en un
+    seul arbre ; d'autres écrivent le chemin nu (`{red.200}`). L'outil lit les deux, et
+    quand vous liez une cellule à un token d'une autre collection il **écrit la forme
+    déjà présente dans vos fichiers** : un projet préfixé reste préfixé et votre build
+    continue de résoudre. Renommer ou déplacer un token réécrit les deux formes.
+
 ## Collections & modes
 
 Décrivez vos collections, leurs modes (les colonnes de valeurs, par ex. Clair/Sombre,

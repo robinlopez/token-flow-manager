@@ -11,6 +11,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import {
   CdkDrag,
+  CdkDragHandle,
   CdkDragPlaceholder,
   CdkDragPreview,
   CdkDropList,
@@ -21,7 +22,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { ProjectStore } from '../../stores/project.store';
 import { GroupDropRegistry } from '../sidebar/group-drop-registry';
-import { ContextMenuService } from '../../core/context-menu.service';
+import { ContextMenuService, type ContextMenuItem } from '../../core/context-menu.service';
 import { CellPickerService } from '../../core/cell-picker.service';
 import { UiService } from '../../core/ui.service';
 import { ValueCellComponent } from '../../ui/value-cell.component';
@@ -35,7 +36,16 @@ import {
   typeGlyph,
   typesCompatible,
 } from '../../core/format';
-import type { DtcgType, GroupNode, ParsedToken } from '../../core/models';
+import {
+  cellClipboardText,
+  coerceTypedText,
+  normalizeCellText,
+  parseCellText,
+  readClipboardText,
+  writeClipboardText,
+  type CellParse,
+} from '../../core/cell-clipboard';
+import type { DtcgType, GroupNode, ModeDefinition, ParsedToken } from '../../core/models';
 
 function isGroupNode(data: unknown): data is GroupNode {
   return !!data && typeof data === 'object' && 'children' in data && 'path' in data;
@@ -57,6 +67,11 @@ interface EditCoord {
   mode: number;
 }
 
+/** One in-flight cell ⌘C / ⌘V, claimed by whichever path handles it first. */
+interface ClipboardTicket {
+  done: boolean;
+}
+
 interface AliasSuggestion {
   alias: string;
   label: string;
@@ -68,6 +83,9 @@ interface AliasSuggestion {
 /** DTCG composite types that get a structured sub-property editor. */
 const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', 'transition']);
 
+
+const ACTION_COL_W = 40;
+
 @Component({
   selector: 'tf-variables-table',
   standalone: true,
@@ -76,6 +94,7 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
     FormsModule,
     CdkDropList,
     CdkDrag,
+    CdkDragHandle,
     CdkDragPreview,
     CdkDragPlaceholder,
   ],
@@ -95,8 +114,29 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
               (dblclick)="ui.setNameColWidth(280)"
             ></div>
           </div>
+          <!-- Mode columns: drag a header by its label to reorder the columns.
+               The first mode is the collection's default. -->
+          <div
+            class="flex items-stretch"
+            cdkDropList
+            cdkDropListOrientation="horizontal"
+            [cdkDropListData]="modes()"
+            (cdkDropListDropped)="dropMode($event)"
+          >
           @for (mode of modes(); track mode.id; let last = $last) {
-            <div class="relative shrink-0 px-4 py-2 border-l border-ink-200" [style.width.px]="modeW(mode.id)">
+            <div
+              class="relative shrink-0 px-4 py-2 border-l border-ink-200 bg-ink-50"
+              [class.border-r]="last"
+              [style.width.px]="modeW(mode.id)"
+              cdkDrag
+              cdkDragLockAxis="x"
+              [cdkDragDisabled]="modes().length < 2 || renamingModeId() === mode.id"
+            >
+              <div
+                *cdkDragPlaceholder
+                class="shrink-0 h-full border-l border-forge-300 bg-forge-50"
+                [style.width.px]="modeW(mode.id)"
+              ></div>
               @if (renamingModeId() === mode.id) {
                 <input
                   #modeRenameInput
@@ -108,12 +148,15 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                 />
               } @else {
                 <span
+                  cdkDragHandle
                   tabindex="0"
-                  class="inline-block cursor-pointer select-none outline-none rounded px-1 -mx-1 ring-forge-400"
+                  class="inline-block select-none outline-none rounded px-1 -mx-1 ring-forge-400"
+                  [class.cursor-grab]="modes().length > 1"
+                  [class.cursor-pointer]="modes().length < 2"
                   [class.bg-forge-100]="selectedModeId() === mode.id"
                   [class.text-forge-700]="selectedModeId() === mode.id"
                   [class.ring-1]="selectedModeId() === mode.id"
-                  title="Click to select · double-click to rename · Delete to remove · right-click for options"
+                  title="Drag to reorder · click to select · double-click to rename · Delete to remove · right-click for options"
                   (click)="selectMode(mode.id)"
                   (dblclick)="startRenameMode(mode.id)"
                   (contextmenu)="onModeContextMenu($event, mode.id)"
@@ -121,22 +164,18 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                   >{{ mode.label || mode.id }}</span
                 >
               }
-              <!-- Resize handle. For the LAST mode it does NOT overhang (no -mr-px)
-                   so it never reaches into the pinned action column to its right. -->
+              <!-- Resize handle. The last mode overhangs like the others: the
+                   spacer's gutter keeps it clear of the pinned action column. -->
               <div
-                class="absolute top-0 right-0 h-full w-1.5 cursor-col-resize hover:bg-forge-300/60 z-10"
-                [class.-mr-px]="!last"
+                class="absolute top-0 right-0 h-full w-1.5 -mr-px cursor-col-resize hover:bg-forge-300/60 z-10"
                 title="Drag to resize · double-click to reset"
                 (pointerdown)="startColResize($event, 'mode', mode.id)"
                 (dblclick)="ui.setModeColWidth(mode.id, 224)"
               ></div>
             </div>
           }
-          <!-- Flexible spacer fills any width left over so the pinned action
-               column sits flush at the right edge (no gap) when columns are narrow. -->
-          <div class="flex-1 min-w-0"></div>
-          <!-- Action column: pinned to the right (always visible) + non-resizable.
-               Click to add a new mode (column). -->
+          </div>
+          <div class="flex-1 min-w-[2.5rem]"></div>
           <button
             type="button"
             class="shrink-0 w-10 border-l border-ink-200 sticky right-0 bg-ink-50 z-30 text-ink-400 hover:text-forge-600 hover:bg-ink-100 flex items-center justify-center"
@@ -385,9 +424,10 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                   }
                 </div>
 
-                @for (mode of modes(); track mode.id; let mi = $index) {
+                @for (mode of modes(); track mode.id; let mi = $index; let last = $last) {
                   <div
                     class="relative shrink-0 px-3 py-1.5 border-l border-ink-100 flex items-center gap-1 overflow-visible outline-none"
+                    [class.border-r]="last"
                     [style.width.px]="modeW(mode.id)"
                     [attr.tabindex]="isEditing(token, mi) ? null : -1"
                     [attr.data-cell]="cellKey(token, mi)"
@@ -396,8 +436,11 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                     [class.ring-forge-400]="isEditing(token, mi) || isActiveCell(token, mi)"
                     (focus)="onCellFocus(token, mi)"
                     (keydown)="onCellKeydown($event, token, mi)"
+                    (paste)="onCellPaste($event, token, mi)"
+                    (copy)="onCellCopy($event, token, mi)"
+                    (contextmenu)="onContextMenu(token, $event, mi)"
                     (dblclick)="startEditRaw(token, mi); $event.stopPropagation()"
-                    title="Arrows move · Enter edits · ⌘C/⌘V copy/paste · double-click edits raw"
+                    title="Arrows move · Enter edits · ⌘C/⌘V copy/paste the value · double-click edits raw"
                   >
                     @if (isEditing(token, mi)) {
                       <input
@@ -407,6 +450,7 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                         [ngModel]="editText()"
                         (ngModelChange)="onEditInput($event)"
                         (keydown)="onKeydown($event)"
+                        (paste)="onEditPaste($event)"
                         (blur)="onBlur()"
                         (click)="$event.stopPropagation()"
                       />
@@ -605,8 +649,7 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                     }
                   </div>
                 }
-                <!-- Spacer: fills leftover width so the pinned action cell is flush right. -->
-                <div class="flex-1 min-w-0"></div>
+                <div class="flex-1 min-w-[2.5rem]"></div>
                 <div
                   class="w-10 shrink-0 border-l flex items-center justify-center sticky right-0 z-[5]"
                   [class.border-ink-100]="!isFocused(token)"
@@ -659,13 +702,12 @@ export class VariablesTableComponent {
   modeW(modeId: string): number {
     return this.ui.modeColWidth(modeId);
   }
-  /** Total width of all columns — drives section-header / row min-width so their
-   * backgrounds and borders span the full horizontally-scrollable area. */
   readonly totalWidth = computed(
     () =>
       this.ui.nameColWidth() +
       this.modes().reduce((sum, m) => sum + this.ui.modeColWidth(m.id), 0) +
-      40, // trailing action column (w-10)
+      ACTION_COL_W +
+      ACTION_COL_W,
   );
   /** Rows/section headers are at least the columns' total, but stretch to fill the
    * viewport when wider — so a flex spacer can push the pinned action column right. */
@@ -1064,6 +1106,18 @@ export class VariablesTableComponent {
     await this.store.renameMode(col, modeId, to);
   }
 
+  /**
+   * Drop a dragged mode header at its new index; the columns (and the whole
+   * collection's mode order, first = default) follow.
+   */
+  async dropMode(event: CdkDragDrop<ModeDefinition[]>): Promise<void> {
+    const col = this.store.currentCollectionName();
+    if (!col || event.previousIndex === event.currentIndex) return;
+    const order = this.modes().map((m) => m.id);
+    moveItemInArray(order, event.previousIndex, event.currentIndex);
+    await this.store.reorderModes(col, order);
+  }
+
   /** Click a mode header to select its column (toggles off if already selected). */
   selectMode(modeId: string): void {
     this.selectedModeId.set(this.selectedModeId() === modeId ? null : modeId);
@@ -1110,12 +1164,24 @@ export class VariablesTableComponent {
   }
 
   // ---- Context menu ----
-  onContextMenu(token: ParsedToken, event: MouseEvent): void {
+  onContextMenu(token: ParsedToken, event: MouseEvent, modeIndex?: number): void {
     if (!this.store.isSelected(token.id)) this.store.selectOnly(token.id);
     const sel = this.store.selectedIds();
     const multi = sel.has(token.id) && sel.size > 1;
     const copyIds = multi ? [...sel] : [token.id];
+    const cellItems: ContextMenuItem[] =
+      modeIndex === undefined
+        ? []
+        : [
+            { label: 'Copy value', action: () => this.copyCell(token, modeIndex) },
+            {
+              label: multi ? `Paste value into ${sel.size} variables` : 'Paste value',
+              action: () => void this.pasteFromClipboardApi(token, modeIndex),
+            },
+            { label: 'Edit value', action: () => this.startEditRaw(token, modeIndex) },
+          ];
     this.ctxMenu.open(event, [
+      ...cellItems,
       { label: 'Edit variable', action: () => this.store.selectToken(token.id), disabled: multi },
       { label: 'Rename', action: () => this.startRename(token), disabled: multi },
       { label: 'Duplicate', action: () => void this.store.duplicateToken(token.id), disabled: multi },
@@ -1224,8 +1290,11 @@ export class VariablesTableComponent {
   // ---- Cell navigation + copy/paste (Phase 3.5.2) ----
   /** The focused (non-editing) cell for keyboard navigation. */
   readonly activeCell = signal<EditCoord | null>(null);
-  /** Internal single-cell clipboard (raw value). */
-  private readonly cellClipboard = signal<{ value: unknown } | null>(null);
+  private readonly cellClipboard = signal<{ text: string; value: unknown; type: string } | null>(
+    null,
+  );
+  private pendingCopy: ClipboardTicket | null = null;
+  private pendingPaste: ClipboardTicket | null = null;
 
   cellKey(token: ParsedToken, modeIndex: number): string | null {
     const row = this.rowIndexById().get(token.id);
@@ -1245,19 +1314,31 @@ export class VariablesTableComponent {
   }
   /** Arrow-key navigation + Enter-to-edit + ⌘C/⌘V copy/paste on a focused cell. */
   onCellKeydown(event: KeyboardEvent, token: ParsedToken, modeIndex: number): void {
+    if (isTextEntry(event.target)) return;
     const row = this.rowIndexById().get(token.id);
     if (row === undefined) return;
     const key = event.key;
     if ((event.metaKey || event.ctrlKey) && key.toLowerCase() === 'c') {
-      event.preventDefault();
-      event.stopPropagation(); // a focused cell copies its VALUE, not the row
-      this.copyCell(token, modeIndex);
+      event.stopPropagation();
+      const ticket: ClipboardTicket = { done: false };
+      this.pendingCopy = ticket;
+      setTimeout(() => {
+        if (ticket.done || this.pendingCopy !== ticket) return;
+        ticket.done = true;
+        const text = this.copyCellValue(token, modeIndex);
+        if (text !== null) void writeClipboardText(text);
+      }, 120);
       return;
     }
     if ((event.metaKey || event.ctrlKey) && key.toLowerCase() === 'v') {
-      event.preventDefault();
       event.stopPropagation();
-      void this.pasteCell(token, modeIndex);
+      const ticket: ClipboardTicket = { done: false };
+      this.pendingPaste = ticket;
+      setTimeout(() => {
+        if (ticket.done || this.pendingPaste !== ticket) return;
+        ticket.done = true;
+        void this.pasteFromClipboardApi(token, modeIndex);
+      }, 120);
       return;
     }
     if (key === 'Enter' || key === 'F2') {
@@ -1280,28 +1361,107 @@ export class VariablesTableComponent {
     if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) return;
     this.focusCell(nr, nc);
   }
-  /** Copy the focused cell's raw value to the internal clipboard. */
+  onCellCopy(event: ClipboardEvent, token: ParsedToken, modeIndex: number): void {
+    if (isTextEntry(event.target)) return; // the editor's own selection
+    if (this.pendingCopy) this.pendingCopy.done = true;
+    const text = this.copyCellValue(token, modeIndex);
+    if (text === null) return;
+    event.clipboardData?.setData('text/plain', text);
+    event.preventDefault();
+  }
+
+  private copyCellValue(token: ParsedToken, modeIndex: number): string | null {
+    const mode = this.modes()[modeIndex];
+    if (!mode) return null;
+    const value = token.rawValuesByMode[mode.id];
+    const text = cellClipboardText(value, token.type);
+    if (!text) {
+      this.ui.showToast('This cell is empty');
+      return null;
+    }
+    this.cellClipboard.set({ text: normalizeCellText(text), value, type: token.type });
+    this.ui.showToast(`Copied ${text.length > 32 ? 'value' : text}`);
+    return text;
+  }
+
   copyCell(token: ParsedToken, modeIndex: number): void {
+    const text = this.copyCellValue(token, modeIndex);
+    if (text !== null) void writeClipboardText(text);
+  }
+
+  onCellPaste(event: ClipboardEvent, token: ParsedToken, modeIndex: number): void {
+    if (isTextEntry(event.target)) return; // the editor pastes into its own caret
+    if (this.pendingPaste) this.pendingPaste.done = true;
+    const text = event.clipboardData?.getData('text/plain') ?? '';
+    event.preventDefault();
+    void this.applyPastedText(text, token, modeIndex);
+  }
+
+  private async pasteFromClipboardApi(token: ParsedToken, modeIndex: number): Promise<void> {
+    const text = await readClipboardText();
+    if (text === null) {
+      this.ui.showToast('Could not read the clipboard: double-click the cell, then paste', 4000);
+      return;
+    }
+    await this.applyPastedText(text, token, modeIndex);
+  }
+
+  private async applyPastedText(
+    text: string,
+    token: ParsedToken,
+    modeIndex: number,
+  ): Promise<void> {
     const mode = this.modes()[modeIndex];
     if (!mode) return;
-    this.cellClipboard.set({ value: token.rawValuesByMode[mode.id] });
-    this.ui.showToast('Copied');
-  }
-  /**
-   * Paste the clipboard value into the focused cell, or — when it is part of a
-   * multi-selection — into every selected row at this mode (one batch / one undo).
-   */
-  async pasteCell(token: ParsedToken, modeIndex: number): Promise<void> {
-    const clip = this.cellClipboard();
-    const mode = this.modes()[modeIndex];
-    if (!clip || !mode) return;
     const sel = this.store.selectedIds();
-    const ids = sel.has(token.id) && sel.size > 1 ? [...sel] : [token.id];
-    if (ids.length > 1) {
-      await this.store.updateValuesBatch(ids.map((id) => ({ id, mode: mode.id, value: clip.value })));
-    } else {
-      await this.store.updateValue(token.id, mode.id, clip.value);
+    const byId = new Map(this.flatTokens().map((t) => [t.id, t]));
+    const targets =
+      sel.has(token.id) && sel.size > 1
+        ? [...sel].map((id) => byId.get(id)).filter((t): t is ParsedToken => !!t)
+        : [token];
+
+    const changes: { id: string; mode: string; value: unknown }[] = [];
+    let firstError: string | null = null;
+    let unchanged = 0;
+    for (const target of targets) {
+      const parsed = this.pasteValueFor(text, target, mode.id);
+      if (!parsed.ok) {
+        firstError ??= parsed.error;
+        continue;
+      }
+      const current = target.rawValuesByMode[mode.id];
+      if (JSON.stringify(parsed.value) === JSON.stringify(current)) {
+        unchanged++;
+        continue;
+      }
+      changes.push({ id: target.id, mode: mode.id, value: parsed.value });
     }
+
+    if (changes.length === 0) {
+      this.ui.showToast(firstError ?? 'Value unchanged', firstError ? 4000 : 2500);
+      return;
+    }
+    if (changes.length === 1 && targets.length === 1) {
+      await this.store.updateValue(changes[0]!.id, mode.id, changes[0]!.value);
+      this.ui.showToast('Pasted');
+      return;
+    }
+    await this.store.updateValuesBatch(changes);
+    const skipped = targets.length - changes.length - unchanged;
+    if (skipped > 0) this.ui.showToast(`Skipped ${skipped} cell(s): ${firstError}`, 4000);
+  }
+
+  /**
+   * The value a given cell should take for this clipboard text. Pasting back the
+   * text we ourselves copied from a same-typed cell restores the exact raw value;
+   * anything else is parsed and type-checked.
+   */
+  private pasteValueFor(text: string, token: ParsedToken, modeId: string): CellParse {
+    const clip = this.cellClipboard();
+    if (clip && clip.type === token.type && clip.text === normalizeCellText(text)) {
+      return { ok: true, value: clip.value };
+    }
+    return parseCellText(text, token.type, token.rawValuesByMode[modeId]);
   }
 
   // ---- Inline editing ----
@@ -1638,6 +1798,23 @@ export class VariablesTableComponent {
     this.highlight.set(0);
   }
 
+  onEditPaste(event: ClipboardEvent): void {
+    const raw = event.clipboardData?.getData('text/plain');
+    if (raw == null) return;
+    const text = normalizeCellText(raw);
+    event.preventDefault();
+    const el = event.target as HTMLInputElement;
+    const start = el.selectionStart ?? el.value.length;
+    const end = el.selectionEnd ?? start;
+    const next = el.value.slice(0, start) + text + el.value.slice(end);
+    const caret = start + text.length;
+    el.value = next;
+    el.setSelectionRange(caret, caret);
+    this.editText.set(next);
+    this.highlight.set(0);
+    setTimeout(() => el.setSelectionRange(caret, caret));
+  }
+
   /** Accept an alias suggestion: set the value and commit (no cell move). */
   pickSuggestion(option: string): void {
     this.editText.set(option);
@@ -1708,13 +1885,17 @@ export class VariablesTableComponent {
       return;
     }
 
-    const text = this.editText();
-    const current = formatValue(token.rawValuesByMode[mode.id], token.type);
+    const text = this.editText().trim();
+    const raw = token.rawValuesByMode[mode.id];
+    const current = formatValue(raw, token.type);
     // An unterminated alias (e.g. just "{" or "{partial" with no closing brace) is
-    // reverted, not written — so a half-typed alias never clobbers the value.
-    const incompleteAlias = /^\{[^}]*$/.test(text.trim());
-    if (text !== current && !incompleteAlias) {
-      await this.store.updateValue(token.id, mode.id, coerce(text, token.type === 'number'));
+    const incompleteAlias = /^\{[^}]*$/.test(text);
+    const untouched = text === current || (text === '' && raw == null);
+    if (!untouched && !incompleteAlias) {
+      const value = coerceTypedText(text, token.type, raw);
+      if (JSON.stringify(value) !== JSON.stringify(raw)) {
+        await this.store.updateValue(token.id, mode.id, value);
+      }
     }
 
     const modeCount = this.modes().length;
@@ -1731,10 +1912,8 @@ export class VariablesTableComponent {
   }
 }
 
-function coerce(value: string, asNumber: boolean): unknown {
-  if (asNumber) {
-    const n = Number(value);
-    return Number.isNaN(n) ? value : n;
-  }
-  return value;
+function isTextEntry(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  if (!el) return false;
+  return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable;
 }

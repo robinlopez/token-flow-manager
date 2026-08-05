@@ -17,12 +17,28 @@ icon: lucide/sparkles
 
 - **Tableau des variables** : colonnes de modes (clair/sombre/marque et plus), puces
   d'alias, édition en ligne, colonnes redimensionnables.
+- **Réordonner les colonnes de modes** : glissez un en-tête de colonne par son libellé.
+  Seul l'ordre des modes de la collection change (les fichiers de tokens ne sont pas
+  touchés), et le mode le plus à gauche est le mode par défaut de la collection.
 - **Arbre de groupes** : glisser-déposer à la Finder. Déposez un groupe sur un autre
   pour l'**imbriquer**, ou entre deux groupes pour **réordonner**. Sélection multiple
   avec ⌘/Ctrl-clic et Maj-clic pour en déplacer plusieurs à la fois.
 - **Copier / Couper / Coller des variables** (++cmd+c++ / ++cmd+x++ / ++cmd+v++) :
   couper masque les lignes immédiatement et les déplace au collage ; copier duplique.
+- **Copier / Coller une valeur** (++cmd+c++ / ++cmd+v++ sur une cellule focus, ou
+  clic droit → *Copy value* / *Paste value*) : la valeur passe par le **presse-papier
+  système**, elle circule donc vers une autre cellule, un autre mode ou n'importe quelle
+  autre app. Coller sur une multi-sélection remplit toutes les lignes sélectionnées pour
+  ce mode d'un coup (un seul annuler).
 - **Annuler / Rétablir** (++cmd+z++ / ++cmd+shift+z++) : exact à l'octet, côté serveur.
+
+!!! tip "Une valeur collée est nettoyée et vérifiée"
+
+    Le texte du presse-papier est normalisé (espaces, retours à la ligne, guillemets et
+    `;` final retirés) puis validé contre le type de la cellule : `1a2b3c` devient
+    `#1a2b3c`, `1600` collé sur `1440px` devient `1600px` (l'unité en place est
+    conservée), et `{screen.gutter}` relie la cellule à ce token. Une valeur qui ne
+    correspond pas au type est refusée avec un message, au lieu d'être écrite.
 
 ## Palettes de couleurs (shading)
 

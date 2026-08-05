@@ -317,6 +317,28 @@ export class ProjectStore {
     }
   }
 
+  /**
+   * Reorder a collection's mode columns. Optimistic: the columns snap to the new
+   * order immediately, then the server write reconciles (and rolls back on error).
+   */
+  async reorderModes(collection: string, order: string[]): Promise<boolean> {
+    const col = this.collection();
+    if (col) {
+      const byId = new Map(col.modes.map((m) => [m.id, m]));
+      const next = order.map((id) => byId.get(id)).filter((m): m is NonNullable<typeof m> => !!m);
+      if (next.length === col.modes.length) this.collection.set({ ...col, modes: next });
+    }
+    try {
+      const res = await this.fetch(this.api.reorderModes(collection, order));
+      await this.refresh();
+      return res.ok;
+    } catch (err) {
+      this.ui.showToast(errMessage(err), 4000);
+      await this.refresh();
+      return false;
+    }
+  }
+
   /** Duplicate a collection's mode into a copy (named with a free suffix). */
   async duplicateMode(collection: string, mode: string): Promise<boolean> {
     try {

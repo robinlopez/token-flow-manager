@@ -45,6 +45,7 @@ import {
   type JsonObject,
 } from '@tokenflow/core';
 import {
+  collectionNamespaceVariants,
   envelopeOf,
   extractEmbeddedRefs,
   isAlias,
@@ -193,6 +194,14 @@ export class ProjectManager extends EventEmitter {
    * actually resolves.
    */
   private collectionNamespaces = new Map<string, string>();
+  /**
+   * Collection → the namespace literal this project's cross-collection aliases
+   * use for it (`{primitives.red.200}` → "primitives"). Empty when the project
+   * writes bare cross-collection paths. Learned from the files on every reparse.
+   */
+  private aliasPrefixes = new Map<string, string>();
+  /** Collection → every namespace literal observed for it (casing preserved). */
+  private aliasNamespaceLiterals = new Map<string, string[]>();
   /** Effective modes per collection (declared OR auto-detected from a path dimension). */
   private effectiveModes = new Map<string, string[]>();
   /** Active path-segment mode dimension per collection (logical↔physical path translation). */
@@ -440,12 +449,146 @@ export class ProjectManager extends EventEmitter {
   private buildCollectionNamespaces(tokens: ParsedToken[]): void {
     this.collectionNamespaces = new Map();
     for (const name of new Set(tokens.map((t) => t.collection))) {
-      const n = name.toLowerCase();
-      for (const base of new Set<string>([n, ...n.split('/')])) {
-        const variant = base.endsWith('s') ? base.slice(0, -1) : `${base}s`;
-        for (const v of [base, variant]) if (!this.collectionNamespaces.has(v)) this.collectionNamespaces.set(v, name);
+      for (const v of collectionNamespaceVariants(name)) {
+        if (!this.collectionNamespaces.has(v)) this.collectionNamespaces.set(v, name);
       }
     }
+  }
+
+  /**
+   * Learn how THIS project writes cross-collection references, per target
+   * collection: bare (`{red.200}`) or namespaced (`{primitives.red.200}`).
+   *
+   * Downstream build tools (Style Dictionary, Tokens Studio) usually merge the
+   * files into one tree in which each collection is a top-level group, so a bare
+   * path that our resolver happily resolves is dangling for them. Rather than
+   * guess, we mirror whatever the existing files already do, and only for
+   * collections that actually have namespaced references pointing at them.
+   *
+   * Fills `aliasPrefixes` (the winning literal per collection, used when writing
+   * a new alias) and `aliasNamespaceLiterals` (every literal seen, so a rename
+   * rewrites `{Primitives.red.200}` as well as `{primitives.red.200}`).
+   */
+  private detectAliasPrefixes(tokens: ParsedToken[]): void {
+    const namespaced = new Map<string, Map<string, number>>(); // collection → literal → count
+    const bare = new Map<string, number>();
+
+    for (const t of tokens) {
+      for (const p of this.aliasTargetsOf(t)) {
+        const entries = this.byPathKey.get(p.join('.'));
+        if (entries?.some((e) => e.collection === t.collection)) continue; // same-collection ref
+        if (entries?.length) {
+          // Bare path that lands in another collection.
+          const id = this.lookupByPath(t.collection, p.join('.')) ?? entries[0]!.id;
+          const col = this.tokensById.get(id)?.collection ?? entries[0]!.collection;
+          bare.set(col, (bare.get(col) ?? 0) + 1);
+          continue;
+        }
+        if (p.length < 2) continue;
+        // Not a real path: the first segment may be a collection namespace.
+        const rest = this.byPathKey.get(p.slice(1).join('.'))?.filter((e) => e.collection !== t.collection) ?? [];
+        if (rest.length === 0) continue;
+        const named = this.collectionNamespaces.get(p[0]!.toLowerCase());
+        const target = rest.find((e) => e.collection === named) ?? (rest.length === 1 ? rest[0]! : undefined);
+        if (!target) continue;
+        const literals = namespaced.get(target.collection) ?? new Map<string, number>();
+        literals.set(p[0]!, (literals.get(p[0]!) ?? 0) + 1);
+        namespaced.set(target.collection, literals);
+      }
+    }
+
+    this.aliasPrefixes = new Map();
+    this.aliasNamespaceLiterals = new Map();
+    for (const [col, literals] of namespaced) {
+      this.aliasNamespaceLiterals.set(col, [...literals.keys()]);
+      let best = '';
+      let bestCount = 0;
+      let total = 0;
+      for (const [literal, n] of literals) {
+        total += n;
+        if (n > bestCount) {
+          best = literal;
+          bestCount = n;
+        }
+      }
+      // Only adopt the convention when it is at least as common as bare refs.
+      if (best && total >= (bare.get(col) ?? 0)) this.aliasPrefixes.set(col, best);
+    }
+  }
+
+  /**
+   * Rewrite the value of a cross-collection alias into the project's namespace
+   * convention (`{red.200}` → `{primitives.red.200}`). A no-op when the value
+   * isn't an alias, already carries a namespace, resolves inside `fromCollection`,
+   * or when the target collection has no observed convention.
+   */
+  private qualifyAliasValue(value: unknown, fromCollection: string): unknown {
+    if (typeof value === 'string') return this.qualifyAliasString(value, fromCollection);
+    if (Array.isArray(value)) return value.map((v) => this.qualifyAliasValue(v, fromCollection));
+    if (value && typeof value === 'object') {
+      const out: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+        out[k] = this.qualifyAliasValue(v, fromCollection);
+      }
+      return out;
+    }
+    return value;
+  }
+
+  private qualifyAliasString(value: string, fromCollection: string): string {
+    if (!isAlias(value)) return value;
+    const path = parseAliasPath(value);
+    if (!path || path.length === 0) return value;
+    // Already namespaced: leave the author's form alone.
+    if (path.length > 1 && this.collectionNamespaces.has(path[0]!.toLowerCase())) return value;
+    const pk = path.join('.');
+    const entries = this.byPathKey.get(pk) ?? [];
+    if (entries.some((e) => e.collection === fromCollection)) return value; // resolves locally
+    const id = this.lookupByPath(fromCollection, pk);
+    const target = id ? this.tokensById.get(id)?.collection : undefined;
+    if (!target || target === fromCollection) return value;
+    const prefix = this.aliasPrefixes.get(target);
+    if (!prefix) return value;
+    const qualified = [prefix, ...path];
+    return value.startsWith('#/')
+      ? '#/' + qualified.map((s) => s.replace(/~/g, '~0').replace(/\//g, '~1')).join('/')
+      : `{${qualified.join('.')}}`;
+  }
+
+  /**
+   * Rewrite every reference to `oldPath` (a token of `tokenCollection`) inside a
+   * document that belongs to `entryCollection`. Covers the bare path plus, for a
+   * document in ANOTHER collection, each namespaced form the project uses;
+   * otherwise a rename would silently leave `{primitives.red.200}` dangling.
+   */
+  private rewriteRefsTo(
+    data: JsonObject,
+    entryCollection: string,
+    tokenCollection: string,
+    oldPath: string[],
+    newPath: string[],
+  ): number {
+    let n = rewriteAliasReferences(data, oldPath, newPath);
+    if (entryCollection === tokenCollection) return n;
+    for (const ns of this.aliasNamespaceLiterals.get(tokenCollection) ?? []) {
+      n += rewriteAliasReferences(data, [ns, ...oldPath], [ns, ...newPath]);
+    }
+    return n;
+  }
+
+  /** Reference count for `oldPath`, counting namespaced forms outside its collection. */
+  private countRefsTo(
+    data: JsonObject,
+    entryCollection: string,
+    tokenCollection: string,
+    path: string[],
+  ): number {
+    let n = countAliasReferences(data, path);
+    if (entryCollection === tokenCollection) return n;
+    for (const ns of this.aliasNamespaceLiterals.get(tokenCollection) ?? []) {
+      n += countAliasReferences(data, [ns, ...path]);
+    }
+    return n;
   }
 
   /** Reference target paths declared by a token across all of its modes. */
@@ -467,6 +610,7 @@ export class ProjectManager extends EventEmitter {
       this.byPathKey.set(pk, list);
     }
     this.buildCollectionNamespaces(tokens);
+    this.detectAliasPrefixes(tokens);
 
     // reference graph (which ids are referenced)
     this.referencedIds = new Set();
@@ -1727,6 +1871,35 @@ export class ProjectManager extends EventEmitter {
     return { ok: true, affectedTokenIds: [], diagnostics: [] };
   }
 
+  /**
+   * Reorder a collection's modes (the table's columns). Purely declarative: the
+   * token files are untouched, only the collection's mode list is rewritten, so
+   * every consumer (columns, manifest key order, `defaultMode`) follows. As
+   * elsewhere, the FIRST mode is the collection's default.
+   */
+  async reorderModes(collection: string, order: string[]): Promise<MutationResult> {
+    return this.runStructural(`Reorder modes in ${collection}`, () =>
+      this.reorderModesImpl(collection, order),
+    );
+  }
+  private async reorderModesImpl(collection: string, order: string[]): Promise<MutationResult> {
+    const info = this.modeInfo(collection);
+    if (!info) return fail('invalid-token', `Unknown collection "${collection}"`);
+    if (info.modes.length < 2) {
+      return fail('invalid-token', `Collection "${collection}" has a single mode`);
+    }
+    const current = [...info.modes].sort();
+    const next = [...order].sort();
+    if (order.length !== info.modes.length || current.some((m, i) => m !== next[i])) {
+      return fail('invalid-token', `The new order must list each mode of ${collection} exactly once`);
+    }
+    if (info.modes.every((m, i) => m === order[i])) {
+      return { ok: true, affectedTokenIds: [], diagnostics: [] }; // already in that order
+    }
+    await this.finishStructural(collection, { modes: [...order] });
+    return { ok: true, affectedTokenIds: [], diagnostics: [] };
+  }
+
   /** Duplicate a mode: a copy seeded from it, named with a free `<mode>2` suffix. */
   async duplicateMode(collection: string, mode: string): Promise<MutationResult> {
     return this.runStructural(`Duplicate mode "${mode}" in ${collection}`, () =>
@@ -1748,11 +1921,14 @@ export class ProjectManager extends EventEmitter {
   // ---- Mutations ----
 
   /** Update a single token's value for a given mode and persist atomically. */
-  async updateValue(id: string, mode: string, value: unknown): Promise<MutationResult> {
+  async updateValue(id: string, mode: string, rawValue: unknown): Promise<MutationResult> {
     const token = this.tokensById.get(id);
     if (!token) {
       return fail('invalid-token', `Token "${id}" not found`);
     }
+    // A cross-collection alias is written the way this project writes them
+    // (`{red.200}` → `{primitives.red.200}`) so downstream builds resolve it.
+    const value = this.qualifyAliasValue(rawValue, token.collection);
     const entry = this.fileEntryForMode(token, mode);
     if (!entry) {
       return fail('invalid-token', `Source file for token not loaded`);
@@ -1881,9 +2057,11 @@ export class ProjectManager extends EventEmitter {
     if (changes.length === 0) return { ok: true, affectedTokenIds: [], diagnostics: [] };
 
     const perFile = new Map<string, { entry: FileEntry; data: JsonObject; format: ReturnType<typeof detectFormat> }>();
-    for (const ch of changes) {
-      const token = this.tokensById.get(ch.id);
-      if (!token) return fail('invalid-token', `Token "${ch.id}" not found`, ch.id, ch.mode);
+    for (const raw of changes) {
+      const token = this.tokensById.get(raw.id);
+      if (!token) return fail('invalid-token', `Token "${raw.id}" not found`, raw.id, raw.mode);
+      // Same alias qualification as the single-value path.
+      const ch = { ...raw, value: this.qualifyAliasValue(raw.value, token.collection) };
       const entry = this.fileEntryForMode(token, ch.mode);
       if (!entry) return fail('invalid-token', `Source file for token not loaded`, ch.id, ch.mode);
       if (entry.readOnly) {
@@ -2130,7 +2308,7 @@ export class ProjectManager extends EventEmitter {
       } catch {
         continue;
       }
-      const refs = countAliasReferences(data, token.path);
+      const refs = this.countRefsTo(data, entry.collection, token.collection, token.path);
       const isOwner = entry.abs === join(this.root, token.source.file);
       if (refs > 0 || isOwner) files++;
       references += refs;
@@ -2181,7 +2359,7 @@ export class ProjectManager extends EventEmitter {
         touched = true;
       }
       if (updateReferences && canReference) {
-        const n = rewriteAliasReferences(data, token.path, newPath);
+        const n = this.rewriteRefsTo(data, entry.collection, token.collection, token.path, newPath);
         touched = touched || n > 0;
       }
       if (touched) staged.push({ entry, content: stringifyDocument(data, format) });
@@ -2406,7 +2584,8 @@ export class ProjectManager extends EventEmitter {
         for (let i = 0; i < oldPaths.length; i++) {
           if (renameNode(data, oldPaths[i]!, newPaths[i]!)) touched = true; // node lives here
         }
-        if (rewriteAliasReferences(data, r.old, r.new) > 0) touched = true; // refs here
+        // refs here (bare, plus the project's namespaced form in other collections)
+        if (this.rewriteRefsTo(data, entry.collection, collection, r.old, r.new) > 0) touched = true;
       }
       if (touched) staged.push({ entry, content: stringifyDocument(data, detectFormat(entry.content)) });
     }
