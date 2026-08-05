@@ -16,6 +16,9 @@ icon: lucide/sparkles
 
 - **Variables table**: mode columns (light/dark/brand and more), alias chips, inline
   editing, resizable columns.
+- **Reorder mode columns**: drag a column header by its label to move it. Only the
+  collection's mode order changes (the token files are untouched), and the leftmost
+  mode is the collection's default.
 - **Sidebar group tree**: Finder-style drag-and-drop. Drop a group onto another to
   **nest** it, or between two groups to **reorder**. Multi-select with ⌘/Ctrl-click and
   Shift-click to move several at once.

@@ -19,6 +19,7 @@ import {
   RenameModeRequestSchema,
   DeleteModeRequestSchema,
   DuplicateModeRequestSchema,
+  ReorderModesRequestSchema,
   AddCollectionRequestSchema,
   RenameCollectionRequestSchema,
   DeleteCollectionRequestSchema,
@@ -348,6 +349,13 @@ function registerApiRoutes(
     const parsed = DuplicateModeRequestSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
     const result = await project.duplicateMode(parsed.data.collection, parsed.data.mode);
+    return reply.code(result.ok ? 200 : 422).send(result);
+  });
+
+  app.post<{ Body: unknown }>('/api/modes/reorder', async (req, reply) => {
+    const parsed = ReorderModesRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    const result = await project.reorderModes(parsed.data.collection, parsed.data.order);
     return reply.code(result.ok ? 200 : 422).send(result);
   });
 

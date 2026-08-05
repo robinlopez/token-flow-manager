@@ -17,6 +17,9 @@ icon: lucide/sparkles
 
 - **Tableau des variables** : colonnes de modes (clair/sombre/marque et plus), puces
   d'alias, édition en ligne, colonnes redimensionnables.
+- **Réordonner les colonnes de modes** : glissez un en-tête de colonne par son libellé.
+  Seul l'ordre des modes de la collection change (les fichiers de tokens ne sont pas
+  touchés), et le mode le plus à gauche est le mode par défaut de la collection.
 - **Arbre de groupes** : glisser-déposer à la Finder. Déposez un groupe sur un autre
   pour l'**imbriquer**, ou entre deux groupes pour **réordonner**. Sélection multiple
   avec ⌘/Ctrl-clic et Maj-clic pour en déplacer plusieurs à la fois.

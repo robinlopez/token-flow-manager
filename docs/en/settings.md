@@ -36,6 +36,15 @@ How aliases resolve across your collections. Saved to `tokenflow.config.json`.
 - **Resolution order**: reorder collections with the up/down arrows. Earlier
   collections resolve first; a collection may only reference those above it.
 
+!!! info "Cross-collection aliases keep your project's own spelling"
+
+    Some projects namespace a reference with the target collection
+    (`{primitives.red.200}`), because the build merges every collection into one tree;
+    others write the bare path (`{red.200}`). The tool reads both, and when you link a
+    cell to a token in another collection it **writes the form your files already use**,
+    so a namespaced project stays namespaced and your build keeps resolving. Renaming or
+    moving a token rewrites both forms.
+
 ## Collections & modes
 
 Describe your collections, their modes (the value columns, e.g. Light/Dark,

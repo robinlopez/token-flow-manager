@@ -2,6 +2,7 @@ export * from './dtcg.js';
 export * from './dialect.js';
 export * from './diagnostics.js';
 export * from './model.js';
+export * from './namespace.js';
 export * from './palette.js';
 export * from './config.js';
 export * from './manifest.js';

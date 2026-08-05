@@ -839,6 +839,64 @@ describe('ProjectManager — mode management (add / rename)', () => {
     await pm.dispose();
   });
 
+  it('inline: reorders the mode columns without touching the token files', async () => {
+    const doc = { color: { bg: { $type: 'color', $value: { light: '#fff', dark: '#000' } } } };
+    await writeFile(join(root, 'inline.json'), JSON.stringify(doc, null, 2) + '\n');
+    const before = await readFile(join(root, 'inline.json'), 'utf8');
+    const pm = new ProjectManager(root, inlineConfig(['light', 'dark']));
+    await pm.load();
+
+    expect((await pm.reorderModes('c', ['dark', 'light'])).ok).toBe(true);
+    expect(pm.getCollection('c')!.modes.map((m) => m.id)).toEqual(['dark', 'light']);
+    // Declarative only: the values on disk are byte-identical.
+    expect(await readFile(join(root, 'inline.json'), 'utf8')).toBe(before);
+    const bg = pm.getCollection('c')!.tokens.find((t) => t.path.join('.') === 'color.bg')!;
+    expect(bg.resolvedValuesByMode).toEqual({ light: '#fff', dark: '#000' });
+
+    await pm.dispose();
+  });
+
+  it('dimension: reordering survives a reload and is undoable', async () => {
+    const doc = {
+      color: {
+        modeLight: { bg: { $value: '#fff' } },
+        modeDark: { bg: { $value: '#000' } },
+      },
+    };
+    await writeFile(join(root, 'theme.tokens.json'), JSON.stringify(doc, null, 2) + '\n');
+    const pm = new ProjectManager(root, DEFAULT_CONFIG, { autoDetect: true });
+    await pm.load();
+    const name = pm.getState().collections[0]!.name;
+    const ids = () => pm.getCollection(name)!.modes.map((m) => m.id);
+    expect(ids()).toEqual(['modeDark', 'modeLight']);
+
+    expect((await pm.reorderModes(name, ['modeLight', 'modeDark'])).ok).toBe(true);
+    expect(ids()).toEqual(['modeLight', 'modeDark']);
+    await pm.reload();
+    expect(ids()).toEqual(['modeLight', 'modeDark']); // persisted, not re-detected
+
+    // Undo restores the pre-reorder config (which, for an auto-detected project,
+    // means the collection is detected from the file name again).
+    expect((await pm.undo()).ok).toBe(true);
+    const restored = pm.getState().collections[0]!.name;
+    expect(pm.getCollection(restored)!.modes.map((m) => m.id)).toEqual(['modeDark', 'modeLight']);
+
+    await pm.dispose();
+  });
+
+  it('rejects a reorder that is not a permutation of the modes', async () => {
+    const doc = { color: { bg: { $type: 'color', $value: { light: '#fff', dark: '#000' } } } };
+    await writeFile(join(root, 'inline.json'), JSON.stringify(doc, null, 2) + '\n');
+    const pm = new ProjectManager(root, inlineConfig(['light', 'dark']));
+    await pm.load();
+
+    expect((await pm.reorderModes('c', ['dark'])).ok).toBe(false);
+    expect((await pm.reorderModes('c', ['dark', 'hc'])).ok).toBe(false);
+    expect(pm.getCollection('c')!.modes.map((m) => m.id)).toEqual(['light', 'dark']);
+
+    await pm.dispose();
+  });
+
   it('rejects a duplicate mode name', async () => {
     const doc = { color: { bg: { $type: 'color', $value: { light: '#fff', dark: '#000' } } } };
     await writeFile(join(root, 'inline.json'), JSON.stringify(doc, null, 2) + '\n');

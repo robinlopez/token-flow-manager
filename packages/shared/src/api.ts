@@ -307,6 +307,14 @@ export const DeleteModeRequestSchema = z.object({
 });
 export type DeleteModeRequest = z.infer<typeof DeleteModeRequestSchema>;
 
+/** Reorder a collection's modes (the table's columns). Must be a permutation. */
+export const ReorderModesRequestSchema = z.object({
+  collection: z.string(),
+  /** Every mode of the collection, in the new left-to-right order. */
+  order: z.array(z.string().min(1)).min(2),
+});
+export type ReorderModesRequest = z.infer<typeof ReorderModesRequestSchema>;
+
 /** Duplicate a mode of a collection (a copy seeded from it). */
 export const DuplicateModeRequestSchema = z.object({
   collection: z.string(),

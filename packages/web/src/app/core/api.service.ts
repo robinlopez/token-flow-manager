@@ -182,6 +182,15 @@ export class ApiService {
     );
   }
 
+  /** Reorder a collection's modes (drag a column header). */
+  reorderModes(collection: string, order: string[]): Observable<MutationResult> {
+    return this.http.post<MutationResult>(
+      '/api/modes/reorder',
+      { collection, order },
+      { params: this.params() },
+    );
+  }
+
   /** Duplicate a mode of a collection (a copy seeded from it). */
   duplicateMode(collection: string, mode: string): Observable<MutationResult> {
     return this.http.post<MutationResult>(

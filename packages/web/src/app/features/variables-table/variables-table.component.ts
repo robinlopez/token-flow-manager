@@ -11,6 +11,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import {
   CdkDrag,
+  CdkDragHandle,
   CdkDragPlaceholder,
   CdkDragPreview,
   CdkDropList,
@@ -44,7 +45,7 @@ import {
   writeClipboardText,
   type CellParse,
 } from '../../core/cell-clipboard';
-import type { DtcgType, GroupNode, ParsedToken } from '../../core/models';
+import type { DtcgType, GroupNode, ModeDefinition, ParsedToken } from '../../core/models';
 
 function isGroupNode(data: unknown): data is GroupNode {
   return !!data && typeof data === 'object' && 'children' in data && 'path' in data;
@@ -90,6 +91,7 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
     FormsModule,
     CdkDropList,
     CdkDrag,
+    CdkDragHandle,
     CdkDragPreview,
     CdkDragPlaceholder,
   ],
@@ -109,8 +111,28 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
               (dblclick)="ui.setNameColWidth(280)"
             ></div>
           </div>
+          <!-- Mode columns: drag a header by its label to reorder the columns.
+               The first mode is the collection's default. -->
+          <div
+            class="flex items-stretch"
+            cdkDropList
+            cdkDropListOrientation="horizontal"
+            [cdkDropListData]="modes()"
+            (cdkDropListDropped)="dropMode($event)"
+          >
           @for (mode of modes(); track mode.id; let last = $last) {
-            <div class="relative shrink-0 px-4 py-2 border-l border-ink-200" [style.width.px]="modeW(mode.id)">
+            <div
+              class="relative shrink-0 px-4 py-2 border-l border-ink-200 bg-ink-50"
+              [style.width.px]="modeW(mode.id)"
+              cdkDrag
+              cdkDragLockAxis="x"
+              [cdkDragDisabled]="modes().length < 2 || renamingModeId() === mode.id"
+            >
+              <div
+                *cdkDragPlaceholder
+                class="shrink-0 h-full border-l border-forge-300 bg-forge-50"
+                [style.width.px]="modeW(mode.id)"
+              ></div>
               @if (renamingModeId() === mode.id) {
                 <input
                   #modeRenameInput
@@ -122,12 +144,15 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
                 />
               } @else {
                 <span
+                  cdkDragHandle
                   tabindex="0"
-                  class="inline-block cursor-pointer select-none outline-none rounded px-1 -mx-1 ring-forge-400"
+                  class="inline-block select-none outline-none rounded px-1 -mx-1 ring-forge-400"
+                  [class.cursor-grab]="modes().length > 1"
+                  [class.cursor-pointer]="modes().length < 2"
                   [class.bg-forge-100]="selectedModeId() === mode.id"
                   [class.text-forge-700]="selectedModeId() === mode.id"
                   [class.ring-1]="selectedModeId() === mode.id"
-                  title="Click to select · double-click to rename · Delete to remove · right-click for options"
+                  title="Drag to reorder · click to select · double-click to rename · Delete to remove · right-click for options"
                   (click)="selectMode(mode.id)"
                   (dblclick)="startRenameMode(mode.id)"
                   (contextmenu)="onModeContextMenu($event, mode.id)"
@@ -146,6 +171,7 @@ const COMPOSITE_TYPES = new Set(['typography', 'shadow', 'border', 'gradient', '
               ></div>
             </div>
           }
+          </div>
           <!-- Flexible spacer fills any width left over so the pinned action
                column sits flush at the right edge (no gap) when columns are narrow. -->
           <div class="flex-1 min-w-0"></div>
@@ -1080,6 +1106,18 @@ export class VariablesTableComponent {
     this.renamingModeId.set(null);
     if (!col || !to || to === modeId) return;
     await this.store.renameMode(col, modeId, to);
+  }
+
+  /**
+   * Drop a dragged mode header at its new index; the columns (and the whole
+   * collection's mode order, first = default) follow.
+   */
+  async dropMode(event: CdkDragDrop<ModeDefinition[]>): Promise<void> {
+    const col = this.store.currentCollectionName();
+    if (!col || event.previousIndex === event.currentIndex) return;
+    const order = this.modes().map((m) => m.id);
+    moveItemInArray(order, event.previousIndex, event.currentIndex);
+    await this.store.reorderModes(col, order);
   }
 
   /** Click a mode header to select its column (toggles off if already selected). */
