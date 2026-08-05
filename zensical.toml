@@ -331,7 +331,7 @@ alternate = [
 # subdirectory by `scripts/docs-build-versioned.mjs` (mike-compatible layout).
 [project.extra.version]
 provider = "mike"
-default = "0.1.7"
+default = "0.1.8"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"

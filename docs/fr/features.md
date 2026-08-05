@@ -22,7 +22,20 @@ icon: lucide/sparkles
   avec ⌘/Ctrl-clic et Maj-clic pour en déplacer plusieurs à la fois.
 - **Copier / Couper / Coller des variables** (++cmd+c++ / ++cmd+x++ / ++cmd+v++) :
   couper masque les lignes immédiatement et les déplace au collage ; copier duplique.
+- **Copier / Coller une valeur** (++cmd+c++ / ++cmd+v++ sur une cellule focus, ou
+  clic droit → *Copy value* / *Paste value*) : la valeur passe par le **presse-papier
+  système**, elle circule donc vers une autre cellule, un autre mode ou n'importe quelle
+  autre app. Coller sur une multi-sélection remplit toutes les lignes sélectionnées pour
+  ce mode d'un coup (un seul annuler).
 - **Annuler / Rétablir** (++cmd+z++ / ++cmd+shift+z++) : exact à l'octet, côté serveur.
+
+!!! tip "Une valeur collée est nettoyée et vérifiée"
+
+    Le texte du presse-papier est normalisé (espaces, retours à la ligne, guillemets et
+    `;` final retirés) puis validé contre le type de la cellule : `1a2b3c` devient
+    `#1a2b3c`, `1600` collé sur `1440px` devient `1600px` (l'unité en place est
+    conservée), et `{screen.gutter}` relie la cellule à ce token. Une valeur qui ne
+    correspond pas au type est refusée avec un message, au lieu d'être écrite.
 
 ## Palettes de couleurs (shading)
 

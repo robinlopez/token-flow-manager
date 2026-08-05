@@ -21,7 +21,19 @@ icon: lucide/sparkles
   Shift-click to move several at once.
 - **Copy / Cut / Paste variables** (++cmd+c++ / ++cmd+x++ / ++cmd+v++): cut hides the
   rows immediately and moves them on paste; copy duplicates.
+- **Copy / Paste a value** (++cmd+c++ / ++cmd+v++ on a focused cell, or right-click →
+  *Copy value* / *Paste value*): the cell value goes to the **system clipboard**, so it
+  travels to another cell, another mode, or any other app. Pasting into a multi-selection
+  fills every selected row at that mode in one go (one undo).
 - **Undo / redo** (++cmd+z++ / ++cmd+shift+z++): byte-exact and server-side.
+
+!!! tip "A pasted value is cleaned up and checked"
+
+    Clipboard text is normalised (surrounding whitespace, line breaks, quotes and a
+    trailing `;` are dropped) then validated against the cell's type: `1a2b3c` pastes as
+    `#1a2b3c`, `1600` over `1440px` becomes `1600px` (it keeps the unit already in use),
+    and `{screen.gutter}` re-links the cell to that token. A value that doesn't fit the
+    type is refused with a reason instead of being written.
 
 ## Colour palettes (shading)
 
