@@ -11,6 +11,11 @@ icon: lucide/sparkles
   no path on the command line.
 - **Project switcher**: the header shows the open project's name with a chevron; the
   dropdown switches to a recent project in place or returns to the welcome screen.
+- **[Starter templates](templates.md)**: no project yet? *Open a project* slides over to a
+  picker that scaffolds a complete DTCG structure from Tailwind CSS v4, Material Design 3,
+  Semantic Functional DS or the Simple Design System (collections, modes and aliases already
+  in place), then opens it and, if you want, jumps straight to the distribution
+  configurator.
 
 ## Editing tokens
 

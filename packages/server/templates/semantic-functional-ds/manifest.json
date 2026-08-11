@@ -1,0 +1,76 @@
+{
+  "name": "Design Tokens",
+  "collections": {
+    "Primitives": {
+      "modes": {
+        "Brand 1": [
+          "primitives.json"
+        ],
+        "Brand 2": [
+          "primitives.json"
+        ],
+        "Brand 3": [
+          "primitives.json"
+        ]
+      }
+    },
+    "Semantics": {
+      "modes": {
+        "Light": [
+          "semantics.json"
+        ],
+        "Dark": [
+          "semantics.json"
+        ]
+      }
+    },
+    "Metrics": {
+      "modes": {
+        "Mode 1": [
+          "metrics.json"
+        ]
+      }
+    },
+    "Typography": {
+      "modes": {
+        "Mode 1": [
+          "typography.json"
+        ]
+      }
+    },
+    "Responsive": {
+      "modes": {
+        "Desktop": [
+          "responsive.json"
+        ],
+        "Tablet": [
+          "responsive.json"
+        ],
+        "Mobile": [
+          "responsive.json"
+        ]
+      }
+    },
+    "Utils": {
+      "modes": {
+        "Mode 1": [
+          "utils.json"
+        ]
+      }
+    },
+    "Breakpoints": {
+      "modes": {
+        "Mode 1": [
+          "breakpoints.json"
+        ]
+      }
+    },
+    "Transitions": {
+      "modes": {
+        "Mode 1": [
+          "transitions.json"
+        ]
+      }
+    }
+  }
+}

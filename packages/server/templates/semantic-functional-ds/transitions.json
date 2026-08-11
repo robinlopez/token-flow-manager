@@ -1,0 +1,106 @@
+{
+  "$description": "Transitions",
+  "$metadata": {
+    "generatedAt": "2026-05-17T13:50:58.659Z"
+  },
+  "transition": {
+    "fast": {
+      "$value": "80ms",
+      "$description": "Durée d'animation rapide.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:120",
+          "collectionId": "VariableCollectionId:966:119",
+          "modeId": "966:1",
+          "resolvedType": "STRING",
+          "description": "Durée d'animation rapide."
+        }
+      }
+    },
+    "default": {
+      "$value": "180ms",
+      "$description": "Durée d'animation standard (micro-interactions).",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:121",
+          "collectionId": "VariableCollectionId:966:119",
+          "modeId": "966:1",
+          "resolvedType": "STRING",
+          "description": "Durée d'animation standard (micro-interactions)."
+        }
+      }
+    },
+    "slow": {
+      "$value": "280ms",
+      "$description": "Durée d'animation lente.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:122",
+          "collectionId": "VariableCollectionId:966:119",
+          "modeId": "966:1",
+          "resolvedType": "STRING",
+          "description": "Durée d'animation lente."
+        }
+      }
+    },
+    "easein": {
+      "$value": "ease-in",
+      "$description": "Courbe d'accélération d'animation.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:123",
+          "collectionId": "VariableCollectionId:966:119",
+          "modeId": "966:1",
+          "resolvedType": "STRING",
+          "description": "Courbe d'accélération d'animation."
+        }
+      }
+    },
+    "easeout": {
+      "$value": "ease-out",
+      "$description": "Courbe de décélération d'animation.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:124",
+          "collectionId": "VariableCollectionId:966:119",
+          "modeId": "966:1",
+          "resolvedType": "STRING",
+          "description": "Courbe de décélération d'animation."
+        }
+      }
+    },
+    "easeinout": {
+      "$value": "ease-in-out",
+      "$description": "Courbe d'animation fluide.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:125",
+          "collectionId": "VariableCollectionId:966:119",
+          "modeId": "966:1",
+          "resolvedType": "STRING",
+          "description": "Courbe d'animation fluide."
+        }
+      }
+    },
+    "linear": {
+      "$value": "linear",
+      "$description": "Courbe d'animation linéaire.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:126",
+          "collectionId": "VariableCollectionId:966:119",
+          "modeId": "966:1",
+          "resolvedType": "STRING",
+          "description": "Courbe d'animation linéaire."
+        }
+      }
+    }
+  }
+}

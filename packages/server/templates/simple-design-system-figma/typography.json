@@ -1,0 +1,650 @@
+{
+  "$description": "Typography",
+  "$metadata": {
+    "generatedAt": "2026-05-17T13:52:32.792Z"
+  },
+  "titleHero": {
+    "fontFamily": {
+      "$value": "{typographyPrimitives.familySans}",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10188",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "STRING",
+          "scopes": [
+            "FONT_FAMILY"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-title-hero-font-family)"
+          }
+        }
+      }
+    },
+    "size": {
+      "$value": "{typographyPrimitives.scale10}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10189",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-title-hero-size)"
+          }
+        }
+      }
+    },
+    "fontWeight": {
+      "$value": "{typographyPrimitives.weightBold}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10190",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_WEIGHT"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-title-hero-font-weight)"
+          }
+        }
+      }
+    }
+  },
+  "titlePage": {
+    "fontFamily": {
+      "$value": "{typographyPrimitives.familySans}",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:58:8569",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "STRING",
+          "scopes": [
+            "FONT_FAMILY"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-title-page-font-family)"
+          }
+        }
+      }
+    },
+    "sizeSmall": {
+      "$value": "{typographyPrimitives.scale07}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:58:8574",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-title-page-size-small)"
+          }
+        }
+      }
+    },
+    "sizeBase": {
+      "$value": "{typographyPrimitives.scale08}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10197",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-title-page-size-base)"
+          }
+        }
+      }
+    },
+    "sizeLarge": {
+      "$value": "{typographyPrimitives.scale09}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10198",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-title-page-size-large)"
+          }
+        }
+      }
+    },
+    "fontWeight": {
+      "$value": "{typographyPrimitives.weightBold}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:58:8572",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_WEIGHT"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-title-page-font-weight)"
+          }
+        }
+      }
+    }
+  },
+  "subtitle": {
+    "fontFamily": {
+      "$value": "{typographyPrimitives.familySans}",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10176",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "STRING",
+          "scopes": [
+            "FONT_FAMILY"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subtitle-font-family)"
+          }
+        }
+      }
+    },
+    "sizeSmall": {
+      "$value": "{typographyPrimitives.scale05}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10210",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subtitle-size-small)"
+          }
+        }
+      }
+    },
+    "sizeBase": {
+      "$value": "{typographyPrimitives.scale06}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10177",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subtitle-size-base)"
+          }
+        }
+      }
+    },
+    "sizeLarge": {
+      "$value": "{typographyPrimitives.scale07}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10209",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subtitle-size-large)"
+          }
+        }
+      }
+    },
+    "fontWeight": {
+      "$value": "{typographyPrimitives.weightRegular}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10178",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_WEIGHT"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subtitle-font-weight)"
+          }
+        }
+      }
+    }
+  },
+  "heading": {
+    "fontFamily": {
+      "$value": "{typographyPrimitives.familySans}",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10185",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "STRING",
+          "scopes": [
+            "FONT_FAMILY"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-heading-font-family)"
+          }
+        }
+      }
+    },
+    "sizeSmall": {
+      "$value": "{typographyPrimitives.scale04}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10212",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-heading-size-small)"
+          }
+        }
+      }
+    },
+    "sizeBase": {
+      "$value": "{typographyPrimitives.scale05}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10186",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-heading-size-base)"
+          }
+        }
+      }
+    },
+    "sizeLarge": {
+      "$value": "{typographyPrimitives.scale06}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10211",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-heading-size-large)"
+          }
+        }
+      }
+    },
+    "fontWeight": {
+      "$value": "{typographyPrimitives.weightSemibold}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10187",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_WEIGHT"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-heading-font-weight)"
+          }
+        }
+      }
+    }
+  },
+  "subheading": {
+    "fontFamily": {
+      "$value": "{typographyPrimitives.familySans}",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:2103:22306",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "STRING",
+          "scopes": [
+            "FONT_FAMILY"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subheading-font-family)"
+          }
+        }
+      }
+    },
+    "sizeSmall": {
+      "$value": "{typographyPrimitives.scale03}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:2103:22307",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subheading-size-small)"
+          }
+        }
+      }
+    },
+    "sizeMedium": {
+      "$value": "{typographyPrimitives.scale04}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:2103:22308",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subheading-size-medium)"
+          }
+        }
+      }
+    },
+    "sizeLarge": {
+      "$value": "{typographyPrimitives.scale05}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:2103:22309",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subheading-size-large)"
+          }
+        }
+      }
+    },
+    "fontWeight": {
+      "$value": "{typographyPrimitives.weightRegular}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:2103:22310",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_WEIGHT"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-subheading-font-weight)"
+          }
+        }
+      }
+    }
+  },
+  "body": {
+    "fontFamily": {
+      "$value": "{typographyPrimitives.familySans}",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10179",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "STRING",
+          "scopes": [
+            "FONT_FAMILY"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-body-font-family)"
+          }
+        }
+      }
+    },
+    "sizeSmall": {
+      "$value": "{typographyPrimitives.scale02}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10216",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-body-size-small)"
+          }
+        }
+      }
+    },
+    "sizeMedium": {
+      "$value": "{typographyPrimitives.scale03}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10180",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-body-size-medium)"
+          }
+        }
+      }
+    },
+    "sizeLarge": {
+      "$value": "{typographyPrimitives.scale04}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10215",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-body-size-large)"
+          }
+        }
+      }
+    },
+    "fontWeightRegular": {
+      "$value": "{typographyPrimitives.weightRegular}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10181",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_WEIGHT"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-body-font-weight-regular)"
+          }
+        }
+      }
+    },
+    "fontWeightStrong": {
+      "$value": "{typographyPrimitives.weightSemibold}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:14844",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_WEIGHT"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-body-font-weight-strong)"
+          }
+        }
+      }
+    },
+    "fontStyleItalic": {
+      "$value": "{typographyPrimitives.weightRegularItalic}",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:14846",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "STRING",
+          "scopes": [
+            "ALL_SCOPES"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-body-font-style-italic)"
+          }
+        }
+      }
+    }
+  },
+  "code": {
+    "fontFamily": {
+      "$value": "{typographyPrimitives.familyMono}",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10182",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "STRING",
+          "scopes": [
+            "FONT_FAMILY"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-code-font-family)"
+          }
+        }
+      }
+    },
+    "sizeSmall": {
+      "$value": "{body.sizeSmall}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10218",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-code-size-small)"
+          }
+        }
+      }
+    },
+    "sizeBase": {
+      "$value": "{body.sizeMedium}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10183",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-code-size-base)"
+          }
+        }
+      }
+    },
+    "sizeLarge": {
+      "$value": "{body.sizeLarge}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10217",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_SIZE"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-code-size-large)"
+          }
+        }
+      }
+    },
+    "fontWeight": {
+      "$value": "{body.fontWeightRegular}",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:66:10184",
+          "collectionId": "VariableCollectionId:58:8567",
+          "modeId": "58:0",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "FONT_WEIGHT"
+          ],
+          "codeSyntax": {
+            "WEB": "var(--sds-typography-code-font-weight)"
+          }
+        }
+      }
+    }
+  }
+}

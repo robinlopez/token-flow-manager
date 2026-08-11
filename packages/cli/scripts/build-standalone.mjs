@@ -2,7 +2,7 @@
 //   standalone/tokenflow   — single-file binary (Bun runtime + server + deps)
 //   standalone/web/         — the built Angular dashboard, served by the binary
 //
-// This binary is also the sidecar a Tauri desktop build wraps (see plan.md §10.3).
+// This binary is also the sidecar a Tauri desktop build wraps (see plan.md §10.2, Étape B).
 // Requires Bun on PATH and a prior `@tokenflow/web` build.
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, rmSync } from 'node:fs';

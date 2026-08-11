@@ -57,6 +57,7 @@ Copyright &copy; 2026 Robin Lopez
 nav = [
   { "Home" = "index.md" },
   { "Getting started" = "getting-started.md" },
+  { "Starter templates" = "templates.md" },
   { "Features" = "features.md" },
   { "Token types & pickers" = "token-types.md" },
   { "Settings" = "settings.md" },
@@ -331,7 +332,7 @@ alternate = [
 # subdirectory by `scripts/docs-build-versioned.mjs` (mike-compatible layout).
 [project.extra.version]
 provider = "mike"
-default = "0.1.8"
+default = "0.1.9"
 
 [[project.extra.social]]
 icon = "fontawesome/brands/github"

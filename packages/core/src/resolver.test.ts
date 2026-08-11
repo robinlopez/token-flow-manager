@@ -217,6 +217,50 @@ describe('resolveProject — collection-namespace aliases (PrimeNG convention)',
     });
     expect(diagnostics.some((d) => d.code === 'broken-alias')).toBe(true);
   });
+
+  // Figma-exported projects name collections for humans ("Color Primitives",
+  // "Font theme") while the alias uses the identifier form the exporter emitted.
+  // Both sides fold word separators away, so the two meet.
+  it('matches a multi-word collection name against its identifier form', () => {
+    const primitives = parseInto(
+      'Color Primitives',
+      JSON.stringify({ gray: { $type: 'color', '900': { $value: '#111827' } } }),
+    );
+    const semantics = parseInto(
+      'Color',
+      JSON.stringify({ text: { $type: 'color', $value: '{colorPrimitives.gray.900}' } }),
+    );
+    const { tokens, diagnostics } = resolveProject([primitives, semantics], {
+      ...baseOpts,
+      order: ['Color Primitives', 'Color'],
+    });
+    expect(diagnostics.filter((d) => d.code === 'broken-alias')).toHaveLength(0);
+    expect(tokens.find((t) => t.path.join('.') === 'text')!.resolvedValuesByMode.default).toBe(
+      '#111827',
+    );
+  });
+
+  it('matches a snake/kebab collection name too, and still misses a real mismatch', () => {
+    const primitives = parseInto(
+      'Font_theme',
+      JSON.stringify({ weight: { $type: 'fontWeight', bold: { $value: 700 } } }),
+    );
+    const typescale = parseInto(
+      'Typescale',
+      JSON.stringify({
+        display: { large: { $type: 'fontWeight', $value: '{fontTheme.weight.bold}' } },
+        broken: { $type: 'fontWeight', $value: '{otherTheme.weight.bold}' },
+      }),
+    );
+    const { tokens, diagnostics } = resolveProject([primitives, typescale], {
+      ...baseOpts,
+      order: ['Font_theme', 'Typescale'],
+    });
+    expect(tokens.find((t) => t.path.join('.') === 'display.large')!.resolvedValuesByMode.default).toBe(700);
+    const broken = diagnostics.filter((d) => d.code === 'broken-alias');
+    expect(broken).toHaveLength(1);
+    expect(broken[0]!.message).toContain('otherTheme');
+  });
 });
 
 describe('resolveProject — incomplete mode overrides', () => {

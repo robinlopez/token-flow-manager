@@ -26,8 +26,9 @@ Ensuite, il suffit de taper :
 tokenflow
 ```
 
-Un écran d'accueil s'ouvre dans votre navigateur. Choisissez un projet récent ou
-parcourez un dossier.
+Un écran d'accueil s'ouvre dans votre navigateur. Choisissez un projet récent,
+parcourez un dossier, ou glissez vers un [modèle](templates.md) si vous n'avez pas encore
+de projet de tokens.
 
 !!! tip "Ouvrir un projet directement"
 
@@ -72,5 +73,6 @@ npm install -g ./token-flow-manager-0.1.1.tgz
 
 ## Étapes suivantes
 
+- Pas encore de projet de tokens ? Générez-en un depuis un [modèle de démarrage](templates.md).
 - Découvrez tout ce que fait le tableau de bord sur la page [Fonctionnalités](features.md).
 - Envie de compiler ou de contribuer ? Lisez la page [Développement](development.md).

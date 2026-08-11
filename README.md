@@ -11,7 +11,8 @@ It starts a local Node server (bound to `127.0.0.1`), parses every `*.tokens.jso
 resolves aliases across collections and modes, and opens a dashboard. It **never**
 commits, it edits the source JSON in place, atomically, preserving key order and
 formatting. Run it with **no path** and a **welcome screen** lets you open a recent
-project or browse for one.
+project, browse for one, or slide over to a **starter design system** and scaffold a fresh
+token structure.
 
 ## Two ways to use it
 
@@ -44,6 +45,11 @@ node packages/cli/dist/cli.js
   from the UI, no path on the command line.
 - **Project switcher** : the header shows the open project's name with a chevron;
   the dropdown switches to a recent project in place or returns to the welcome screen.
+- **Starter templates** : no token project yet? *Open a project* slides over to a picker
+  that scaffolds a complete DTCG structure (**Tailwind CSS v4**, **Material Design 3**,
+  **Semantic Functional DS** or the **Simple Design System**) into a folder you pick,
+  `manifest.json` included, so it opens with its collections and mode columns already right.
+  Optionally chains into the distribution configurator.
 - **Variables table** : mode columns (light/dark/brand…), alias chips, inline editing,
   resizable columns.
 - **Sidebar group tree** : Finder-style drag-and-drop: drop a group onto another to
@@ -68,7 +74,7 @@ node packages/cli/dist/cli.js
 |---|---|
 | [`@tokenflow/shared`](packages/shared) | Zod schemas + types: DTCG nodes, token dialects (DTCG / legacy Tokens Studio), internal model, diagnostics, config, API payloads. |
 | [`@tokenflow/core`](packages/core) | Engine: token parser (both dialects, source positions), alias resolver (cycles, broken refs, cross-collection ordering, multi-mode), value validator, format-preserving document mutation. |
-| [`@tokenflow/server`](packages/server) | Fastify REST + WebSocket, `Session` (runtime project switching + folder browser + recents), `ProjectManager` (load/resolve/mutate), chokidar watcher, atomic writes with rotating backups. |
+| [`@tokenflow/server`](packages/server) | Fastify REST + WebSocket, `Session` (runtime project switching + folder browser + recents), `ProjectManager` (load/resolve/mutate), chokidar watcher, atomic writes with rotating backups, starter-template catalog + scaffolder. |
 | [`token-flow-manager`](packages/cli) | `npx` entry point (commander): default `serve`, `validate`, `init`. Self-contained bundle — inlines the workspace packages and embeds the built dashboard. |
 | [`@tokenflow/web`](packages/web) | Angular 21 dashboard: welcome screen, shell, sidebar, variables table, inspector, realtime. |
 
@@ -137,6 +143,13 @@ npx token-flow-manager ./somedir  # open a project
 If step 4 starts the server and serves the dashboard with **no `ERR_MODULE_NOT_FOUND`**,
 the package is publish-ready. (Then a real user does `npm i -g token-flow-manager` once
 it is published, and runs `tokenflow`.)
+
+> **Refreshing a starter template:** the raw token files live in
+> [`packages/server/templates/<id>/`](packages/server/templates); after editing them run
+> `node packages/server/scripts/gen-templates.mjs` to regenerate the embedded payloads
+> (`packages/server/src/templates/data.generated.ts`), then run
+> `pnpm --filter @tokenflow/server test`: `templates.test.ts` opens every template and
+> asserts the advertised counts match reality.
 
 > **Bumping the version:** keep the **6** `package.json` (root + 5 packages) and
 > `packages/web/src/app/core/version.ts` (`APP_VERSION`, shown in the footer) in sync, bump

@@ -1,0 +1,92 @@
+{
+  "$description": "Breakpoints",
+  "$metadata": {
+    "generatedAt": "2026-05-17T13:50:58.659Z"
+  },
+  "breakpoints": {
+    "phone": {
+      "$value": "0px",
+      "$description": "Seuil responsive mobile (0px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:113",
+          "collectionId": "VariableCollectionId:966:112",
+          "modeId": "966:0",
+          "resolvedType": "FLOAT",
+          "description": "Seuil responsive mobile (0px)."
+        }
+      }
+    },
+    "tabletPortrait": {
+      "$value": "600px",
+      "$description": "Seuil responsive tablette portrait (600px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:114",
+          "collectionId": "VariableCollectionId:966:112",
+          "modeId": "966:0",
+          "resolvedType": "FLOAT",
+          "description": "Seuil responsive tablette portrait (600px)."
+        }
+      }
+    },
+    "tabletLandscape": {
+      "$value": "900px",
+      "$description": "Seuil responsive tablette paysage (900px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:115",
+          "collectionId": "VariableCollectionId:966:112",
+          "modeId": "966:0",
+          "resolvedType": "FLOAT",
+          "description": "Seuil responsive tablette paysage (900px)."
+        }
+      }
+    },
+    "desktop": {
+      "$value": "1200px",
+      "$description": "Seuil responsive bureau (1200px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:116",
+          "collectionId": "VariableCollectionId:966:112",
+          "modeId": "966:0",
+          "resolvedType": "FLOAT",
+          "description": "Seuil responsive bureau (1200px)."
+        }
+      }
+    },
+    "mediumDesktop": {
+      "$value": "1440px",
+      "$description": "Seuil responsive bureau moyen (1440px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:117",
+          "collectionId": "VariableCollectionId:966:112",
+          "modeId": "966:0",
+          "resolvedType": "FLOAT",
+          "description": "Seuil responsive bureau moyen (1440px)."
+        }
+      }
+    },
+    "bigDesktop": {
+      "$value": "1800px",
+      "$description": "Seuil responsive grand bureau (1800px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:966:118",
+          "collectionId": "VariableCollectionId:966:112",
+          "modeId": "966:0",
+          "resolvedType": "FLOAT",
+          "description": "Seuil responsive grand bureau (1800px)."
+        }
+      }
+    }
+  }
+}

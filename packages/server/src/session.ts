@@ -6,7 +6,13 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 
 const execFileP = promisify(execFile);
-import type { BrowseResponse, ProjectState, RealtimeEvent, RecentProject } from '@tokenflow/shared';
+import type {
+  BrowseResponse,
+  PickFolderPurpose,
+  ProjectState,
+  RealtimeEvent,
+  RecentProject,
+} from '@tokenflow/shared';
 import { ProjectManager } from './project.js';
 import { loadConfig } from './config-loader.js';
 
@@ -16,6 +22,16 @@ const MAX_RECENTS = 12;
 
 /** Directories never worth showing in the folder browser. */
 const HIDDEN_DIRS = new Set(['node_modules', '.git', '.cache', '.DS_Store', 'dist', '.angular']);
+
+/**
+ * Wording of the native folder dialog, per purpose. Kept here (never taken from
+ * a request) because these strings are interpolated into AppleScript and
+ * PowerShell source. Plain ASCII, no quotes, no backslashes.
+ */
+const DIALOG_LABELS: Record<PickFolderPurpose, string> = {
+  open: 'Select a token project',
+  scaffold: 'Where should the design tokens go?',
+};
 
 /** Empty state shown before any project is opened (welcome screen). */
 const CLOSED_STATE: ProjectState = {
@@ -124,13 +140,19 @@ export class Session extends EventEmitter {
    * Open the OS-native "choose folder" dialog on the machine running the server
    * and return the chosen absolute path, or null if cancelled / unavailable.
    * The server is local, so the dialog appears on the user's own desktop.
+   *
+   * The caller says *why* it is picking; the wording lives here. On macOS and
+   * Windows the label is interpolated into an AppleScript / PowerShell snippet,
+   * so it must never come from a request body: `PickFolderPurpose` is a closed
+   * set precisely so no attacker-chosen text can reach a script interpreter.
    */
-  async pickFolder(): Promise<string | null> {
+  async pickFolder(purpose: PickFolderPurpose = 'open'): Promise<string | null> {
+    const label = DIALOG_LABELS[purpose] ?? DIALOG_LABELS.open;
     try {
       if (process.platform === 'darwin') {
         const { stdout } = await execFileP('osascript', [
           '-e',
-          'POSIX path of (choose folder with prompt "Select a token project")',
+          `POSIX path of (choose folder with prompt "${label}")`,
         ]);
         return stdout.trim() || null;
       }
@@ -138,6 +160,7 @@ export class Session extends EventEmitter {
         const ps =
           'Add-Type -AssemblyName System.Windows.Forms;' +
           "$d = New-Object System.Windows.Forms.FolderBrowserDialog;" +
+          `$d.Description = '${label}';` +
           "if ($d.ShowDialog() -eq 'OK') { Write-Output $d.SelectedPath }";
         const { stdout } = await execFileP('powershell', ['-NoProfile', '-Command', ps]);
         return stdout.trim() || null;
@@ -146,7 +169,7 @@ export class Session extends EventEmitter {
       const { stdout } = await execFileP('zenity', [
         '--file-selection',
         '--directory',
-        '--title=Select a token project',
+        `--title=${label}`,
       ]);
       return stdout.trim() || null;
     } catch {

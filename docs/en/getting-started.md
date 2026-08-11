@@ -25,7 +25,8 @@ From now on, just type:
 tokenflow
 ```
 
-A welcome screen opens in your browser. Pick a recent project or browse for a folder.
+A welcome screen opens in your browser. Pick a recent project, browse for a folder, or
+slide over to a [template](templates.md) if you have no token project yet.
 
 !!! tip "Open a project directly"
 
@@ -69,5 +70,6 @@ npm install -g ./token-flow-manager-0.1.1.tgz
 
 ## Next steps
 
+- No token project yet? Scaffold one from a [starter template](templates.md).
 - See everything the dashboard can do on the [Features](features.md) page.
 - Want to build or contribute? Read the [Development](development.md) page.

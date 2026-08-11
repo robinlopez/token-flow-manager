@@ -39,10 +39,13 @@ import {
   ResolverWriteRequestSchema,
   LinkConfigRequestSchema,
   RunCommandRequestSchema,
+  PickFolderRequestSchema,
+  ScaffoldTemplateRequestSchema,
   type RealtimeEvent,
 } from '@tokenflow/shared';
 import type { ProjectManager } from './project.js';
 import type { Session } from './session.js';
+import { listTemplates, scaffoldTemplate } from './templates/index.js';
 
 export interface AppOptions {
   session: Session;
@@ -62,6 +65,8 @@ const NO_PROJECT_ROUTES = new Set([
   '/api/recents',
   '/api/recents/remove',
   '/api/pick-folder',
+  '/api/templates',
+  '/api/templates/scaffold',
 ]);
 
 export async function buildApp(opts: AppOptions): Promise<FastifyInstance> {
@@ -140,7 +145,29 @@ function registerSessionRoutes(app: FastifyInstance, session: Session): void {
     return { recents: session.removeRecent(parsed.data.path) };
   });
 
-  app.post('/api/pick-folder', async () => ({ path: await session.pickFolder() }));
+  app.post<{ Body: unknown }>('/api/pick-folder', async (req) => {
+    // An unparseable body falls back to the default purpose rather than 400:
+    // the dialog label is cosmetic, and older clients send an empty body.
+    const parsed = PickFolderRequestSchema.safeParse(req.body ?? {});
+    return { path: await session.pickFolder(parsed.success ? parsed.data.purpose : 'open') };
+  });
+
+  // ---- Starter templates (welcome screen: "no project yet") ----
+
+  app.get('/api/templates', async () => ({ templates: listTemplates() }));
+
+  app.post<{ Body: unknown }>('/api/templates/scaffold', async (req, reply) => {
+    const parsed = ScaffoldTemplateRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    try {
+      const result = await scaffoldTemplate(parsed.data);
+      // 409 on a file collision (the UI offers to overwrite), 400 on bad input.
+      const code = result.ok ? 201 : result.conflicts.length > 0 ? 409 : 400;
+      return reply.code(code).send(result);
+    } catch (err) {
+      return reply.code(400).send({ error: (err as Error).message });
+    }
+  });
 
   app.get<{ Querystring: { path?: string } }>('/api/browse', async (req, reply) => {
     try {

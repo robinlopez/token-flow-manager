@@ -482,6 +482,46 @@ export interface DistBuildReport {
   error?: string;
 }
 
+// ---- Starter design-system templates (welcome screen) ----
+
+export type TemplateLogo = 'tailwind' | 'semantic-ds' | 'figma' | 'material';
+export type TemplateOrigin = 'official' | 'community';
+/** Which server-owned label the native folder dialog should show. */
+export type PickFolderPurpose = 'open' | 'scaffold';
+
+export interface TemplateCollection {
+  name: string;
+  modes: string[];
+  tokenCount: number;
+}
+
+export interface TokenTemplate {
+  id: string;
+  name: string;
+  tagline: string;
+  description: string;
+  origin: TemplateOrigin;
+  logo: TemplateLogo;
+  /** Brand colour (hex) for the card accent and selected state. */
+  accent: string;
+  url?: string;
+  suggestedFolder: string;
+  collections: TemplateCollection[];
+  tokenCount: number;
+  fileCount: number;
+  bytes: number;
+  hasStyles: boolean;
+}
+
+export interface ScaffoldTemplateResult {
+  ok: boolean;
+  path: string;
+  files: string[];
+  /** Files already present at the destination (set when `ok` is false). */
+  conflicts: string[];
+  error?: string;
+}
+
 export type RealtimeEvent =
   | { type: 'tokens-changed'; affectedTokenIds: string[] }
   | { type: 'file-changed'; file: string }

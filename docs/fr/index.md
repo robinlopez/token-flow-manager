@@ -12,8 +12,9 @@ L'outil démarre un serveur local sur votre machine, lit chaque fichier
 `*.tokens.json`, résout les alias à travers les collections et les modes, puis ouvre
 un tableau de bord dans votre navigateur. Il ne **commit jamais** : il modifie le JSON
 source sur place, de façon atomique, en préservant l'ordre des clés et le formatage.
-Lancez-le sans chemin et un écran d'accueil vous laisse ouvrir un projet récent ou en
-parcourir un.
+Lancez-le sans chemin et un écran d'accueil vous laisse ouvrir un projet récent, en
+parcourir un, ou glisser vers un design system de départ pour générer une structure de
+tokens neuve.
 
 [Démarrer :material-arrow-right:](getting-started.md){ .md-button .md-button--primary }
 [Voir sur GitHub :fontawesome-brands-github:](https://github.com/robinlopez/token-flow-manager){ .md-button }
@@ -21,6 +22,8 @@ parcourir un.
 ## En bref
 
 - **Écran d'accueil** avec projets récents et sélecteur de dossier natif.
+- **[Modèles de démarrage](templates.md)** : pas encore de projet ? À un glissement de là,
+  générez Tailwind CSS v4, Material Design 3, Semantic Functional DS ou Simple Design System.
 - **Tableau des variables** : colonnes de modes (clair/sombre/marque et plus), puces
   d'alias, édition en ligne.
 - **Barre latérale type Finder** : glisser-déposer pour imbriquer ou réordonner les

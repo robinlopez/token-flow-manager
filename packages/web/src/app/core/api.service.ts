@@ -19,9 +19,12 @@ import type {
   ProjectState,
   RecentProject,
   ReferenceInfo,
+  PickFolderPurpose,
   RenamePreview,
+  ScaffoldTemplateResult,
   SearchFilters,
   SearchResponse,
+  TokenTemplate,
   UndoRedoResult,
   WriteDistributionResult,
 } from './models';
@@ -53,9 +56,41 @@ export class ApiService {
     return this.http.get<BrowseResponse>('/api/browse', { params });
   }
 
-  /** Open the OS-native folder picker on the server machine; resolves to the path or null. */
-  pickFolder(): Observable<{ path: string | null }> {
-    return this.http.post<{ path: string | null }>('/api/pick-folder', {}, { params: this.params() });
+  /**
+   * Open the OS-native folder picker on the server machine; resolves to the path
+   * or null. `purpose` only selects which server-owned label the dialog shows:
+   * the wording is never sent from here, since it reaches a script interpreter.
+   */
+  pickFolder(purpose: PickFolderPurpose = 'open'): Observable<{ path: string | null }> {
+    return this.http.post<{ path: string | null }>(
+      '/api/pick-folder',
+      { purpose },
+      { params: this.params() },
+    );
+  }
+
+  // ---- Starter templates (welcome screen) ----
+
+  getTemplates(): Observable<{ templates: TokenTemplate[] }> {
+    return this.http.get<{ templates: TokenTemplate[] }>('/api/templates', { params: this.params() });
+  }
+
+  /**
+   * Write a template's token files into `parent[/folder]`.
+   *
+   * A name collision comes back as a 409 whose body is a
+   * {@link ScaffoldTemplateResult} listing the offending files; retry with
+   * `overwrite` to replace them.
+   */
+  scaffoldTemplate(req: {
+    templateId: string;
+    parent: string;
+    folder?: string;
+    overwrite?: boolean;
+  }): Observable<ScaffoldTemplateResult> {
+    return this.http.post<ScaffoldTemplateResult>('/api/templates/scaffold', req, {
+      params: this.params(),
+    });
   }
 
   removeRecent(path: string): Observable<{ recents: RecentProject[] }> {

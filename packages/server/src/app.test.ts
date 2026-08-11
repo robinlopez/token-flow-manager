@@ -37,17 +37,17 @@ describe('HTTP API', () => {
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.tokenCount).toBe(1);
-    expect(body.collections[0].name).toBe('Tokens');
+    expect(body.collections[0].name).toBe('app.tokens');
   });
 
   it('GET /api/collections/:name returns tokens', async () => {
-    const res = await app.inject({ method: 'GET', url: '/api/collections/Tokens' });
+    const res = await app.inject({ method: 'GET', url: '/api/collections/app.tokens' });
     expect(res.statusCode).toBe(200);
     expect(res.json().tokens).toHaveLength(1);
   });
 
   it('PATCH a value persists and returns the updated token', async () => {
-    const id = session.current!.getCollection('Tokens')!.tokens[0]!.id;
+    const id = session.current!.getCollection('app.tokens')!.tokens[0]!.id;
     const res = await app.inject({
       method: 'PATCH',
       url: `/api/tokens/${id}/values/default`,
@@ -59,7 +59,7 @@ describe('HTTP API', () => {
   });
 
   it('PATCH with an invalid value returns 422', async () => {
-    const id = session.current!.getCollection('Tokens')!.tokens[0]!.id;
+    const id = session.current!.getCollection('app.tokens')!.tokens[0]!.id;
     const res = await app.inject({
       method: 'PATCH',
       url: `/api/tokens/${id}/values/default`,

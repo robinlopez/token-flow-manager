@@ -3,6 +3,7 @@ import {
   type ParsedToken,
   type TokenPath,
   collectionNamespaceVariants,
+  normalizeCollectionNamespace,
   isAlias,
   isCompositeType,
   parseAliasPath,
@@ -365,7 +366,7 @@ function findTarget(targetPath: TokenPath, ctx: ResolveCtx): TargetMatch | null 
   // Collection-namespace alias: the first segment names a collection
   // (e.g. `{primitive.green.500}` → collection "primitives", path "green.500").
   if (targetPath.length > 1) {
-    const nsCol = ctx.collectionNamespaces.get(targetPath[0]!.toLowerCase());
+    const nsCol = ctx.collectionNamespaces.get(normalizeCollectionNamespace(targetPath[0]!));
     if (nsCol && nsCol !== ctx.fromCollection) {
       const entry = ctx.index.get(makeKey(nsCol, pathKey(targetPath.slice(1))));
       if (entry) return { entry, collectionName: nsCol };

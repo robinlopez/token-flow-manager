@@ -46,6 +46,7 @@ import {
 } from '@tokenflow/core';
 import {
   collectionNamespaceVariants,
+  normalizeCollectionNamespace,
   envelopeOf,
   extractEmbeddedRefs,
   isAlias,
@@ -420,7 +421,7 @@ export class ProjectManager extends EventEmitter {
     // names a collection, not a path. Retry against the token at the remaining
     // path inside that collection, falling back to the general scoped lookup.
     if (aliasPath.length > 1) {
-      const ns = this.collectionNamespaces.get(aliasPath[0]!.toLowerCase());
+      const ns = this.collectionNamespaces.get(normalizeCollectionNamespace(aliasPath[0]!));
       if (ns) {
         const rest = aliasPath.slice(1).join('.');
         const inNs = this.byPathKey.get(rest)?.find((e) => e.collection === ns);
@@ -488,7 +489,7 @@ export class ProjectManager extends EventEmitter {
         // Not a real path: the first segment may be a collection namespace.
         const rest = this.byPathKey.get(p.slice(1).join('.'))?.filter((e) => e.collection !== t.collection) ?? [];
         if (rest.length === 0) continue;
-        const named = this.collectionNamespaces.get(p[0]!.toLowerCase());
+        const named = this.collectionNamespaces.get(normalizeCollectionNamespace(p[0]!));
         const target = rest.find((e) => e.collection === named) ?? (rest.length === 1 ? rest[0]! : undefined);
         if (!target) continue;
         const literals = namespaced.get(target.collection) ?? new Map<string, number>();
@@ -540,7 +541,7 @@ export class ProjectManager extends EventEmitter {
     const path = parseAliasPath(value);
     if (!path || path.length === 0) return value;
     // Already namespaced: leave the author's form alone.
-    if (path.length > 1 && this.collectionNamespaces.has(path[0]!.toLowerCase())) return value;
+    if (path.length > 1 && this.collectionNamespaces.has(normalizeCollectionNamespace(path[0]!))) return value;
     const pk = path.join('.');
     const entries = this.byPathKey.get(pk) ?? [];
     if (entries.some((e) => e.collection === fromCollection)) return value; // resolves locally
