@@ -7,4 +7,5 @@ export * from './palette.js';
 export * from './config.js';
 export * from './manifest.js';
 export * from './distribution.js';
+export * from './templates.js';
 export * from './api.js';

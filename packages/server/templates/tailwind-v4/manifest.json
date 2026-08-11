@@ -1,0 +1,27 @@
+{
+  "name": "Design Tokens",
+  "collections": {
+    "TailwindCSS_Metrics": {
+      "modes": {
+        "Default": [
+          "tailwindcss-metrics.json"
+        ]
+      }
+    },
+    "TailwindCSS_Colors": {
+      "modes": {
+        "Default": [
+          "tailwindcss-colors.json"
+        ]
+      }
+    }
+  },
+  "styles": {
+    "text": [
+      "styles.tokens.json"
+    ],
+    "effect": [
+      "styles.tokens.json"
+    ]
+  }
+}

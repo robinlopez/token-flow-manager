@@ -1,0 +1,534 @@
+{
+  "$description": "Typography Primitives",
+  "$metadata": {
+    "generatedAt": "2026-05-17T13:52:32.791Z"
+  },
+  "familySans": {
+    "$value": "Inter",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11199",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_FAMILY"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-family-sans)"
+        }
+      }
+    }
+  },
+  "familySerif": {
+    "$value": "Noto Serif",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11200",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_FAMILY"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-family-serif)"
+        }
+      }
+    }
+  },
+  "familyMono": {
+    "$value": "Roboto Mono",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11201",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_FAMILY"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-family-mono)"
+        }
+      }
+    }
+  },
+  "scale01": {
+    "$value": 12,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11198",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-01)"
+        }
+      }
+    }
+  },
+  "scale02": {
+    "$value": 14,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11197",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-02)"
+        }
+      }
+    }
+  },
+  "scale03": {
+    "$value": 16,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11196",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-03)"
+        }
+      }
+    }
+  },
+  "scale04": {
+    "$value": 20,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11195",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-04)"
+        }
+      }
+    }
+  },
+  "scale05": {
+    "$value": 24,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11194",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-05)"
+        }
+      }
+    }
+  },
+  "scale06": {
+    "$value": 32,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11193",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-06)"
+        }
+      }
+    }
+  },
+  "scale07": {
+    "$value": 40,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11192",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-07)"
+        }
+      }
+    }
+  },
+  "scale08": {
+    "$value": 48,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11191",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-08)"
+        }
+      }
+    }
+  },
+  "scale09": {
+    "$value": 64,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11190",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-09)"
+        }
+      }
+    }
+  },
+  "scale10": {
+    "$value": 72,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11189",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-scale-10)"
+        }
+      }
+    }
+  },
+  "weightThin": {
+    "$value": 100,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11180",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "scopes": [
+          "FONT_WEIGHT"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-thin)"
+        }
+      }
+    }
+  },
+  "weightThinItalic": {
+    "$value": "Thin Italic",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:66:10200",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_STYLE"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-thin-italic)"
+        }
+      }
+    }
+  },
+  "weightExtraLight": {
+    "$value": 200,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11181",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "scopes": [
+          "FONT_WEIGHT"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-extra-light)"
+        }
+      }
+    }
+  },
+  "weightExtralightItalic": {
+    "$value": "Extra Light Italic",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:66:10201",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_STYLE"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-extralight-italic)"
+        }
+      }
+    }
+  },
+  "weightLight": {
+    "$value": 300,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11182",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "scopes": [
+          "FONT_WEIGHT"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-light)"
+        }
+      }
+    }
+  },
+  "weightLightItalic": {
+    "$value": "Light Italic",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:56:8551",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_STYLE"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-light-italic)"
+        }
+      }
+    }
+  },
+  "weightRegular": {
+    "$value": 400,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11183",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "scopes": [
+          "FONT_WEIGHT"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-regular)"
+        }
+      }
+    }
+  },
+  "weightRegularItalic": {
+    "$value": "Italic",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:56:8552",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_STYLE"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-regular-italic)"
+        }
+      }
+    }
+  },
+  "weightMedium": {
+    "$value": 500,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11184",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "scopes": [
+          "FONT_WEIGHT"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-medium)"
+        }
+      }
+    }
+  },
+  "weightMediumItalic": {
+    "$value": "Medium Italic",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:66:10202",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_STYLE"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-medium-italic)"
+        }
+      }
+    }
+  },
+  "weightSemibold": {
+    "$value": 600,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11185",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "scopes": [
+          "FONT_WEIGHT"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-semibold)"
+        }
+      }
+    }
+  },
+  "weightSemiboldItalic": {
+    "$value": "Semi Bold Italic",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:66:10203",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_STYLE"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-semibold-italic)"
+        }
+      }
+    }
+  },
+  "weightBold": {
+    "$value": 700,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11186",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "scopes": [
+          "FONT_WEIGHT"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-bold)"
+        }
+      }
+    }
+  },
+  "weightBoldItalic": {
+    "$value": "Bold Italic",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:56:8553",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_STYLE"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-bold-italic)"
+        }
+      }
+    }
+  },
+  "weightExtraBold": {
+    "$value": 800,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11187",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "scopes": [
+          "FONT_WEIGHT"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-extra-bold)"
+        }
+      }
+    }
+  },
+  "weightExtraBoldItalic": {
+    "$value": "Extra Bold Italic",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:66:10204",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_STYLE"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-extra-bold-italic)"
+        }
+      }
+    }
+  },
+  "weightBlack": {
+    "$value": 900,
+    "$type": "dimension",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:9:11188",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "FLOAT",
+        "scopes": [
+          "FONT_WEIGHT"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-black)"
+        }
+      }
+    }
+  },
+  "weightBlackItalic": {
+    "$value": "Black Italic",
+    "$type": "string",
+    "$extensions": {
+      "com.figma": {
+        "variableId": "VariableID:66:10208",
+        "collectionId": "VariableCollectionId:9:11179",
+        "modeId": "9:2",
+        "resolvedType": "STRING",
+        "scopes": [
+          "FONT_STYLE"
+        ],
+        "codeSyntax": {
+          "WEB": "var(--sds-typography-weight-black-italic)"
+        }
+      }
+    }
+  }
+}

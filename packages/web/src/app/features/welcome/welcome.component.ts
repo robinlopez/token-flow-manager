@@ -3,17 +3,22 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/api.service';
 import { ProjectStore } from '../../stores/project.store';
 import { APP_VERSION } from '../../core/version';
+import { TemplateGalleryComponent } from './template-gallery.component';
 import type { RecentProject } from '../../core/models';
 
 /**
  * Landing screen shown when no project is open: pick a recent project, or open the
  * OS-native folder picker (the server is local, so the dialog shows on this machine).
  * A manual path field is kept as a fallback for headless/remote setups.
+ *
+ * "Open a project" is a two-face card: most visitors already have a project, so
+ * scaffolding one from a starter design system sits behind a slide rather than
+ * taking a block of its own. See `template-gallery.component.ts`.
  */
 @Component({
   selector: 'tf-welcome',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, TemplateGalleryComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
@@ -53,7 +58,7 @@ import type { RecentProject } from '../../core/models';
   ],
   template: `
     <div
-      class="welcome-bg h-screen flex flex-col items-center justify-center text-ink-950 p-6"
+      class="welcome-bg h-screen overflow-y-auto scrollbar-thin flex flex-col items-center text-ink-950 p-6"
       [class.is-hovering]="hovering()"
       [style.--mx.px]="mx()"
       [style.--my.px]="my()"
@@ -61,13 +66,17 @@ import type { RecentProject } from '../../core/models';
       (mouseleave)="hovering.set(false)"
     >
       <div class="dot-spotlight"></div>
-      <div class="relative z-10 w-full max-w-3xl">
+      <!-- my-auto (not justify-center) so the page still centres when it fits
+           but stays fully reachable once the template grid makes it taller. -->
+      <div class="relative z-10 w-full max-w-3xl my-auto">
         <!-- Brand -->
         <div class="flex items-center gap-3 mb-5">
           <img src="logo.svg" alt="" class="w-10 h-10 rounded-lg" />
           <div>
             <h1 class="text-lg font-semibold tracking-tight">Token Flow Manager</h1>
-            <p class="text-xs text-ink-400">Open a project to manage its design tokens · v{{ version }}</p>
+            <p class="text-xs text-ink-400">
+              Open a project, or start one from a template · v{{ version }}
+            </p>
           </div>
         </div>
 
@@ -109,47 +118,89 @@ import type { RecentProject } from '../../core/models';
             </div>
           </div>
 
-          <!-- Open a project -->
-          <div class="bg-white border border-ink-200 rounded-xl p-5 flex flex-col gap-4">
-            <div>
-              <div class="text-[11px] font-semibold uppercase tracking-wide text-ink-400">
-                Open a project
-              </div>
-              <p class="mt-1 text-xs text-ink-400 leading-relaxed">
-                Pick the folder that holds your design-token JSON files (DTCG).
-              </p>
-            </div>
-
-            <button
-              class="w-full flex items-center justify-center gap-2 text-sm font-medium px-3 py-2.5 rounded-lg bg-ink-950 text-white hover:bg-ink-800 disabled:opacity-40"
-              [disabled]="busy()"
-              (click)="browse()"
+          <!-- Open a project · slides sideways to the template picker.
+               The slide uses margin, not transform, on purpose: a transformed
+               ancestor becomes the containing block for a fixed-position
+               descendant, which would trap the scaffold dialog inside this
+               clipped card. -->
+          <div class="bg-white border border-ink-200 rounded-xl overflow-hidden">
+            <div
+              class="flex w-[200%] h-full items-stretch transition-[margin-left] duration-300 ease-out"
+              [style.margin-left]="showTemplates() ? '-100%' : '0'"
             >
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
-              </svg>
-              Browse your computer…
-            </button>
-
-            <div class="flex items-center gap-2 text-[11px] text-ink-300">
-              <span class="flex-1 h-px bg-ink-100"></span>or paste a path<span class="flex-1 h-px bg-ink-100"></span>
-            </div>
-
-            <form class="flex gap-2" (submit)="openTyped(); $event.preventDefault()">
-              <input
-                class="flex-1 min-w-0 text-sm font-mono bg-ink-50 border border-ink-200 rounded-lg px-3 py-2 focus:outline-none focus:border-forge-500"
-                placeholder="/path/to/project"
-                [ngModel]="typedPath()"
-                (ngModelChange)="typedPath.set($event)"
-                name="path"
-              />
-              <button
-                class="shrink-0 text-sm font-medium px-3 py-2 rounded-lg border border-ink-200 text-ink-700 hover:bg-ink-50 disabled:opacity-40"
-                [disabled]="!typedPath().trim() || busy()"
+              <!-- Face A: open an existing project -->
+              <div
+                class="w-1/2 p-5 flex flex-col gap-4"
+                [attr.inert]="showTemplates() ? '' : null"
+                [attr.aria-hidden]="showTemplates() ? 'true' : null"
               >
-                Open
-              </button>
-            </form>
+                <div>
+                  <div class="text-[11px] font-semibold uppercase tracking-wide text-ink-400">
+                    Open a project
+                  </div>
+                  <p class="mt-1 text-xs text-ink-400 leading-relaxed">
+                    Pick the folder that holds your design-token JSON files (DTCG).
+                  </p>
+                </div>
+
+                <button
+                  class="w-full flex items-center justify-center gap-2 text-sm font-medium px-3 py-2.5 rounded-lg bg-ink-950 text-white hover:bg-ink-800 disabled:opacity-40"
+                  [disabled]="busy()"
+                  (click)="browse()"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" />
+                  </svg>
+                  Browse your computer…
+                </button>
+
+                <div class="flex items-center gap-2 text-[11px] text-ink-300">
+                  <span class="flex-1 h-px bg-ink-100"></span>or paste a path<span class="flex-1 h-px bg-ink-100"></span>
+                </div>
+
+                <form class="flex gap-2" (submit)="openTyped(); $event.preventDefault()">
+                  <input
+                    class="flex-1 min-w-0 text-sm font-mono bg-ink-50 border border-ink-200 rounded-lg px-3 py-2 focus:outline-none focus:border-forge-500"
+                    placeholder="/path/to/project"
+                    [ngModel]="typedPath()"
+                    (ngModelChange)="typedPath.set($event)"
+                    name="path"
+                  />
+                  <button
+                    class="shrink-0 text-sm font-medium px-3 py-2 rounded-lg border border-ink-200 text-ink-700 hover:bg-ink-50 disabled:opacity-40"
+                    [disabled]="!typedPath().trim() || busy()"
+                  >
+                    Open
+                  </button>
+                </form>
+
+                @if (templatesAvailable()) {
+                  <button
+                    class="mt-auto group flex items-center gap-3 -mx-2 px-2 py-2 rounded-lg text-left hover:bg-ink-50"
+                    (click)="showTemplates.set(true)"
+                  >
+                    <span class="flex-1 min-w-0">
+                      <span class="block text-[11px] text-ink-400">No project yet?</span>
+                      <span class="block text-sm font-medium text-ink-900">
+                        Start from a template
+                      </span>
+                    </span>
+                    <svg class="shrink-0 w-4 h-4 text-ink-300 group-hover:text-ink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m9 18 6-6-6-6" />
+                    </svg>
+                  </button>
+                }
+              </div>
+
+              <!-- Face B: pick a starter design system -->
+              <tf-template-gallery
+                class="w-1/2"
+                [attr.inert]="showTemplates() ? null : ''"
+                [attr.aria-hidden]="showTemplates() ? null : 'true'"
+                (availableChange)="templatesAvailable.set($event)"
+                (back)="showTemplates.set(false)"
+              />
+            </div>
           </div>
         </div>
 
@@ -167,6 +218,10 @@ export class WelcomeComponent {
 
   readonly recents = signal<RecentProject[]>([]);
   readonly typedPath = signal('');
+  /** Which face of the "Open a project" card is showing. */
+  readonly showTemplates = signal(false);
+  /** Hides the entry point when the server has no template catalog. */
+  readonly templatesAvailable = signal(false);
   readonly busy = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -179,9 +234,16 @@ export class WelcomeComponent {
     this.loadRecents();
   }
 
+  /**
+   * Track the pointer in the *content* coordinates of the scrolling background,
+   * which is what the spotlight mask is positioned against: viewport coords
+   * would drift away from the cursor as soon as the page scrolls.
+   */
   onMove(event: MouseEvent): void {
-    this.mx.set(event.clientX);
-    this.my.set(event.clientY);
+    const el = event.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    this.mx.set(event.clientX - rect.left);
+    this.my.set(event.clientY - rect.top + el.scrollTop);
     if (!this.hovering()) this.hovering.set(true);
   }
 

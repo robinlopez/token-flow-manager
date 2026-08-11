@@ -1,0 +1,137 @@
+{
+  "name": "Design Tokens",
+  "collections": {
+    "M3": {
+      "modes": {
+        "Light": [
+          "m3.json"
+        ],
+        "Light High Contrast": [
+          "m3.json"
+        ],
+        "Light Medium Contrast": [
+          "m3.json"
+        ],
+        "Dark": [
+          "m3.json"
+        ],
+        "Dark High Contrast": [
+          "m3.json"
+        ],
+        "Dark Medium Contrast": [
+          "m3.json"
+        ],
+        "Monochrome LT": [
+          "m3.json"
+        ],
+        "Monochrome DT": [
+          "m3.json"
+        ],
+        "Pink LT": [
+          "m3.json"
+        ],
+        "Pink DT": [
+          "m3.json"
+        ],
+        "Rose LT": [
+          "m3.json"
+        ],
+        "Rose DT": [
+          "m3.json"
+        ],
+        "Red LT": [
+          "m3.json"
+        ],
+        "Red DT": [
+          "m3.json"
+        ],
+        "Orange LT": [
+          "m3.json"
+        ],
+        "Orange DT": [
+          "m3.json"
+        ],
+        "Yellow LT": [
+          "m3.json"
+        ],
+        "Yellow DT": [
+          "m3.json"
+        ],
+        "Chartreuse LT": [
+          "m3.json"
+        ],
+        "Chartreuse DT": [
+          "m3.json"
+        ],
+        "Green LT": [
+          "m3.json"
+        ],
+        "Green DT": [
+          "m3.json"
+        ],
+        "Teal LT": [
+          "m3.json"
+        ],
+        "Teal DT": [
+          "m3.json"
+        ],
+        "Cyan LT": [
+          "m3.json"
+        ],
+        "Cyan DT": [
+          "m3.json"
+        ],
+        "Blue LT": [
+          "m3.json"
+        ],
+        "Blue DT": [
+          "m3.json"
+        ],
+        "Indigo LT": [
+          "m3.json"
+        ],
+        "Indigo DT": [
+          "m3.json"
+        ],
+        "Purple LT": [
+          "m3.json"
+        ],
+        "Purple DT": [
+          "m3.json"
+        ]
+      }
+    },
+    "Font theme": {
+      "modes": {
+        "Baseline": [
+          "fontTheme.json"
+        ],
+        "Wireframe": [
+          "fontTheme.json"
+        ]
+      }
+    },
+    "Typescale": {
+      "modes": {
+        "Baseline": [
+          "typescale.json"
+        ]
+      }
+    },
+    "Shape": {
+      "modes": {
+        "Baseline": [
+          "shape.json"
+        ]
+      }
+    }
+  },
+  "styles": {
+    "text": [
+      "styles.tokens.json"
+    ],
+    "effect": [
+      "styles.tokens.json"
+    ]
+  }
+}

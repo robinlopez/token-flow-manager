@@ -10,7 +10,7 @@ import {
 } from '@tokenflow/shared';
 
 /**
- * `manifest.json` — organization source of truth (collections, modes, files per
+ * `manifest.json`: organization source of truth (collections, modes, files per
  * mode), kept ISO with the Figma plugin that consumes it. This module maps the
  * manifest ↔ the tool's internal {@link CollectionConfig} model.
  *
@@ -20,13 +20,20 @@ import {
  *    files (bijective)    → file-based modes (`fileModes`).
  *  - N modes sharing a
  *    file                 → path-segment modes (`modeDimension`): the dimension
- *                           is detected by mode COUNT, and the manifest's mode
+ *                           is located by mode NAME then by COUNT (see
+ *                           {@link detectModeSegments}), and the manifest's mode
  *                           names ride along as display labels (`modeLabels`),
  *                           matched to physical segments by normalized name then
  *                           position.
  */
 
 export const ORG_MANIFEST_NAME = 'manifest.json';
+
+/**
+ * Internal mode id of a collection that declares no modes. Mirrors
+ * `CollectionRuntime.defaultMode`'s fallback in `project.ts`.
+ */
+const IMPLICIT_MODE = 'default';
 
 /** Relative manifest path if present at the project root, else null. */
 export function detectOrgManifest(root: string): string | null {
@@ -48,20 +55,13 @@ function normalizeMode(s: string): string {
   return s.toLowerCase().replace(/^mode[\s_-]?/, '').replace(/[\s_-]+/g, '');
 }
 
-/**
- * Find the shallowest path depth whose distinct non-leaf segment values number
- * exactly `n`, returning those values in first-appearance order. Used to locate
- * the mode dimension of a file shared across `n` manifest modes (works for
- * non-`mode*` names like `desktop`/`tablet` that auto-detection misses).
- */
-function detectDimensionByCount(
-  paths: string[][],
-  n: number,
-): { dimension: number; segments: string[] } | null {
+/** Distinct segment values per depth, in first-appearance order. */
+function segmentsByDepth(paths: string[][], includeLeaf: boolean): Map<number, string[]> {
   const byDepth = new Map<number, string[]>();
   const seenByDepth = new Map<number, Set<string>>();
   for (const p of paths) {
-    for (let d = 0; d < p.length - 1; d++) {
+    const last = includeLeaf ? p.length : p.length - 1;
+    for (let d = 0; d < last; d++) {
       let arr = byDepth.get(d);
       if (!arr) {
         arr = [];
@@ -76,9 +76,48 @@ function detectDimensionByCount(
       }
     }
   }
-  for (const d of [...byDepth.keys()].sort((a, b) => a - b)) {
-    const segs = byDepth.get(d)!;
-    if (segs.length === n) return { dimension: d, segments: segs };
+  return byDepth;
+}
+
+/**
+ * Locate the path depth carrying the mode segment of a file shared across the
+ * manifest's `modeNames`, returning those segments in first-appearance order.
+ *
+ * Two passes, in order of confidence:
+ *  1. **By name**: the depth whose segments *are* the declared modes once
+ *     normalized (`modeBaseline` ↔ `Baseline`). Only this pass can tell the mode
+ *     dimension from a shallower level that merely happens to have as many
+ *     groups: Material's `Font theme` has 2 modes and exactly 2 top groups
+ *     (`static`, `tracking`), and counting alone folds the wrong one.
+ *  2. **By count**: the shallowest depth with exactly as many distinct
+ *     segments. Catches exports whose segment names carry no trace of the mode
+ *     label at all.
+ *
+ * Each pass tries non-leaf depths first, since the last segment is normally the
+ * token name, then the leaf: some exports do put the mode last
+ * (`device.modeDesktop`, `device.modeTablet`… = one `device` variable with three
+ * modes), and a manifest declaring N modes is explicit enough to trust.
+ * Auto-detection never takes that step: it would be guessing.
+ */
+function detectModeSegments(
+  paths: string[][],
+  modeNames: string[],
+): { dimension: number; segments: string[] } | null {
+  const n = modeNames.length;
+  const wanted = new Set(modeNames.map(normalizeMode));
+  const matchesByName = (segs: string[]): boolean =>
+    segs.length === n && segs.every((s) => wanted.has(normalizeMode(s)));
+
+  for (const byName of [true, false]) {
+    for (const includeLeaf of [false, true]) {
+      const byDepth = segmentsByDepth(paths, includeLeaf);
+      for (const d of [...byDepth.keys()].sort((a, b) => a - b)) {
+        const segs = byDepth.get(d)!;
+        if (byName ? matchesByName(segs) : segs.length === n) {
+          return { dimension: d, segments: segs };
+        }
+      }
+    }
   }
   return null;
 }
@@ -123,9 +162,16 @@ export async function parseOrgManifest(root: string, raw: unknown): Promise<Pars
     const modeNames = Object.keys(col.modes);
     const distinctFiles = [...new Set(Object.values(col.modes).flat())];
 
-    // 1) Single mode → plain single-mode collection.
+    // 1) Single mode → plain single-mode collection. The declared name ("Default",
+    //    "Baseline", "Value"…) rides along as the label of the implicit default
+    //    mode, so the table header reads like Figma instead of `default`.
     if (modeNames.length <= 1) {
-      collections.push({ name, files: oneOrMany(distinctFiles) });
+      const label = modeNames[0];
+      collections.push({
+        name,
+        files: oneOrMany(distinctFiles),
+        ...(label ? { modeLabels: { [IMPLICIT_MODE]: label } } : {}),
+      });
       continue;
     }
 
@@ -140,11 +186,11 @@ export async function parseOrgManifest(root: string, raw: unknown): Promise<Pars
       continue;
     }
 
-    // 3) Shared file(s) → path-segment dimension, detected by mode count.
+    // 3) Shared file(s) → path-segment dimension, located by mode name then count.
     const sharedPaths = (await Promise.all(distinctFiles.map((f) => pathsOf(f, name)))).flat();
-    const dim = detectDimensionByCount(sharedPaths, modeNames.length);
+    const dim = detectModeSegments(sharedPaths, modeNames);
     if (!dim) {
-      // Can't locate the modes inside the file(s) — surface for onboarding and
+      // Can't locate the modes inside the file(s): surface for onboarding and
       // fall back to a single-mode collection so the tokens still load.
       issues.push({
         code: 'mode-count-mismatch',
@@ -179,7 +225,8 @@ function oneOrMany(files: string[]): string | string[] {
  * raw on-disk object so unknown keys survive. Inverse of {@link parseOrgManifest}:
  *  - `fileModes` → one file per mode;
  *  - `modeDimension` → each mode's display name (from `modeLabels`) → the file(s);
- *  - single-mode → `{ "Mode 1": [files] }`.
+ *  - single-mode → `{ "<label>": [files] }`, keeping the name the manifest
+ *    declared (falling back to `"Mode 1"` when there is none to keep).
  */
 export function serializeOrgManifest(
   collections: CollectionConfig[],
@@ -203,7 +250,8 @@ export function serializeOrgManifest(
       // Path-segment modes: emit the display label (or the segment id) → shared file(s).
       for (const seg of c.modes) modes[c.modeLabels?.[seg] ?? seg] = files;
     } else {
-      modes['Mode 1'] = files;
+      const only = c.modes?.[0] ?? IMPLICIT_MODE;
+      modes[c.modeLabels?.[only] ?? 'Mode 1'] = files;
     }
     cols[c.name] = { ...asRecord(asRecord(raw['collections'])[c.name]), modes };
   }

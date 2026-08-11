@@ -1,0 +1,601 @@
+{
+  "$description": "Metrics",
+  "$metadata": {
+    "generatedAt": "2026-05-17T13:50:58.659Z"
+  },
+  "units": {
+    "2xs": {
+      "$value": "2px",
+      "$description": "Espacement micro.",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:364",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement micro.",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    },
+    "xs": {
+      "$value": "4px",
+      "$description": "Espacement extra petit.",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:365",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement extra petit.",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    },
+    "sm": {
+      "$value": "8px",
+      "$description": "Espacement réduit. Usage gap icône/texte.",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:366",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement réduit. Usage gap icône/texte.",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    },
+    "md": {
+      "$value": "12px",
+      "$description": "Espacement moyen.",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:367",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement moyen.",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    },
+    "default": {
+      "$value": "16px",
+      "$description": "Espacement de base. Padding standard.",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:368",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement de base. Padding standard.",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    },
+    "lg": {
+      "$value": "24px",
+      "$description": "Espacement large.",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:369",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement large.",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    },
+    "xl": {
+      "$value": "32px",
+      "$description": "Espacement extra large (32px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:370",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement extra large (32px).",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    },
+    "2xl": {
+      "$value": "40px",
+      "$description": "Espacement double extra large (40px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:371",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement double extra large (40px).",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    },
+    "3xl": {
+      "$value": "48px",
+      "$description": "Espacement géant.",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:372",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement géant.",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    },
+    "4xl": {
+      "$value": "56px",
+      "$description": "Espacement extra géant.",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:373",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Espacement extra géant.",
+          "scopes": [
+            "WIDTH_HEIGHT",
+            "GAP",
+            "FONT_VARIATIONS"
+          ]
+        }
+      }
+    }
+  },
+  "radius": {
+    "2xs": {
+      "$value": "2px",
+      "$description": "Rayon d'angle extra extra petit (2px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:374",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Rayon d'angle extra extra petit (2px).",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "xs": {
+      "$value": "4px",
+      "$description": "Rayon d'angle extra petit (4px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:375",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Rayon d'angle extra petit (4px).",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "sm": {
+      "$value": "8px",
+      "$description": "Rayon d'angle petit (8px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:376",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Rayon d'angle petit (8px).",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "md": {
+      "$value": "12px",
+      "$description": "Rayon d'angle moyen (12px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:377",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Rayon d'angle moyen (12px).",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "default": {
+      "$value": "16px",
+      "$description": "Arrondi standard pour boutons et cartes.",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:378",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Arrondi standard pour boutons et cartes.",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "lg": {
+      "$value": "24px",
+      "$description": "Rayon d'angle large (24px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:379",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Rayon d'angle large (24px).",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "xl": {
+      "$value": "32px",
+      "$description": "Rayon d'angle extra large (32px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:380",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Rayon d'angle extra large (32px).",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "full": {
+      "$value": "999px",
+      "$description": "Arrondi complet (pilule/cercle).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:381",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Arrondi complet (pilule/cercle).",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    }
+  },
+  "stroke": {
+    "sm": {
+      "$value": "1px",
+      "$description": "Épaisseur de bordure fine (1px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:386",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Épaisseur de bordure fine (1px).",
+          "scopes": [
+            "STROKE_FLOAT"
+          ]
+        }
+      }
+    },
+    "default": {
+      "$value": "2px",
+      "$description": "Épaisseur de bordure standard (2px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:388",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Épaisseur de bordure standard (2px).",
+          "scopes": [
+            "STROKE_FLOAT"
+          ]
+        }
+      }
+    },
+    "lg": {
+      "$value": "4px",
+      "$description": "Épaisseur de bordure large (4px).",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:389",
+          "collectionId": "VariableCollectionId:5:363",
+          "modeId": "5:1",
+          "resolvedType": "FLOAT",
+          "description": "Épaisseur de bordure large (4px).",
+          "scopes": [
+            "STROKE_FLOAT"
+          ]
+        }
+      }
+    }
+  },
+  "shadow": {
+    "sm": {
+      "positionX": {
+        "$value": "0px",
+        "$description": "Ombre petite axe X.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:392",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre petite axe X.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      },
+      "positionY": {
+        "$value": "0px",
+        "$description": "Ombre petite axe Y.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5814",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre petite axe Y.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      },
+      "blur": {
+        "$value": "2px",
+        "$description": "Ombre petite flou.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5815",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre petite flou.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      },
+      "spread": {
+        "$value": "1px",
+        "$description": "Ombre petite étendue.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5816",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre petite étendue.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      }
+    },
+    "md": {
+      "positionX": {
+        "$value": "0px",
+        "$description": "Ombre moyenne axe X.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5817",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre moyenne axe X.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      },
+      "positionY": {
+        "$value": "0px",
+        "$description": "Ombre moyenne axe Y.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5818",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre moyenne axe Y.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      },
+      "blur": {
+        "$value": "6px",
+        "$description": "Ombre moyenne flou.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5819",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre moyenne flou.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      },
+      "spread": {
+        "$value": "2px",
+        "$description": "Ombre moyenne étendue.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5820",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre moyenne étendue.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      }
+    },
+    "lg": {
+      "positionX": {
+        "$value": "0px",
+        "$description": "Ombre large axe X.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5821",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre large axe X.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      },
+      "positionY": {
+        "$value": "0px",
+        "$description": "Ombre large axe Y.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5822",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre large axe Y.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      },
+      "blur": {
+        "$value": "6px",
+        "$description": "Ombre large flou.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5823",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre large flou.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      },
+      "spread": {
+        "$value": "4px",
+        "$description": "Ombre large étendue.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:11:5824",
+            "collectionId": "VariableCollectionId:5:363",
+            "modeId": "5:1",
+            "resolvedType": "FLOAT",
+            "description": "Ombre large étendue.",
+            "scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,537 @@
+{
+  "$description": "Utils",
+  "$metadata": {
+    "generatedAt": "2026-05-17T13:50:58.659Z"
+  },
+  "utilsData": {
+    "projectName": {
+      "$value": "Project Name",
+      "$description": "Variable utilitaire pour nom du projet.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:446",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "STRING",
+          "description": "Variable utilitaire pour nom du projet.",
+          "scopes": [
+            "TEXT_CONTENT"
+          ]
+        }
+      }
+    }
+  },
+  "utilsColors": {
+    "100": {
+      "$value": "#efe8ff",
+      "$description": "Couleur utilitaire.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:529:9562",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "200": {
+      "$value": "#d5c3ff",
+      "$description": "Couleur utilitaire.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:450",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "300": {
+      "$value": "#ccb1ff",
+      "$description": "Couleur utilitaire.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:529:9564",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "400": {
+      "$value": "#b485ff",
+      "$description": "Couleur utilitaire.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:529:9565",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "600": {
+      "$value": "#9330f7",
+      "$description": "Couleur utilitaire.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:529:9566",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "700": {
+      "$value": "#851ee3",
+      "$description": "Couleur utilitaire.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:529:9567",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "800": {
+      "$value": "#721dc0",
+      "$description": "Couleur utilitaire.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:449",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "900": {
+      "$value": "#5b169c",
+      "$description": "Couleur utilitaire.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:529:9569",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "base": {
+      "$value": "#9747ff",
+      "$description": "Couleur utilitaire de base.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:529:561",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire de base.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "200Op": {
+      "$value": "#d5c3ff33",
+      "$description": "Couleur utilitaire transparente.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:14:12283",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire transparente.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "high": {
+      "$value": "{utilsColors.base}",
+      "$description": "Couleur utilitaire forte. Non sémantique.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:447",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire forte. Non sémantique.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "white": {
+      "$value": "#ffffff",
+      "$description": "Couleur utilitaire blanche.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:448",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire blanche.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "whiteOp": {
+      "$value": "#ffffff33",
+      "$description": "Couleur utilitaire blanche transparente.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:468",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire blanche transparente.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "neutral1": {
+      "$value": "#a5a5a9",
+      "$description": "Couleur utilitaire neutre.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:463",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire neutre.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "neutral2": {
+      "$value": "#717178",
+      "$description": "Couleur utilitaire neutre.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:464",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire neutre.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "neutral3": {
+      "$value": "#33333e",
+      "$description": "Couleur utilitaire neutre.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:465",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire neutre.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "neutral4": {
+      "$value": "#1d1d29",
+      "$description": "Couleur utilitaire neutre.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:466",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire neutre.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "neutral5": {
+      "$value": "#11111a",
+      "$description": "Couleur utilitaire neutre.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:467",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire neutre.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "green": {
+      "$value": "#00ffb0",
+      "$description": "Couleur utilitaire verte.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:451",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire verte.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "greenOp": {
+      "$value": "#00ffb033",
+      "$description": "Couleur utilitaire verte transparente.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:452",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire verte transparente.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "blue": {
+      "$value": "#3d8eff",
+      "$description": "Couleur utilitaire bleue.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:453",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire bleue.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "blueOp": {
+      "$value": "#3d8eff33",
+      "$description": "Couleur utilitaire bleue transparente.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:454",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire bleue transparente.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "orange": {
+      "$value": "#ffa659",
+      "$description": "Couleur utilitaire orange.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:456",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire orange.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "orangeOp": {
+      "$value": "#ffa65933",
+      "$description": "Couleur utilitaire orange transparente.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:455",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire orange transparente.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "yellow": {
+      "$value": "#ffde59",
+      "$description": "Couleur utilitaire jaune.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:32:10884",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire jaune.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "yellowOp": {
+      "$value": "#ffde5933",
+      "$description": "Couleur utilitaire jaune transparente.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:32:10885",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire jaune transparente.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "red": {
+      "$value": "#ff5959",
+      "$description": "Couleur utilitaire rouge.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:20:8014",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire rouge.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "redOp": {
+      "$value": "#ff595933",
+      "$description": "Couleur utilitaire rouge transparente.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:20:8013",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire rouge transparente.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "pink": {
+      "$value": "#ff59db",
+      "$description": "Couleur utilitaire rose.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:32:10882",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire rose.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "pinkOp": {
+      "$value": "#ff59db33",
+      "$description": "Couleur utilitaire rose transparente.",
+      "$type": "color",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:32:10883",
+          "collectionId": "VariableCollectionId:5:445",
+          "modeId": "5:7",
+          "resolvedType": "COLOR",
+          "description": "Couleur utilitaire rose transparente.",
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    }
+  }
+}

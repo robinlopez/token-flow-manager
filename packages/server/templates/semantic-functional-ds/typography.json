@@ -1,0 +1,180 @@
+{
+  "$description": "Typography",
+  "$metadata": {
+    "generatedAt": "2026-05-17T13:50:58.659Z"
+  },
+  "fontFamily": {
+    "title": {
+      "$value": "DM Sans",
+      "$description": "Police réservée aux titres (H1-H6).",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:408",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Police réservée aux titres (H1-H6).",
+          "scopes": [
+            "FONT_FAMILY"
+          ]
+        }
+      }
+    },
+    "base": {
+      "$value": "Inter",
+      "$description": "Police pour le corps de texte.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:409",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Police pour le corps de texte.",
+          "scopes": [
+            "FONT_FAMILY"
+          ]
+        }
+      }
+    },
+    "monospace": {
+      "$value": "Roboto Mono",
+      "$description": "Police pour blocs de code ou données.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:342:16190",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Police pour blocs de code ou données.",
+          "scopes": [
+            "FONT_FAMILY"
+          ]
+        }
+      }
+    },
+    "icon": {
+      "$value": "Font Awesome 6 Free",
+      "$description": "Police pour la librairie d'icônes.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:411",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Police pour la librairie d'icônes.",
+          "scopes": [
+            "FONT_FAMILY"
+          ]
+        }
+      }
+    }
+  },
+  "weight": {
+    "light": {
+      "$value": "Light",
+      "$description": "Graisse légère.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:412",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Graisse légère.",
+          "scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      }
+    },
+    "regular": {
+      "$value": "Regular",
+      "$description": "Graisse normale de base.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:413",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Graisse normale de base.",
+          "scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      }
+    },
+    "bold": {
+      "$value": "Bold",
+      "$description": "Graisse forte pour emphase.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:416",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Graisse forte pour emphase.",
+          "scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      }
+    },
+    "italic": {
+      "$value": "Italic",
+      "$description": "Style italique.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:417",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Style italique.",
+          "scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      }
+    },
+    "solidIcon": {
+      "$value": "Solid",
+      "$description": "Graisse icône pleine.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:418",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Graisse icône pleine.",
+          "scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      }
+    },
+    "outlineIcon": {
+      "$value": "Regular",
+      "$description": "Graisse icône contour.",
+      "$type": "string",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:5:419",
+          "collectionId": "VariableCollectionId:5:407",
+          "modeId": "5:2",
+          "resolvedType": "STRING",
+          "description": "Graisse icône contour.",
+          "scopes": [
+            "FONT_STYLE"
+          ]
+        }
+      }
+    }
+  }
+}

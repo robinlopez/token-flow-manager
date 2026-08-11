@@ -1,0 +1,1553 @@
+{
+  "$description": "Responsive",
+  "$metadata": {
+    "generatedAt": "2026-05-17T13:50:58.659Z"
+  },
+  "screen": {
+    "modeDesktop": {
+      "width": {
+        "$value": "1440px",
+        "$description": "Largeur d'écran adaptative.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:439",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:4",
+            "resolvedType": "FLOAT",
+            "description": "Largeur d'écran adaptative.",
+            "scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      },
+      "height": {
+        "$value": "1024px",
+        "$description": "Hauteur d'écran adaptative.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:442",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:4",
+            "resolvedType": "FLOAT",
+            "description": "Hauteur d'écran adaptative.",
+            "scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    },
+    "modeTablet": {
+      "width": {
+        "$value": "1024px",
+        "$description": "Largeur d'écran adaptative.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:439",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:5",
+            "resolvedType": "FLOAT",
+            "description": "Largeur d'écran adaptative.",
+            "scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      },
+      "height": {
+        "$value": "1366px",
+        "$description": "Hauteur d'écran adaptative.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:442",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:5",
+            "resolvedType": "FLOAT",
+            "description": "Hauteur d'écran adaptative.",
+            "scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    },
+    "modeMobile": {
+      "width": {
+        "$value": "402px",
+        "$description": "Largeur d'écran adaptative.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:439",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:6",
+            "resolvedType": "FLOAT",
+            "description": "Largeur d'écran adaptative.",
+            "scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      },
+      "height": {
+        "$value": "874px",
+        "$description": "Hauteur d'écran adaptative.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:442",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:6",
+            "resolvedType": "FLOAT",
+            "description": "Hauteur d'écran adaptative.",
+            "scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "spacing": {
+    "modeDesktop": {
+      "default": {
+        "$value": "{metrics.units.default}",
+        "$description": "Marge adaptative principale selon le device.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:443",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:4",
+            "resolvedType": "FLOAT",
+            "description": "Marge adaptative principale selon le device.",
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      }
+    },
+    "modeTablet": {
+      "default": {
+        "$value": "{metrics.units.md}",
+        "$description": "Marge adaptative principale selon le device.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:443",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:5",
+            "resolvedType": "FLOAT",
+            "description": "Marge adaptative principale selon le device.",
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      }
+    },
+    "modeMobile": {
+      "default": {
+        "$value": "{metrics.units.sm}",
+        "$description": "Marge adaptative principale selon le device.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:443",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:6",
+            "resolvedType": "FLOAT",
+            "description": "Marge adaptative principale selon le device.",
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "grid": {
+    "modeDesktop": {
+      "columns": {
+        "$value": 12,
+        "$description": "Nombre de colonnes de la grille.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:444",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:4",
+            "resolvedType": "FLOAT",
+            "description": "Nombre de colonnes de la grille.",
+            "scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    },
+    "modeTablet": {
+      "columns": {
+        "$value": 8,
+        "$description": "Nombre de colonnes de la grille.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:444",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:5",
+            "resolvedType": "FLOAT",
+            "description": "Nombre de colonnes de la grille.",
+            "scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    },
+    "modeMobile": {
+      "columns": {
+        "$value": 4,
+        "$description": "Nombre de colonnes de la grille.",
+        "$type": "dimension",
+        "$extensions": {
+          "com.figma": {
+            "variableId": "VariableID:5:444",
+            "collectionId": "VariableCollectionId:5:438",
+            "modeId": "5:6",
+            "resolvedType": "FLOAT",
+            "description": "Nombre de colonnes de la grille.",
+            "scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "size": {
+    "modeDesktop": {
+      "components": {
+        "2xs": {
+          "$value": "22px",
+          "$description": "Taille de composant micro adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:266:4641",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:4",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant micro adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "xs": {
+          "$value": "32px",
+          "$description": "Taille de composant extra petit adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:104:4424",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:4",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant extra petit adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "sm": {
+          "$value": "40px",
+          "$description": "Taille de composant petit adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:74:158",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:4",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant petit adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "default": {
+          "$value": "44px",
+          "$description": "Taille de composant standard adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:74:156",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:4",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant standard adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "lg": {
+          "$value": "48px",
+          "$description": "Taille de composant large adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:342:17555",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:4",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant large adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "xl": {
+          "$value": "54px",
+          "$description": "Taille de composant extra large adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:342:17556",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:4",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant extra large adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
+      },
+      "typography": {
+        "title": {
+          "sm": {
+            "$value": "16px",
+            "$description": "Taille de titre petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:134",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "md": {
+            "$value": "20px",
+            "$description": "Taille de titre moyenne adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:135",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre moyenne adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "24px",
+            "$description": "Taille de titre standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:130",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "30px",
+            "$description": "Taille de titre large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:136",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "xl": {
+            "$value": "38px",
+            "$description": "Taille de titre extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:137",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "2xl": {
+            "$value": "48px",
+            "$description": "Taille de titre double extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:138",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre double extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "text": {
+          "sm": {
+            "$value": "12px",
+            "$description": "Taille de texte petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:139",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "md": {
+            "$value": "14px",
+            "$description": "Taille de texte moyenne adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:140",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte moyenne adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "16px",
+            "$description": "Taille de texte standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:131",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "18px",
+            "$description": "Taille de texte large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:141",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "xl": {
+            "$value": "20px",
+            "$description": "Taille de texte extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:142",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "accent": {
+          "sm": {
+            "$value": "32px",
+            "$description": "Taille de typo accent petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:16215",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de typo accent petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "40px",
+            "$description": "Taille de typo accent standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:16217",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de typo accent standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "48px",
+            "$description": "Taille de typo accent large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:16218",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille de typo accent large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "icon": {
+          "sm": {
+            "$value": "14px",
+            "$description": "Taille d'icône petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:143",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "md": {
+            "$value": "16px",
+            "$description": "Taille d'icône moyenne adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:144",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône moyenne adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "20px",
+            "$description": "Taille d'icône standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:132",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "24px",
+            "$description": "Taille d'icône large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:145",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "xl": {
+            "$value": "32px",
+            "$description": "Taille d'icône extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:146",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:4",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "modeTablet": {
+      "components": {
+        "2xs": {
+          "$value": "22px",
+          "$description": "Taille de composant micro adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:266:4641",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:5",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant micro adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "xs": {
+          "$value": "30px",
+          "$description": "Taille de composant extra petit adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:104:4424",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:5",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant extra petit adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "sm": {
+          "$value": "38px",
+          "$description": "Taille de composant petit adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:74:158",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:5",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant petit adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "default": {
+          "$value": "44px",
+          "$description": "Taille de composant standard adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:74:156",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:5",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant standard adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "lg": {
+          "$value": "48px",
+          "$description": "Taille de composant large adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:342:17555",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:5",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant large adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "xl": {
+          "$value": "54px",
+          "$description": "Taille de composant extra large adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:342:17556",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:5",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant extra large adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
+      },
+      "typography": {
+        "title": {
+          "sm": {
+            "$value": "16px",
+            "$description": "Taille de titre petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:134",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "md": {
+            "$value": "20px",
+            "$description": "Taille de titre moyenne adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:135",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre moyenne adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "24px",
+            "$description": "Taille de titre standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:130",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "30px",
+            "$description": "Taille de titre large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:136",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "xl": {
+            "$value": "38px",
+            "$description": "Taille de titre extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:137",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "2xl": {
+            "$value": "48px",
+            "$description": "Taille de titre double extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:138",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre double extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "text": {
+          "sm": {
+            "$value": "12px",
+            "$description": "Taille de texte petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:139",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "md": {
+            "$value": "14px",
+            "$description": "Taille de texte moyenne adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:140",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte moyenne adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "16px",
+            "$description": "Taille de texte standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:131",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "18px",
+            "$description": "Taille de texte large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:141",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "xl": {
+            "$value": "20px",
+            "$description": "Taille de texte extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:142",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "accent": {
+          "sm": {
+            "$value": "32px",
+            "$description": "Taille de typo accent petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:16215",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de typo accent petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "40px",
+            "$description": "Taille de typo accent standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:16217",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de typo accent standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "48px",
+            "$description": "Taille de typo accent large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:16218",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille de typo accent large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "icon": {
+          "sm": {
+            "$value": "14px",
+            "$description": "Taille d'icône petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:143",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "md": {
+            "$value": "16px",
+            "$description": "Taille d'icône moyenne adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:144",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône moyenne adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "20px",
+            "$description": "Taille d'icône standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:132",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "24px",
+            "$description": "Taille d'icône large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:145",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "xl": {
+            "$value": "32px",
+            "$description": "Taille d'icône extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:146",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:5",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "modeMobile": {
+      "components": {
+        "2xs": {
+          "$value": "24px",
+          "$description": "Taille de composant micro adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:266:4641",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:6",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant micro adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "xs": {
+          "$value": "28px",
+          "$description": "Taille de composant extra petit adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:104:4424",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:6",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant extra petit adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "sm": {
+          "$value": "36px",
+          "$description": "Taille de composant petit adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:74:158",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:6",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant petit adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "default": {
+          "$value": "44px",
+          "$description": "Taille de composant standard adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:74:156",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:6",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant standard adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "lg": {
+          "$value": "48px",
+          "$description": "Taille de composant large adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:342:17555",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:6",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant large adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        },
+        "xl": {
+          "$value": "54px",
+          "$description": "Taille de composant extra large adaptative.",
+          "$type": "dimension",
+          "$extensions": {
+            "com.figma": {
+              "variableId": "VariableID:342:17556",
+              "collectionId": "VariableCollectionId:5:438",
+              "modeId": "5:6",
+              "resolvedType": "FLOAT",
+              "description": "Taille de composant extra large adaptative.",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
+      },
+      "typography": {
+        "title": {
+          "sm": {
+            "$value": "16px",
+            "$description": "Taille de titre petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:134",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "md": {
+            "$value": "20px",
+            "$description": "Taille de titre moyenne adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:135",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre moyenne adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "24px",
+            "$description": "Taille de titre standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:130",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "30px",
+            "$description": "Taille de titre large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:136",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "xl": {
+            "$value": "38px",
+            "$description": "Taille de titre extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:137",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "2xl": {
+            "$value": "48px",
+            "$description": "Taille de titre double extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:138",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de titre double extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "text": {
+          "sm": {
+            "$value": "12px",
+            "$description": "Taille de texte petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:139",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "md": {
+            "$value": "14px",
+            "$description": "Taille de texte moyenne adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:140",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte moyenne adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "16px",
+            "$description": "Taille de texte standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:131",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "18px",
+            "$description": "Taille de texte large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:141",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "xl": {
+            "$value": "20px",
+            "$description": "Taille de texte extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:142",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de texte extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "accent": {
+          "sm": {
+            "$value": "32px",
+            "$description": "Taille de typo accent petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:16215",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de typo accent petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "40px",
+            "$description": "Taille de typo accent standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:16217",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de typo accent standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "48px",
+            "$description": "Taille de typo accent large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:16218",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille de typo accent large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        },
+        "icon": {
+          "sm": {
+            "$value": "14px",
+            "$description": "Taille d'icône petite adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:143",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône petite adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "md": {
+            "$value": "16px",
+            "$description": "Taille d'icône moyenne adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:144",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône moyenne adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "default": {
+            "$value": "20px",
+            "$description": "Taille d'icône standard adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:132",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône standard adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "lg": {
+            "$value": "24px",
+            "$description": "Taille d'icône large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:145",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          },
+          "xl": {
+            "$value": "32px",
+            "$description": "Taille d'icône extra large adaptative.",
+            "$type": "dimension",
+            "$extensions": {
+              "com.figma": {
+                "variableId": "VariableID:342:146",
+                "collectionId": "VariableCollectionId:5:438",
+                "modeId": "5:6",
+                "resolvedType": "FLOAT",
+                "description": "Taille d'icône extra large adaptative.",
+                "scopes": [
+                  "ALL_SCOPES"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

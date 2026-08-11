@@ -1,0 +1,158 @@
+{
+  "$description": "Shape",
+  "$metadata": {
+    "generatedAt": "2026-08-11T14:41:06.803Z"
+  },
+  "corner": {
+    "none": {
+      "$value": "0px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:55064:15587",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "extraSmall": {
+      "$value": "4px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:55064:15588",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "small": {
+      "$value": "8px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:55064:15589",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "medium": {
+      "$value": "12px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:55064:15590",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "large": {
+      "$value": "16px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:55064:15591",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "largeIncreased": {
+      "$value": "20px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:58024:69203",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "extraLarge": {
+      "$value": "28px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:55064:15592",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "extraLargeIncreased": {
+      "$value": "32px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:58024:69208",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "extraExtraLarge": {
+      "$value": "48px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:58024:69213",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    },
+    "full": {
+      "$value": "1000px",
+      "$type": "dimension",
+      "$extensions": {
+        "com.figma": {
+          "variableId": "VariableID:55064:15593",
+          "collectionId": "VariableCollectionId:55064:15586",
+          "modeId": "55064:3",
+          "resolvedType": "FLOAT",
+          "scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      }
+    }
+  }
+}

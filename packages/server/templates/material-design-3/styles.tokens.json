@@ -1,0 +1,899 @@
+{
+  "$description": "Figma Styles",
+  "$metadata": {
+    "generatedAt": "2026-08-11T14:41:06.803Z"
+  },
+  "Typography": {
+    "M3": {
+      "display": {
+        "large": {
+          "$value": {
+            "fontFamily": "{static.displayLarge.font}",
+            "fontWeight": "{static.displayLarge.weight}",
+            "fontSize": "{static.displayLarge.size}",
+            "lineHeight": "{static.displayLarge.lineHeight}",
+            "letterSpacing": "{static.displayLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:ab2ba6452f7add920dce4dad2c6720f2102fe04e,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15567",
+                "fontWeight": "VariableID:55064:15568",
+                "fontSize": "VariableID:55064:15509",
+                "lineHeight": "VariableID:55064:15511",
+                "letterSpacing": "VariableID:55064:15510"
+              }
+            }
+          }
+        },
+        "large-emphasized": {
+          "$value": {
+            "fontFamily": "{static.displayLarge.font}",
+            "fontWeight": "{static.displayMedium.weightEmphasized}",
+            "fontSize": "{static.displayLarge.size}",
+            "lineHeight": "{static.displayLarge.lineHeight}",
+            "letterSpacing": "{static.displayLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:6bb038adeb1932976d843f29b362371ce4fbda7b,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15567",
+                "fontWeight": "VariableID:58148:19370",
+                "fontSize": "VariableID:55064:15509",
+                "lineHeight": "VariableID:55064:15511",
+                "letterSpacing": "VariableID:55064:15510"
+              }
+            }
+          }
+        },
+        "medium": {
+          "$value": {
+            "fontFamily": "{static.displayMedium.font}",
+            "fontWeight": "{static.displayMedium.weight}",
+            "fontSize": "{static.displayMedium.size}",
+            "lineHeight": "{static.displayMedium.lineHeight}",
+            "letterSpacing": "{static.displayMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:d7f5c6c2621e4b53880508a68c27d7f22802542b,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15565",
+                "fontWeight": "VariableID:55064:15566",
+                "fontSize": "VariableID:55064:15512",
+                "lineHeight": "VariableID:55064:15513",
+                "letterSpacing": "VariableID:55064:15514"
+              }
+            }
+          }
+        },
+        "medium-emphasized": {
+          "$value": {
+            "fontFamily": "{static.displayMedium.font}",
+            "fontWeight": "{static.displayMedium.weightEmphasized}",
+            "fontSize": "{static.displayMedium.size}",
+            "lineHeight": "{static.displayMedium.lineHeight}",
+            "letterSpacing": "{static.displayMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:536497a3ea844415009a7c6930d9b68915bf593b,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15565",
+                "fontWeight": "VariableID:58148:19370",
+                "fontSize": "VariableID:55064:15512",
+                "lineHeight": "VariableID:55064:15513",
+                "letterSpacing": "VariableID:55064:15514"
+              }
+            }
+          }
+        },
+        "small": {
+          "$value": {
+            "fontFamily": "{static.displaySmall.font}",
+            "fontWeight": "{static.displaySmall.weight}",
+            "fontSize": "{static.displaySmall.size}",
+            "lineHeight": "{static.displaySmall.lineHeight}",
+            "letterSpacing": "{static.displayMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:2ab867d19b3968c9cc4cf8a40fe688f6518ba281,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15563",
+                "fontWeight": "VariableID:55064:15564",
+                "fontSize": "VariableID:55064:15515",
+                "lineHeight": "VariableID:55064:15517",
+                "letterSpacing": "VariableID:55064:15514"
+              }
+            }
+          }
+        },
+        "small-emphasized": {
+          "$value": {
+            "fontFamily": "{static.displaySmall.font}",
+            "fontWeight": "{static.displaySmall.weightEmphasized}",
+            "fontSize": "{static.displaySmall.size}",
+            "lineHeight": "{static.displaySmall.lineHeight}",
+            "letterSpacing": "{static.displaySmall.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:82e43eb89560e7a63ebc52b0645fe1259e0886c8,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15563",
+                "fontWeight": "VariableID:58148:19373",
+                "fontSize": "VariableID:55064:15515",
+                "lineHeight": "VariableID:55064:15517",
+                "letterSpacing": "VariableID:55064:15516"
+              }
+            }
+          }
+        }
+      },
+      "headline": {
+        "large": {
+          "$value": {
+            "fontFamily": "{static.headlineLarge.font}",
+            "fontWeight": "{static.headlineLarge.weight}",
+            "fontSize": "{static.headlineLarge.size}",
+            "lineHeight": "{static.headlineLarge.lineHeight}",
+            "letterSpacing": "{static.headlineLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:5326556babfd9718b7451756c524643224e64807,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15561",
+                "fontWeight": "VariableID:55064:15562",
+                "fontSize": "VariableID:55064:15518",
+                "lineHeight": "VariableID:55064:15520",
+                "letterSpacing": "VariableID:55064:15519"
+              }
+            }
+          }
+        },
+        "large-emphasized": {
+          "$value": {
+            "fontFamily": "{static.headlineLarge.font}",
+            "fontWeight": "{static.headlineLarge.weightEmphasized}",
+            "fontSize": "{static.headlineLarge.size}",
+            "lineHeight": "{static.headlineLarge.lineHeight}",
+            "letterSpacing": "{static.headlineLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:9c0cc2f25df1356397c3c058ab31c5d6d13cb5c8,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15561",
+                "fontWeight": "VariableID:58148:19376",
+                "fontSize": "VariableID:55064:15518",
+                "lineHeight": "VariableID:55064:15520",
+                "letterSpacing": "VariableID:55064:15519"
+              }
+            }
+          }
+        },
+        "medium": {
+          "$value": {
+            "fontFamily": "{static.headlineMedium.font}",
+            "fontWeight": "{static.headlineMedium.weight}",
+            "fontSize": "{static.headlineMedium.size}",
+            "lineHeight": "{static.headlineMedium.lineHeight}",
+            "letterSpacing": "{static.headlineSmall.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:615f8540515fa97bd35314efa9c41b2f9984fbae,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15559",
+                "fontWeight": "VariableID:55064:15560",
+                "fontSize": "VariableID:55064:15521",
+                "lineHeight": "VariableID:55064:15525",
+                "letterSpacing": "VariableID:55064:15524"
+              }
+            }
+          }
+        },
+        "medium-emphasized": {
+          "$value": {
+            "fontFamily": "{static.headlineMedium.font}",
+            "fontWeight": "{static.headlineMedium.weightEmphasized}",
+            "fontSize": "{static.headlineMedium.size}",
+            "lineHeight": "{static.headlineMedium.lineHeight}",
+            "letterSpacing": "{static.headlineMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:455b04f75bc7e5692d843c12dbbf62edb3ac3f3b,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15559",
+                "fontWeight": "VariableID:58148:19379",
+                "fontSize": "VariableID:55064:15521",
+                "lineHeight": "VariableID:55064:15525",
+                "letterSpacing": "VariableID:55064:15523"
+              }
+            }
+          }
+        },
+        "small": {
+          "$value": {
+            "fontFamily": "{static.headlineSmall.font}",
+            "fontWeight": "{static.headlineSmall.weight}",
+            "fontSize": "{static.headlineSmall.size}",
+            "lineHeight": "{static.headlineSmall.lineHeight}",
+            "letterSpacing": "{static.headlineSmall.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:01685e1f4b3849ad99ba3410448e6ccb4f85a64f,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15557",
+                "fontWeight": "VariableID:55064:15558",
+                "fontSize": "VariableID:55064:15522",
+                "lineHeight": "VariableID:55064:15526",
+                "letterSpacing": "VariableID:55064:15524"
+              }
+            }
+          }
+        },
+        "small-emphasized": {
+          "$value": {
+            "fontFamily": "{static.headlineSmall.font}",
+            "fontWeight": "{static.headlineSmall.weightEmphasized}",
+            "fontSize": "{static.headlineSmall.size}",
+            "lineHeight": "{static.headlineSmall.lineHeight}",
+            "letterSpacing": "{static.headlineSmall.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:fcb7e39b4da6f7e44b6fb730be654cd77d073903,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15557",
+                "fontWeight": "VariableID:58148:19382",
+                "fontSize": "VariableID:55064:15522",
+                "lineHeight": "VariableID:55064:15526",
+                "letterSpacing": "VariableID:55064:15524"
+              }
+            }
+          }
+        }
+      },
+      "title": {
+        "large": {
+          "$value": {
+            "fontFamily": "{static.titleLarge.font}",
+            "fontWeight": "{static.titleLarge.weight}",
+            "fontSize": "{static.titleLarge.size}",
+            "lineHeight": "{static.titleLarge.lineHeight}",
+            "letterSpacing": "{static.titleLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:9de83b30defef721842e42a9aec8e1412daad8c1,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15530",
+                "fontWeight": "VariableID:55064:15531",
+                "fontSize": "VariableID:55064:15527",
+                "lineHeight": "VariableID:55064:15529",
+                "letterSpacing": "VariableID:55064:15528"
+              }
+            }
+          }
+        },
+        "large-emphasized": {
+          "$value": {
+            "fontFamily": "{static.titleLarge.font}",
+            "fontWeight": "{static.titleLarge.weightEmphasized}",
+            "fontSize": "{static.titleLarge.size}",
+            "lineHeight": "{static.titleLarge.lineHeight}",
+            "letterSpacing": "{static.titleLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:8ad36f95d0abbf06528f18a0bf22e55999b96df6,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15530",
+                "fontWeight": "VariableID:58148:19385",
+                "fontSize": "VariableID:55064:15527",
+                "lineHeight": "VariableID:55064:15529",
+                "letterSpacing": "VariableID:55064:15528"
+              }
+            }
+          }
+        },
+        "medium": {
+          "$value": {
+            "fontFamily": "{static.titleMedium.font}",
+            "fontWeight": "{static.titleMedium.weight}",
+            "fontSize": "{static.titleMedium.size}",
+            "lineHeight": "{static.titleMedium.lineHeight}",
+            "letterSpacing": "{static.titleMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:b60903741b2a54f024c2495227760baf5a75e4ad,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15532",
+                "fontWeight": "VariableID:55064:15533",
+                "fontSize": "VariableID:55064:15534",
+                "lineHeight": "VariableID:55064:15536",
+                "letterSpacing": "VariableID:55064:15535"
+              }
+            }
+          }
+        },
+        "medium-emphasized": {
+          "$value": {
+            "fontFamily": "{static.titleMedium.font}",
+            "fontWeight": "{static.titleMedium.weightEmphasized}",
+            "fontSize": "{static.titleMedium.size}",
+            "lineHeight": "{static.titleMedium.lineHeight}",
+            "letterSpacing": "{static.titleMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:8930532f13b5baa66e46055cfb93a3117f679c5e,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15532",
+                "fontWeight": "VariableID:58148:19388",
+                "fontSize": "VariableID:55064:15534",
+                "lineHeight": "VariableID:55064:15536",
+                "letterSpacing": "VariableID:55064:15535"
+              }
+            }
+          }
+        },
+        "small": {
+          "$value": {
+            "fontFamily": "{static.titleSmall.font}",
+            "fontWeight": "{static.titleSmall.weight}",
+            "fontSize": "{static.titleSmall.size}",
+            "lineHeight": "{static.titleSmall.lineHeight}",
+            "letterSpacing": "{static.titleSmall.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:2b2c49929b715de684d211023c628d9144295f7b,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15537",
+                "fontWeight": "VariableID:55064:15538",
+                "fontSize": "VariableID:55064:15539",
+                "lineHeight": "VariableID:55064:15541",
+                "letterSpacing": "VariableID:55064:15540"
+              }
+            }
+          }
+        },
+        "small-emphasized": {
+          "$value": {
+            "fontFamily": "{static.titleSmall.font}",
+            "fontWeight": "{static.titleSmall.weightEmphasized}",
+            "fontSize": "{static.titleSmall.size}",
+            "lineHeight": "{static.titleSmall.lineHeight}",
+            "letterSpacing": "{static.titleSmall.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:ce5e8f45a0cdecf019ed2843fb32f00ac5497aa9,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15537",
+                "fontWeight": "VariableID:58148:19392",
+                "fontSize": "VariableID:55064:15539",
+                "lineHeight": "VariableID:55064:15541",
+                "letterSpacing": "VariableID:55064:15540"
+              }
+            }
+          }
+        }
+      },
+      "label": {
+        "large": {
+          "$value": {
+            "fontFamily": "{static.labelLarge.font}",
+            "fontWeight": "{static.labelLarge.weight}",
+            "fontSize": "{static.labelLarge.size}",
+            "lineHeight": "{static.labelLarge.lineHeight}",
+            "letterSpacing": "{static.labelLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:998d713927df5afda5a1a5c124c39a889f35facb,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15542",
+                "fontWeight": "VariableID:55064:15543",
+                "fontSize": "VariableID:55064:15544",
+                "lineHeight": "VariableID:55064:15546",
+                "letterSpacing": "VariableID:55064:15545"
+              }
+            }
+          }
+        },
+        "large-emphasized": {
+          "$value": {
+            "fontFamily": "{static.labelLarge.font}",
+            "fontWeight": "{static.labelLarge.weightEmphasized}",
+            "fontSize": "{static.labelLarge.size}",
+            "lineHeight": "{static.labelLarge.lineHeight}",
+            "letterSpacing": "{static.labelLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:d3e42fc3dff7008f32250c6d8f58c10c0f4d39ce,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15542",
+                "fontWeight": "VariableID:55064:15584",
+                "fontSize": "VariableID:55064:15544",
+                "lineHeight": "VariableID:55064:15546",
+                "letterSpacing": "VariableID:55064:15545"
+              }
+            }
+          }
+        },
+        "medium": {
+          "$value": {
+            "fontFamily": "{static.labelMedium.font}",
+            "fontWeight": "{static.labelMedium.weight}",
+            "fontSize": "{static.labelMedium.size}",
+            "lineHeight": "{static.labelMedium.lineHeight}",
+            "letterSpacing": "{static.labelMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:15188f36d2d11ed09659081c0b8b7411f202ca7b,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15547",
+                "fontWeight": "VariableID:55064:15548",
+                "fontSize": "VariableID:55064:15549",
+                "lineHeight": "VariableID:55064:15551",
+                "letterSpacing": "VariableID:55064:15550"
+              }
+            }
+          }
+        },
+        "medium-emphasized": {
+          "$value": {
+            "fontFamily": "{static.labelMedium.font}",
+            "fontWeight": "{static.labelMedium.weightEmphasized}",
+            "fontSize": "{static.labelMedium.size}",
+            "lineHeight": "{static.labelMedium.lineHeight}",
+            "letterSpacing": "{static.labelMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:cd834e532b14c49d6936adc23982c5d00d648e89,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15547",
+                "fontWeight": "VariableID:55064:15585",
+                "fontSize": "VariableID:55064:15549",
+                "lineHeight": "VariableID:55064:15551",
+                "letterSpacing": "VariableID:55064:15550"
+              }
+            }
+          }
+        },
+        "small": {
+          "$value": {
+            "fontFamily": "{static.labelSmall.font}",
+            "fontWeight": "{static.labelSmall.weight}",
+            "fontSize": "{static.labelSmall.size}",
+            "lineHeight": "{static.labelSmall.lineHeight}",
+            "letterSpacing": "{static.labelSmall.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:8913f95f8638ff79a1e9482132bcfd3c90c86101,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15552",
+                "fontWeight": "VariableID:55064:15553",
+                "fontSize": "VariableID:55064:15554",
+                "lineHeight": "VariableID:55064:15556",
+                "letterSpacing": "VariableID:55064:15555"
+              }
+            }
+          }
+        },
+        "small-emphasized": {
+          "$value": {
+            "fontFamily": "{static.labelSmall.font}",
+            "fontWeight": "{static.labelSmall.weightEmphasized}",
+            "fontSize": "{static.labelSmall.size}",
+            "lineHeight": "{static.labelSmall.lineHeight}",
+            "letterSpacing": "{static.labelSmall.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:2cd52bed5fffd09841375824184d01f6d36d4e81,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15552",
+                "fontWeight": "VariableID:58148:19398",
+                "fontSize": "VariableID:55064:15554",
+                "lineHeight": "VariableID:55064:15556",
+                "letterSpacing": "VariableID:55064:15555"
+              }
+            }
+          }
+        }
+      },
+      "body": {
+        "large": {
+          "$value": {
+            "fontFamily": "{static.bodyLarge.font}",
+            "fontWeight": "{static.bodyLarge.weight}",
+            "fontSize": "{static.bodyLarge.size}",
+            "lineHeight": "{static.bodyLarge.lineHeight}",
+            "letterSpacing": "{static.bodyLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:52745338506c9e7ce5ed76ed56750a6d145df9e1,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15569",
+                "fontWeight": "VariableID:55064:15570",
+                "fontSize": "VariableID:55064:15571",
+                "lineHeight": "VariableID:55064:15573",
+                "letterSpacing": "VariableID:55064:15572"
+              }
+            }
+          }
+        },
+        "large-emphasized": {
+          "$value": {
+            "fontFamily": "{static.bodyLarge.font}",
+            "fontWeight": "{static.bodyLarge.weightEmphasized}",
+            "fontSize": "{static.bodyLarge.size}",
+            "lineHeight": "{static.bodyLarge.lineHeight}",
+            "letterSpacing": "{static.bodyLarge.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:8baaf7d1ddd604af21c56cd90a0276faccb40a3d,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15569",
+                "fontWeight": "VariableID:58148:19401",
+                "fontSize": "VariableID:55064:15571",
+                "lineHeight": "VariableID:55064:15573",
+                "letterSpacing": "VariableID:55064:15572"
+              }
+            }
+          }
+        },
+        "medium": {
+          "$value": {
+            "fontFamily": "{static.bodyMedium.font}",
+            "fontWeight": "{static.bodyMedium.weight}",
+            "fontSize": "{static.bodyMedium.size}",
+            "lineHeight": "{static.bodyMedium.lineHeight}",
+            "letterSpacing": "{static.bodyMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:36c66d5118d1550862ba4f1688b861038b98ac75,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15574",
+                "fontWeight": "VariableID:55064:15575",
+                "fontSize": "VariableID:55064:15576",
+                "lineHeight": "VariableID:55064:15578",
+                "letterSpacing": "VariableID:55064:15577"
+              }
+            }
+          }
+        },
+        "medium-emphasized": {
+          "$value": {
+            "fontFamily": "{static.bodyMedium.font}",
+            "fontWeight": "{static.bodyMedium.weightEmphasized}",
+            "fontSize": "{static.bodyMedium.size}",
+            "lineHeight": "{static.bodyMedium.lineHeight}",
+            "letterSpacing": "{static.bodyMedium.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:170109d6ba829bb1bbf1d3045fc76fb7f956cd17,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15574",
+                "fontWeight": "VariableID:58148:19404",
+                "fontSize": "VariableID:55064:15576",
+                "lineHeight": "VariableID:55064:15578",
+                "letterSpacing": "VariableID:55064:15577"
+              }
+            }
+          }
+        },
+        "small": {
+          "$value": {
+            "fontFamily": "{static.bodySmall.font}",
+            "fontWeight": "{static.bodySmall.weight}",
+            "fontSize": "{static.bodySmall.size}",
+            "lineHeight": "{static.bodySmall.lineHeight}",
+            "letterSpacing": "{static.bodySmall.tracking}"
+          },
+          "$description": "0.4",
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:6f1d8353c4c52f8a985edd164da272c3cf14c7c5,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15579",
+                "fontWeight": "VariableID:55064:15580",
+                "fontSize": "VariableID:55064:15581",
+                "lineHeight": "VariableID:55064:15583",
+                "letterSpacing": "VariableID:55064:15582"
+              }
+            }
+          }
+        },
+        "small-emphasized": {
+          "$value": {
+            "fontFamily": "{static.bodySmall.font}",
+            "fontWeight": "{static.bodySmall.weightEmphasized}",
+            "fontSize": "{static.bodySmall.size}",
+            "lineHeight": "{static.bodySmall.lineHeight}",
+            "letterSpacing": "{static.bodySmall.tracking}"
+          },
+          "$type": "typography",
+          "$extensions": {
+            "com.figma": {
+              "styleId": "S:8fc281861de213724eded16c8c47b1a816b3d6f4,",
+              "boundVariables": {
+                "fontFamily": "VariableID:55064:15579",
+                "fontWeight": "VariableID:58148:19407",
+                "fontSize": "VariableID:55064:15581",
+                "lineHeight": "VariableID:55064:15583",
+                "letterSpacing": "VariableID:55064:15582"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "Effects": {
+    "M3": {
+      "Elevation Light": {
+        "1": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "1px",
+              "blur": "3px",
+              "spread": "1px",
+              "inset": false,
+              "color": "#00000026"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "1px",
+              "blur": "2px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            }
+          ],
+          "$type": "shadow"
+        },
+        "2": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "2px",
+              "blur": "6px",
+              "spread": "2px",
+              "inset": false,
+              "color": "#00000026"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "1px",
+              "blur": "2px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            }
+          ],
+          "$type": "shadow"
+        },
+        "3": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "1px",
+              "blur": "3px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "4px",
+              "blur": "8px",
+              "spread": "3px",
+              "inset": false,
+              "color": "#00000026"
+            }
+          ],
+          "$type": "shadow"
+        },
+        "4": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "2px",
+              "blur": "3px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "6px",
+              "blur": "10px",
+              "spread": "4px",
+              "inset": false,
+              "color": "#00000026"
+            }
+          ],
+          "$type": "shadow"
+        },
+        "5": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "4px",
+              "blur": "4px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "8px",
+              "blur": "12px",
+              "spread": "6px",
+              "inset": false,
+              "color": "#00000026"
+            }
+          ],
+          "$type": "shadow"
+        }
+      },
+      "Elevation Dark": {
+        "1": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "1px",
+              "blur": "2px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "1px",
+              "blur": "3px",
+              "spread": "1px",
+              "inset": false,
+              "color": "#00000026"
+            }
+          ],
+          "$type": "shadow"
+        },
+        "2": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "1px",
+              "blur": "2px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "2px",
+              "blur": "6px",
+              "spread": "2px",
+              "inset": false,
+              "color": "#00000026"
+            }
+          ],
+          "$type": "shadow"
+        },
+        "3": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "1px",
+              "blur": "3px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "4px",
+              "blur": "8px",
+              "spread": "3px",
+              "inset": false,
+              "color": "#00000026"
+            }
+          ],
+          "$type": "shadow"
+        },
+        "4": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "2px",
+              "blur": "3px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "6px",
+              "blur": "10px",
+              "spread": "4px",
+              "inset": false,
+              "color": "#00000026"
+            }
+          ],
+          "$type": "shadow"
+        },
+        "5": {
+          "$value": [
+            {
+              "offsetX": "0px",
+              "offsetY": "4px",
+              "blur": "4px",
+              "spread": "0px",
+              "inset": false,
+              "color": "#0000004d"
+            },
+            {
+              "offsetX": "0px",
+              "offsetY": "8px",
+              "blur": "12px",
+              "spread": "6px",
+              "inset": false,
+              "color": "#00000026"
+            }
+          ],
+          "$type": "shadow"
+        }
+      }
+    }
+  }
+}

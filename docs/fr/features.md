@@ -12,6 +12,11 @@ icon: lucide/sparkles
 - **Sélecteur de projet** : l'en-tête affiche le nom du projet ouvert avec un chevron ;
   le menu déroulant bascule vers un projet récent sur place ou revient à l'écran
   d'accueil.
+- **[Modèles de démarrage](templates.md)** : pas encore de projet ? La carte *Open a
+  project* glisse vers un sélecteur qui génère une structure DTCG complète depuis Tailwind
+  CSS v4, Material Design 3, Semantic Functional DS ou Simple Design System (collections,
+  modes et alias déjà en place), puis l'ouvre et, si vous le souhaitez, enchaîne sur le
+  configurateur de distribution.
 
 ## Édition des tokens
 

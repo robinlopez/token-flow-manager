@@ -1,0 +1,56 @@
+{
+  "name": "Design Tokens",
+  "collections": {
+    "Color Primitives": {
+      "modes": {
+        "Value": [
+          "colorPrimitives.json"
+        ]
+      }
+    },
+    "Color": {
+      "modes": {
+        "SDS Light": [
+          "color.json"
+        ],
+        "SDS Dark": [
+          "color.json"
+        ]
+      }
+    },
+    "Typography Primitives": {
+      "modes": {
+        "Default": [
+          "typographyPrimitives.json"
+        ]
+      }
+    },
+    "Responsive": {
+      "modes": {
+        "Desktop": [
+          "responsive.json"
+        ],
+        "Mobile": [
+          "responsive.json"
+        ],
+        "Tablet": [
+          "responsive.json"
+        ]
+      }
+    },
+    "Size": {
+      "modes": {
+        "Default": [
+          "size.json"
+        ]
+      }
+    },
+    "Typography": {
+      "modes": {
+        "Mode 1": [
+          "typography.json"
+        ]
+      }
+    }
+  }
+}

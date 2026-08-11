@@ -7,6 +7,7 @@ export { buildApp } from './app.js';
 export { loadConfig } from './config-loader.js';
 export { Session } from './session.js';
 export { generateV5Script, detectSdVersion, runTestBuild } from './distribution-v5.js';
+export { listTemplates, getTemplate, scaffoldTemplate } from './templates/index.js';
 export type { DistMatrix, MatrixSource, MatrixTarget, SdVersionInfo } from './distribution-v5.js';
 
 export interface StartOptions {
