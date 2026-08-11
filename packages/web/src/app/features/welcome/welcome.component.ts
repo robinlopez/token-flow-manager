@@ -4,6 +4,7 @@ import { ApiService } from '../../core/api.service';
 import { ProjectStore } from '../../stores/project.store';
 import { APP_VERSION } from '../../core/version';
 import { TemplateGalleryComponent } from './template-gallery.component';
+import { ToolsPromoComponent } from './tools-promo.component';
 import type { RecentProject } from '../../core/models';
 
 /**
@@ -18,7 +19,7 @@ import type { RecentProject } from '../../core/models';
 @Component({
   selector: 'tf-welcome',
   standalone: true,
-  imports: [FormsModule, TemplateGalleryComponent],
+  imports: [FormsModule, TemplateGalleryComponent, ToolsPromoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
@@ -208,6 +209,8 @@ import type { RecentProject } from '../../core/models';
           <p class="mt-4 text-sm text-red-600">{{ error() }}</p>
         }
       </div>
+
+      <tf-tools-promo />
     </div>
   `,
 })
