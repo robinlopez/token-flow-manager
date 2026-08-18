@@ -18,6 +18,7 @@ import {
   detectFormat,
   setTokenValue,
   setTokenDescription,
+  setTokenExtension,
   setTokenNode,
   makeTokenNode,
   dialectOfDocument,
@@ -43,6 +44,7 @@ import {
   type RawToken,
   type CollectionInput,
   type JsonObject,
+  type DocumentFormat,
 } from '@tokenflow/core';
 import {
   collectionNamespaceVariants,
@@ -51,6 +53,11 @@ import {
   extractEmbeddedRefs,
   isAlias,
   parseAliasPath,
+  figmaResolvedType,
+  normalizeScopes,
+  validateFigmaPatch,
+  FIGMA_VENDOR,
+  SOURCE_TYPE_EXTENSION,
 } from '@tokenflow/shared';
 import { detectCollections, loadConfig } from './config-loader.js';
 import {
@@ -118,6 +125,12 @@ interface FileEntry {
   content: string;
   hash: string;
   readOnly: boolean;
+}
+
+export interface MetadataChange {
+  id: string;
+  description?: string;
+  extensions?: Record<string, Record<string, unknown> | null>;
 }
 
 /** Metadata attached to a recorded history Command. */
@@ -2126,6 +2139,135 @@ export class ProjectManager extends EventEmitter {
     return { ok: true, affectedTokenIds: affected, diagnostics: [] };
   }
 
+  private metadataFileEntries(token: ParsedToken): FileEntry[] {
+    const rt = this.runtimes.get(token.collection);
+    if (rt?.fileModes && rt.fileModes.size > 0) {
+      const out: FileEntry[] = [];
+      for (const rel of rt.fileModes.keys()) {
+        const e = this.files.get(join(this.root, rel));
+        if (e) out.push(e);
+      }
+      if (out.length > 0) return out;
+    }
+    const e = this.files.get(join(this.root, token.source.file));
+    return e ? [e] : [];
+  }
+
+  async updateMetadataBatch(changes: MetadataChange[]): Promise<MutationResult> {
+    if (changes.length === 0) return { ok: true, affectedTokenIds: [], diagnostics: [] };
+
+    const plan: Array<{ token: ParsedToken; entries: FileEntry[]; change: MetadataChange }> = [];
+    const needed = new Map<string, FileEntry>();
+
+    for (const raw of changes) {
+      const token = this.tokensById.get(raw.id);
+      if (!token) return fail('invalid-token', `Token "${raw.id}" not found`, raw.id);
+      if (raw.description === undefined && !raw.extensions) continue;
+
+      const change: MetadataChange = { ...raw };
+      if (raw.extensions) {
+        const resolvedType = figmaResolvedType(token.type);
+        const extensions: Record<string, Record<string, unknown> | null> = {};
+        for (const [vendor, patch] of Object.entries(raw.extensions)) {
+          if (vendor === SOURCE_TYPE_EXTENSION) {
+            return fail('invalid-token', `"${vendor}" is managed by TokenFlow`, raw.id);
+          }
+          if (vendor !== FIGMA_VENDOR || !patch) {
+            extensions[vendor] = patch;
+            continue;
+          }
+          const msg = validateFigmaPatch(patch, resolvedType);
+          if (msg) return fail('invalid-token', `${token.path.join('.')}: ${msg}`, raw.id);
+          extensions[vendor] = Array.isArray(patch['scopes'])
+            ? { ...patch, scopes: normalizeScopes(patch['scopes']) }
+            : patch;
+        }
+        change.extensions = extensions;
+      }
+
+      const entries = this.metadataFileEntries(token);
+      if (entries.length === 0) {
+        return fail('invalid-token', `Source file for token not loaded`, raw.id);
+      }
+      for (const entry of entries) {
+        if (entry.readOnly) {
+          return fail('merge-conflict', `File "${entry.rel}" is read-only (merge conflict)`, raw.id);
+        }
+        needed.set(entry.abs, entry);
+      }
+      plan.push({ token, entries, change });
+    }
+    if (plan.length === 0) return { ok: true, affectedTokenIds: [], diagnostics: [] };
+
+    const perFile = new Map<string, { entry: FileEntry; data: JsonObject; format: DocumentFormat }>();
+    for (const [abs, entry] of needed) {
+      const onDisk = await readFile(abs, 'utf8');
+      if (hashContent(onDisk) !== entry.hash) {
+        return fail('invalid-token', `File "${entry.rel}" changed on disk; reload before editing`);
+      }
+      perFile.set(abs, {
+        entry,
+        data: parseDocument(entry.content),
+        format: detectFormat(entry.content),
+      });
+    }
+
+    let described = 0;
+    let extended = 0;
+    for (const { token, entries, change } of plan) {
+      let applied = false;
+      for (const entry of entries) {
+        const pf = perFile.get(entry.abs)!;
+        for (const path of this.physicalPaths(token.collection, token.path)) {
+          if (!getTokenNode(pf.data, path)) continue;
+          if (change.description !== undefined) {
+            applied = setTokenDescription(pf.data, path, change.description) || applied;
+          }
+          for (const [vendor, patch] of Object.entries(change.extensions ?? {})) {
+            applied = setTokenExtension(pf.data, path, vendor, patch) || applied;
+          }
+        }
+      }
+      if (!applied) {
+        return fail(
+          'invalid-token',
+          `Could not locate token node at ${token.path.join('.')}`,
+          change.id,
+        );
+      }
+      if (change.description !== undefined) described++;
+      if (change.extensions) extended++;
+    }
+
+    const staged = [...perFile.values()]
+      .map((pf) => ({ entry: pf.entry, content: stringifyDocument(pf.data, pf.format) }))
+      .filter((s) => s.content !== s.entry.content);
+    if (staged.length === 0) return { ok: true, affectedTokenIds: [], diagnostics: [] };
+
+    const before = this.snapshotResolved();
+    const edits: FileChange[] = staged.map((s) => ({
+      rel: s.entry.rel,
+      before: s.entry.content,
+      after: s.content,
+    }));
+    for (const s of staged) {
+      await this.backup(s.entry);
+      await writeFileAtomic(s.entry.abs, s.content);
+      s.entry.content = s.content;
+      s.entry.hash = hashContent(s.content);
+    }
+    this.recordHistory(edits, { label: metadataBatchLabel(described, extended) });
+    await this.reparse();
+
+    const after = this.snapshotResolved();
+    const affected = new Set(plan.map((p) => p.change.id));
+    for (const [id, sig] of after) if (before.get(id) !== sig) affected.add(id);
+    const affectedTokenIds = [...affected];
+    this.emit('event', { type: 'tokens-changed', affectedTokenIds });
+    this.emit('event', { type: 'diagnostics-updated', diagnostics: this.diagnostics });
+    return { ok: true, affectedTokenIds, diagnostics: [] };
+  }
+
   /**
    * Create a new token (variable) at `req.path` with per-mode default values.
    * Writes match the collection's mode storage so the new row shows correctly in
@@ -3173,6 +3315,13 @@ export class ProjectManager extends EventEmitter {
 function startsWithPath(path: string[], prefix: string[]): boolean {
   if (path.length < prefix.length) return false;
   return prefix.every((s, i) => path[i] === s);
+}
+
+function metadataBatchLabel(described: number, extended: number): string {
+  const plural = (n: number): string => `${n} variable${n > 1 ? 's' : ''}`;
+  if (described && extended) return `Edit metadata on ${plural(Math.max(described, extended))}`;
+  if (extended) return `Edit extensions on ${plural(extended)}`;
+  return `Describe ${plural(described)}`;
 }
 
 function fail(

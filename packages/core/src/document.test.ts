@@ -6,6 +6,7 @@ import {
   setTokenValue,
   deleteTokenNode,
   reorderChildren,
+  setTokenExtension,
 } from './document.js';
 
 describe('document — format-preserving mutation', () => {
@@ -74,5 +75,81 @@ describe('document — format-preserving mutation', () => {
     expect(deleteTokenNode(data, ['a'])).toBe(true);
     expect('a' in data).toBe(false);
     expect('b' in data).toBe(true);
+  });
+});
+
+describe('document — vendor extensions', () => {
+  const node = () => ({
+    radius: {
+      sm: {
+        $type: 'dimension',
+        $value: '4px',
+        $extensions: {
+          'com.figma': {
+            variableId: 'VariableID:1:2',
+            collectionId: 'VariableCollectionId:1:0',
+            modeId: '1:5',
+            resolvedType: 'FLOAT',
+            scopes: ['CORNER_RADIUS'],
+          },
+        },
+      },
+    },
+  });
+
+  it('merges only the patched keys, leaving binding identities intact', () => {
+    const data = parseDocument(JSON.stringify(node()));
+    expect(setTokenExtension(data, ['radius', 'sm'], 'com.figma', { scopes: ['WIDTH_HEIGHT'] })).toBe(true);
+    const block = (data as any).radius.sm.$extensions['com.figma'];
+    expect(block).toEqual({
+      variableId: 'VariableID:1:2',
+      collectionId: 'VariableCollectionId:1:0',
+      modeId: '1:5',
+      resolvedType: 'FLOAT',
+      scopes: ['WIDTH_HEIGHT'],
+    });
+    expect(Object.keys(block)).toEqual([
+      'variableId',
+      'collectionId',
+      'modeId',
+      'resolvedType',
+      'scopes',
+    ]);
+  });
+
+  it('creates the block (and $extensions) when the token has none', () => {
+    const data = parseDocument(JSON.stringify({ gap: { $type: 'dimension', $value: '8px' } }));
+    setTokenExtension(data, ['gap'], 'com.figma', { scopes: ['GAP'], resolvedType: 'FLOAT' });
+    expect((data as any).gap.$extensions).toEqual({
+      'com.figma': { scopes: ['GAP'], resolvedType: 'FLOAT' },
+    });
+  });
+
+  it('deletes a field on a null patch value', () => {
+    const data = parseDocument(JSON.stringify(node()));
+    setTokenExtension(data, ['radius', 'sm'], 'com.figma', { scopes: null });
+    expect((data as any).radius.sm.$extensions['com.figma'].scopes).toBeUndefined();
+    expect((data as any).radius.sm.$extensions['com.figma'].modeId).toBe('1:5');
+  });
+
+  it('removes the vendor block, then $extensions once empty', () => {
+    const data = parseDocument(JSON.stringify(node()));
+    setTokenExtension(data, ['radius', 'sm'], 'com.figma', null);
+    expect((data as any).radius.sm.$extensions).toBeUndefined();
+  });
+
+  it('leaves other vendors alone', () => {
+    const data = parseDocument(
+      JSON.stringify({
+        a: { $value: 1, $extensions: { 'com.figma': { scopes: [] }, 'com.acme': { x: 1 } } },
+      }),
+    );
+    setTokenExtension(data, ['a'], 'com.figma', null);
+    expect((data as any).a.$extensions).toEqual({ 'com.acme': { x: 1 } });
+  });
+
+  it('returns false for a missing token node', () => {
+    const data = parseDocument(JSON.stringify({ a: { $value: 1 } }));
+    expect(setTokenExtension(data, ['nope'], 'com.figma', { scopes: [] })).toBe(false);
   });
 });

@@ -11,6 +11,7 @@ import {
   type ConfigPatch,
   type DtcgType,
   type HistoryState,
+  type MetadataChange,
   type PaletteRecipe,
   type ParsedToken,
   type ProjectConfig,
@@ -130,6 +131,13 @@ export class ProjectStore {
     }
     return keys;
   });
+  readonly bulkEditOpen = signal(false);
+  readonly selectedTokens = computed<ParsedToken[]>(() => {
+    const ids = this.selectedIds();
+    return ids.size === 0 ? [] : this.allTokens().filter((t) => ids.has(t.id));
+  });
+  readonly bulkEditActive = computed(() => this.bulkEditOpen() && this.selectedIds().size > 1);
+
   /** The token shown in the inspector detail panel (opened via the gear icon). */
   readonly inspectedToken = computed<ParsedToken | null>(() => {
     const id = this.inspectedTokenId();
@@ -164,6 +172,11 @@ export class ProjectStore {
     effect(() => {
       const t = this.selectedToken();
       if (t) untracked(() => this.expandAncestorGroups(t.path));
+    });
+    effect(() => {
+      if (this.selectedIds().size < 2 && untracked(() => this.bulkEditOpen())) {
+        untracked(() => this.bulkEditOpen.set(false));
+      }
     });
   }
 
@@ -548,6 +561,16 @@ export class ProjectStore {
     this.selectedTokenId.set(null);
   }
 
+  openBulkEdit(): void {
+    if (this.selectedIds().size < 2) return;
+    this.inspectedTokenId.set(null);
+    this.bulkEditOpen.set(true);
+  }
+
+  closeBulkEdit(): void {
+    this.bulkEditOpen.set(false);
+  }
+
   /** Single-select `id` (replaces the selection) and make it the range anchor. */
   selectOnly(id: string): void {
     this.selectedIds.set(new Set([id]));
@@ -646,6 +669,42 @@ export class ProjectStore {
       await this.refresh();
       if (res.ok) this.ui.showToast(`Set ${changes.length} value${changes.length > 1 ? 's' : ''}`);
       return res.ok;
+    } catch (err) {
+      this.ui.showToast(errMessage(err), 4000);
+      await this.refresh();
+      return false;
+    }
+  }
+
+  async updateMetadataBatch(changes: MetadataChange[], label?: string): Promise<boolean> {
+    if (changes.length === 0) return true;
+    const col = this.collection();
+    if (col) {
+      const byId = new Map(changes.map((c) => [c.id, c]));
+      const tokens = col.tokens.map((t) => {
+        const ch = byId.get(t.id);
+        if (!ch) return t;
+        let next = t;
+        if (ch.description !== undefined) {
+          const trimmed = ch.description.trim();
+          next = { ...next, description: trimmed || undefined };
+        }
+        if (ch.extensions) {
+          next = { ...next, extensions: mergeExtensions(next.extensions, ch.extensions) };
+        }
+        return next;
+      });
+      this.collection.set({ ...col, tokens });
+    }
+    try {
+      const result = await this.fetch(this.api.updateMetadataBatch(changes));
+      await this.refresh();
+      if (result.ok) {
+        if (label) this.ui.showToast(label);
+      } else {
+        this.ui.showToast(result.diagnostics[0]?.message ?? 'Could not apply the change', 4000);
+      }
+      return result.ok;
     } catch (err) {
       this.ui.showToast(errMessage(err), 4000);
       await this.refresh();
@@ -1388,6 +1447,30 @@ export class ProjectStore {
   private fetch<T>(obs: Observable<T>): Promise<T> {
     return firstValueFrom(obs);
   }
+}
+
+function mergeExtensions(
+  current: Record<string, unknown> | undefined,
+  patch: Record<string, Record<string, unknown> | null>,
+): Record<string, unknown> | undefined {
+  const out: Record<string, unknown> = { ...(current ?? {}) };
+  for (const [vendor, block] of Object.entries(patch)) {
+    if (block === null) {
+      delete out[vendor];
+      continue;
+    }
+    const existing = out[vendor];
+    const base: Record<string, unknown> =
+      typeof existing === 'object' && existing !== null && !Array.isArray(existing)
+        ? { ...(existing as Record<string, unknown>) }
+        : {};
+    for (const [key, value] of Object.entries(block)) {
+      if (value === null || value === undefined) delete base[key];
+      else base[key] = value;
+    }
+    out[vendor] = base;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 /**

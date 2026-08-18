@@ -89,13 +89,14 @@ Open a token's detail panel with the **gear icon** on its row. It shows the desc
 per-mode values (with resolved colour, OKLCH and gamut), incoming references, rename, and
 the source file location.
 
-When a token carries DTCG **`$extensions`** — for example the `com.figma` block exported
-by Figma (variable id, collection id, mode id, resolved type, scopes…) — it is preserved
-on read and shown in a dedicated **Extensions** section. Each vendor block is rendered as
-readable key/value rows, with a **View JSON** toggle for the raw payload. Extensions are
-kept intact through edits and writes.
+Vendor **`$extensions`** are preserved on read and **editable**. The Extensions section
+lists the **services** attached to the variable as collapsible cards, cumulative and
+removable, with the `com.figma` block (scopes, publishing, code syntax) as the first real
+editor. Descriptions and extensions can also be edited across a **multi-selection**.
 
-![Token detail panel showing the com.figma extensions](assets/screenshots/inspector-extensions.webp)
+![The Figma extension editor with scopes, publishing, code syntax and binding](assets/screenshots/inspector-extensions.webp)
+
+Full details on the [Bulk edit & extensions](extensions.md) page.
 
 ## Safety model
 

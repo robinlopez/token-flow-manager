@@ -29,6 +29,7 @@ import {
   DuplicateGroupRequestSchema,
   UndoRedoRequestSchema,
   UpdateValuesBatchRequestSchema,
+  UpdateMetadataBatchRequestSchema,
   CopyTokenToRequestSchema,
   OpenProjectRequestSchema,
   UpdateManifestRequestSchema,
@@ -274,6 +275,13 @@ function registerApiRoutes(
     const parsed = UpdateValuesBatchRequestSchema.safeParse(req.body);
     if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
     const result = await project.updateValuesBatch(parsed.data.changes);
+    return reply.code(result.ok ? 200 : 422).send(result);
+  });
+
+  app.patch<{ Body: unknown }>('/api/tokens/metadata-batch', async (req, reply) => {
+    const parsed = UpdateMetadataBatchRequestSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(400).send({ error: parsed.error.flatten() });
+    const result = await project.updateMetadataBatch(parsed.data.changes);
     return reply.code(result.ok ? 200 : 422).send(result);
   });
 

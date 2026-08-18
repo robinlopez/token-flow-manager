@@ -114,6 +114,40 @@ export function setTokenDescription(
   return true;
 }
 
+export function setTokenExtension(
+  data: JsonObject,
+  path: TokenPath,
+  vendor: string,
+  patch: Record<string, unknown> | null,
+): boolean {
+  const node = getTokenNode(data, path);
+  if (!node) return false;
+  const existing = node['$extensions'];
+  const container: JsonObject =
+    typeof existing === 'object' && existing !== null && !Array.isArray(existing)
+      ? (existing as JsonObject)
+      : {};
+
+  if (patch === null) {
+    delete container[vendor];
+  } else {
+    const currentBlock = container[vendor];
+    const block: JsonObject =
+      typeof currentBlock === 'object' && currentBlock !== null && !Array.isArray(currentBlock)
+        ? (currentBlock as JsonObject)
+        : {};
+    for (const [key, value] of Object.entries(patch)) {
+      if (value === null || value === undefined) delete block[key];
+      else block[key] = value;
+    }
+    container[vendor] = block;
+  }
+
+  if (Object.keys(container).length === 0) delete node['$extensions'];
+  else node['$extensions'] = container;
+  return true;
+}
+
 /**
  * Build a token node in `dialect`, so a token created inside a legacy file is
  * written as `value`/`type` and stays readable by the Figma plugin.

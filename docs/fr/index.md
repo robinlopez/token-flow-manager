@@ -30,6 +30,8 @@ tokens neuve.
   groupes de tokens.
 - **Copier / Couper / Coller** des variables entières, **Annuler / Rétablir**,
   recherche, palette de commandes.
+- **[Multi-édition & extensions](extensions.md)** : une description sur toute une
+  sélection, et les scopes Figma édités en cases à trois états.
 - **Diagnostics** avec corrections en un clic et un inspecteur de chaînes d'alias.
 
 Une visite complète se trouve sur la page [Fonctionnalités](features.md).

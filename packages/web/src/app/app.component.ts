@@ -6,6 +6,7 @@ import { SidebarComponent } from './features/sidebar/sidebar.component';
 import { ToolbarComponent } from './features/toolbar/toolbar.component';
 import { VariablesTableComponent } from './features/variables-table/variables-table.component';
 import { InspectorComponent } from './features/inspector/inspector.component';
+import { BulkInspectorComponent } from './features/inspector/bulk-inspector.component';
 import { CommandPaletteComponent } from './features/command-palette/command-palette.component';
 import { DiagnosticsComponent } from './features/diagnostics/diagnostics.component';
 import { SettingsComponent } from './features/settings/settings.component';
@@ -28,6 +29,7 @@ import { APP_VERSION } from './core/version';
     ToolbarComponent,
     VariablesTableComponent,
     InspectorComponent,
+    BulkInspectorComponent,
     CommandPaletteComponent,
     DiagnosticsComponent,
     SettingsComponent,
@@ -198,6 +200,7 @@ import { APP_VERSION } from './core/version';
             <tf-variables-table />
           </div>
         </main>
+        <tf-bulk-inspector />
         <tf-inspector />
       </div>
 
@@ -294,7 +297,7 @@ export class AppComponent {
     const target = event.target as HTMLElement | null;
     if (
       target?.closest(
-        '.tf-row, tf-sidebar, tf-inspector, tf-toolbar, tf-context-menu, ' +
+        '.tf-row, tf-sidebar, tf-inspector, tf-bulk-inspector, tf-toolbar, tf-context-menu, ' +
           'tf-cell-picker, tf-command-palette, tf-settings, tf-distribution, ' +
           'tf-diagnostics, tf-shortcuts-help, tf-palette-editor',
       )
