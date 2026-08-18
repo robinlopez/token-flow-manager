@@ -1182,7 +1182,10 @@ export class VariablesTableComponent {
           ];
     this.ctxMenu.open(event, [
       ...cellItems,
-      { label: 'Edit variable', action: () => this.store.selectToken(token.id), disabled: multi },
+      {
+        label: multi ? `Edit ${sel.size} variables` : 'Edit variable',
+        action: () => (multi ? this.store.openBulkEdit() : this.store.selectToken(token.id)),
+      },
       { label: 'Rename', action: () => this.startRename(token), disabled: multi },
       { label: 'Duplicate', action: () => void this.store.duplicateToken(token.id), disabled: multi },
       {

@@ -152,6 +152,12 @@ export interface UndoRedoResult {
   diverged?: string[];
 }
 
+export interface MetadataChange {
+  id: string;
+  description?: string;
+  extensions?: Record<string, Record<string, unknown> | null>;
+}
+
 export interface MutationResult {
   ok: boolean;
   token?: ParsedToken;

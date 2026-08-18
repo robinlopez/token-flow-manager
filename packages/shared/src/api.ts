@@ -143,6 +143,19 @@ export const UpdateValuesBatchRequestSchema = z.object({
 });
 export type UpdateValuesBatchRequest = z.infer<typeof UpdateValuesBatchRequestSchema>;
 
+export const UpdateMetadataBatchRequestSchema = z.object({
+  changes: z
+    .array(
+      z.object({
+        id: z.string(),
+        description: z.string().optional(),
+        extensions: z.record(z.union([z.record(z.unknown()), z.null()])).optional(),
+      }),
+    )
+    .min(1),
+});
+export type UpdateMetadataBatchRequest = z.infer<typeof UpdateMetadataBatchRequestSchema>;
+
 export const UpdateMetadataRequestSchema = z.object({
   description: z.string().optional(),
   deprecated: z.union([z.boolean(), z.string()]).optional(),

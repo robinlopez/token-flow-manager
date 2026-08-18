@@ -11,6 +11,7 @@ import type {
   DistConfig,
   DistributionState,
   DtcgType,
+  MetadataChange,
   MutationResult,
   TokenConfigManifest,
   ParsedToken,
@@ -164,6 +165,14 @@ export class ApiService {
     changes: { id: string; mode: string; value: unknown }[],
   ): Observable<MutationResult> {
     return this.http.patch<MutationResult>('/api/tokens/batch', { changes }, { params: this.params() });
+  }
+
+  updateMetadataBatch(changes: MetadataChange[]): Observable<MutationResult> {
+    return this.http.patch<MutationResult>(
+      '/api/tokens/metadata-batch',
+      { changes },
+      { params: this.params() },
+    );
   }
 
   deleteToken(id: string): Observable<MutationResult> {
