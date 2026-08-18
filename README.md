@@ -64,6 +64,14 @@ node packages/cli/dist/cli.js
 - **Search** (⌘S) + filters (aliases, deprecated, orphans, errors) and a **command
   palette**.
 - **Undo / redo** (⌘Z / ⌘⇧Z), byte-exact and server-side.
+- **Bulk edit** : select several rows, right-click, *Edit N variables*: set one
+  description across the selection (with a `Multiple values` placeholder and an explicit
+  *Apply to N*), and edit extensions from tri-state checkboxes. One transaction, one undo.
+- **Vendor `$extensions`, editable** : the Extensions panel lists the **services** attached
+  to a variable as collapsible, cumulative cards (add / remove). **Figma** is the first with
+  a real editor: scopes matching the Figma UI and derived from the token's `$type`, code
+  syntax, publishing flag. `resolvedType` stays derived and the binding identities
+  (`variableId`…) read-only, so an edit can never rebind another Figma variable.
 - **Diagnostics** with one-click quick-fixes; **Inspector** with alias chains and
   incoming references.
 - **Keyboard shortcuts help** (⌘/ or ?) and the app version in the footer.
@@ -152,8 +160,9 @@ it is published, and runs `tokenflow`.)
 > asserts the advertised counts match reality.
 
 > **Bumping the version:** keep the **6** `package.json` (root + 5 packages) and
-> `packages/web/src/app/core/version.ts` (`APP_VERSION`, shown in the footer) in sync, bump
-> the docs version selector (`zensical*.toml` `default` + `VERSIONS` in
-> `scripts/docs-build-versioned.mjs`), add a CHANGELOG entry, then rebuild the CLI so the
-> SPA is re-embedded (`pnpm --filter token-flow-manager build`). See
-> [plan.md](plan.md) §10.1.
+> `packages/web/src/app/core/version.ts` (`APP_VERSION`, shown in the footer) in sync, add a
+> CHANGELOG entry, then rebuild the CLI so the SPA is re-embedded
+> (`pnpm --filter token-flow-manager build`). The docs site is versioned by **minor line**
+> (two entries: the current line and the previous one), so a patch release touches nothing
+> there; only a new minor line updates `zensical*.toml` `default` + `VERSIONS` in
+> `scripts/docs-build-versioned.mjs`. See [plan.md](plan.md) §10.1.

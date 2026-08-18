@@ -21,7 +21,7 @@
 // own directory, and rejects absolute paths.
 // ============================================================================
 import { execFileSync } from 'node:child_process';
-import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 const BASE_URL = 'https://robinlopez.github.io/token-flow-manager';
@@ -29,21 +29,45 @@ const SITE = 'site';
 
 // Newest first. `aliases` are advisory (shown in the selector); the directory
 // is always named by `version`.
-// 0.1.6 and 0.1.7 have no snapshot of their own: they shipped without a docs cut,
-// so 0.1.6's docs are the frozen 0.1.5 ones and 0.1.7's are the frozen 0.1.8 ones.
+//
+// The site is versioned by MINOR LINE, not by patch: a patch release reuses the
+// line's directory (no new entry, no new snapshot), and only a new minor line
+// adds one. Each closed line points at the frozen snapshot of its last patch,
+// so `0.1` is 0.1.9's docs. Older per-patch snapshots stay in `docs-archive/`
+// for reference; they are simply not published.
 const VERSIONS = [
-  { version: '0.1.9', title: '0.1.9 (latest)', aliases: ['latest'], en: 'docs/en', fr: 'docs/fr' },
-  { version: '0.1.8', title: '0.1.8', aliases: [], en: 'docs-archive/0.1.8/en', fr: 'docs-archive/0.1.8/fr' },
-  { version: '0.1.5', title: '0.1.5', aliases: [], en: 'docs-archive/0.1.5/en', fr: 'docs-archive/0.1.5/fr' },
-  { version: '0.1.4', title: '0.1.4', aliases: [], en: 'docs-archive/0.1.4/en', fr: 'docs-archive/0.1.4/fr' },
-  { version: '0.1.3', title: '0.1.3', aliases: [], en: 'docs-archive/0.1.3/en', fr: 'docs-archive/0.1.3/fr' },
+  { version: '0.2', title: '0.2 (latest)', aliases: ['latest'], en: 'docs/en', fr: 'docs/fr' },
+  { version: '0.1', title: '0.1', aliases: [], en: 'docs-archive/0.1.9/en', fr: 'docs-archive/0.1.9/fr' },
 ];
 const latest = VERSIONS[0];
 const tmpConfigs = [];
 
+/**
+ * Drop `nav` entries whose page does not exist in this version's docs. The base
+ * config is shared by every version, so a page added in the current line would
+ * otherwise render as a dead label in an older line's sidebar.
+ */
+function pruneNav(text, docsDir) {
+  const open = '\nnav = [';
+  const start = text.indexOf(open);
+  if (start === -1) return text;
+  const end = text.indexOf('\n]', start);
+  if (end === -1) return text;
+  const kept = text
+    .slice(start + open.length, end)
+    .split('\n')
+    .filter((line) => {
+      const m = /=\s*"([^"]+\.md)"/.exec(line);
+      return !m || existsSync(join(docsDir, m[1]));
+    })
+    .join('\n');
+  return text.slice(0, start) + open + kept + text.slice(end);
+}
+
 /** Clone a base Zensical config (at repo root), overriding docs_dir / site_dir / site_url. */
 function writeConfig(baseFile, outFile, { docsDir, siteDir, siteUrl }) {
   let t = readFileSync(baseFile, 'utf8');
+  t = pruneNav(t, docsDir);
   t = t.replace(/^docs_dir\s*=.*$/m, `docs_dir = "${docsDir}"`);
   t = t.replace(/^site_url\s*=.*$/m, `site_url = "${siteUrl}"`);
   if (/^site_dir\s*=.*$/m.test(t)) t = t.replace(/^site_dir\s*=.*$/m, `site_dir = "${siteDir}"`);

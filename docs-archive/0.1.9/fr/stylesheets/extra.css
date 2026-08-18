@@ -1,0 +1,60 @@
+/* ===========================================================================
+   Token Flow Manager - brand palette derived from the logo (assets/logo.png)
+   Cream #f7ebdf, warm near-black #252321, warm taupe #4a4642.
+
+   NOTE: selectors are scoped to body[data-md-color-scheme=...] so they win over
+   the theme's default palette (data-md-color-primary), regardless of load order.
+   =========================================================================== */
+
+/* ---- Light scheme -------------------------------------------------------- */
+body[data-md-color-scheme="default"] {
+  --md-primary-fg-color:        #252321; /* warm near-black */
+  --md-primary-fg-color--light: #4a4642; /* warm taupe */
+  --md-primary-fg-color--dark:  #1a1816;
+  --md-primary-bg-color:        #f7ebdf; /* cream */
+
+  --md-accent-fg-color:         #9c7a52; /* hovers, active states: warm brown */
+  --md-typeset-a-color:         #8a6238; /* links: warm brown */
+
+  --md-footer-bg-color:         #1a1816;
+}
+
+/* Header in the logo's cream so the logo tile blends into the bar. */
+[data-md-color-scheme="default"] .md-header,
+[data-md-color-scheme="default"] .md-tabs {
+  background-color: #f7ebdf;
+  color: #1c1917;
+}
+[data-md-color-scheme="default"] .md-header .md-search__form {
+  background-color: rgba(28, 25, 23, 0.06);
+}
+[data-md-color-scheme="default"] .md-header .md-search__input::placeholder {
+  color: rgba(28, 25, 23, 0.55);
+}
+
+/* ---- Dark scheme (slate) ------------------------------------------------- */
+body[data-md-color-scheme="slate"] {
+  --md-hue: 30; /* shift slate greys towards warm */
+
+  --md-primary-fg-color:        #1c1a18;
+  --md-primary-bg-color:        #f7ebdf;
+
+  --md-accent-fg-color:         #d8b48c; /* warm sand */
+  --md-typeset-a-color:         #d8b48c;
+
+  --md-footer-bg-color:         #141210;
+}
+/* Higher specificity to beat the slate palette's compound link rule. */
+body[data-md-color-scheme="slate"][data-md-color-primary] {
+  --md-typeset-a-color: #d8b48c;
+}
+[data-md-color-scheme="slate"] .md-header,
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: #1c1a18;
+  color: #f7ebdf;
+}
+
+/* Logo sits on a cream tile; soften its corners. */
+.md-header__button.md-logo img {
+  border-radius: 6px;
+}

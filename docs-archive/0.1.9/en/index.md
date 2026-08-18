@@ -25,8 +25,6 @@ token structure.
 - **Variables table**: mode columns (light/dark/brand and more), alias chips, inline editing.
 - **Finder-style sidebar**: drag-and-drop to nest or reorder token groups.
 - **Copy / Cut / Paste** whole variables, **Undo / Redo**, search, command palette.
-- **[Bulk edit & extensions](extensions.md)**: one description across a multi-selection,
-  and Figma scopes edited from tri-state checkboxes.
 - **Diagnostics** with one-click quick-fixes and an alias-chain inspector.
 
 A full tour lives on the [Features](features.md) page.
